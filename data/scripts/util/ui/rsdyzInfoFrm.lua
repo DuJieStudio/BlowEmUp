@@ -1,0 +1,1625 @@
+----其实现在是我的领地里按game start后的面板 懒得svn上改名字
+--hGlobal.UI.InitRsdyzInfoFrm_RSDYZ = function(sInitMode)
+--	if sInitMode=="init" then
+--		return hVar.RESULT_FAIL
+--	end
+--
+--	local _x,_y,_w,_h = 110,hVar.SCREEN.h - 90,hVar.SCREEN.w - 220,hVar.SCREEN.h - 190
+--	if g_phone_mode == 1 then
+--		_x = 80
+--		_w = hVar.SCREEN.w - 160
+--		_y = hVar.SCREEN.h - 70
+--		_h = hVar.SCREEN.h - 150
+--	elseif g_phone_mode == 2 then
+--		_x = 160
+--		_w = hVar.SCREEN.w - 320
+--		_y = hVar.SCREEN.h - 70
+--		_h = hVar.SCREEN.h - 150
+--	end
+--	local x,y,w,h = _x,_y,_w,_h
+--	local defStr = nil
+--	local inRSDYZ = 0
+--	local RSDYZ_POINTS = 0
+--	local RSDYZ_COINS = 0
+--	local RSDYZ_GONGXUN = 0
+--	local RSDYZ_GX_LINGQU = 500
+--
+--	local lastBattleID = 0
+--	local atkPlayerNum = 0
+--	local atkBossNum = 0
+--	local atkGetCoin = 0
+--	local bestPos = 0
+--	local actLogNum = 0
+--	local atkTime = ""
+--	local bossList = {}
+--	local GongXianBar = nil
+--	local RSDYZ_InfoAddTimer = nil
+--	local RSDYZ_ClearTimer = nil
+--	local sendId = 0--发给服务器的命令id
+--	local sendNum = 0--请求战报的条数
+--	local timerName = "RSDYZ_Summary_timer"
+--	local defExpT = {}
+--	for i = 1,99 do
+--		defExpT[i] = 0
+--	end
+--
+--	local aaa = hUI.frame:new({
+--		x = _x,
+--		y = _y,
+--		h = _h,
+--		w = _w,
+--		dragable = 2,
+--		show = 0,
+--		--background = "UI:tip_item",
+--		closebtn = "BTN:PANEL_CLOSE",
+--		closebtnX = _w - 10,
+--		closebtnY = -14,
+--		border = 1,
+--		autoactive = 0,
+--		codeOnTouch = function(self,x,y,IsInside,tTempPos)
+--			
+--		end,
+--		codeOnClose = function(self)
+--			hGlobal.event:event("LocalEvent_ShowMapAllUI",true)
+--			RSDYZ_ClearTimer()
+--			Game_Zone_OnGameEvent(GZone_Event_TypeDef.Leave,luaGetplayerDataID())
+--		end
+--	})
+--	
+--
+--	local _frm = aaa
+--	local _parent = _frm.handle._n
+--	local _childUI = _frm.childUI
+--
+--	_childUI["SelectedHeroTitle"] = hUI.label:new({
+--		parent = _parent,
+--		size = 34,
+--		align = "MC",
+--		font = hVar.FONTC,
+--		x = w/2,
+--		y = -35,
+--		width = 300,
+--		text = hVar.tab_string["RSDYZ_Public"],
+--		border = 1,
+--	})
+--
+--	local how2PlayFrm = nil
+--	_childUI["quest"] = hUI.button:new({
+--		parent = _parent,
+--		model = "ICON:action_info",
+--		dragbox = _frm.childUI["dragBox"],
+--		x = _w - 60,
+--		y = -35,
+--		w = 40,
+--		h = 40,
+--		scaleT = 0.9,
+--		code = function(self)
+--			how2PlayFrm:show(1)
+--			how2PlayFrm:active()
+--		end,
+--	})
+--
+--	--分界线
+--	_childUI["apartline_back_u"] = hUI.image:new({
+--		parent = _parent,
+--		model = "UI:panel_part_09",
+--		x = w/2,
+--		y = -66,
+--		w = w+20,
+--		h = 8,
+--	})
+--
+--	_childUI["GONG_GAO"] = hUI.label:new({
+--		parent = _parent,
+--		x = 30,
+--		y = -114,
+--		size = 28,
+--		border = 1,
+--		align = "LC",
+--		font = hVar.FONTC,
+--		text = hVar.tab_string["RSDYZ_Public_Def"],
+--		width = 750,
+--		RGB = {255,255,255},
+--	})
+--
+--	--for i = 1,3 do
+--		--_childUI["apartline_back"..i] = hUI.image:new({
+--			--parent = _parent,
+--			--model = "UI:Card_slot",
+--			--x = w-90*(3.5-i),
+--			--y = -(h/3.2),
+--			--w = 70,
+--			--h = 90,
+--		--})
+--	--end
+--
+--	_childUI["Now_Def"] = hUI.label:new({
+--		parent = _parent,
+--		size = 34,
+--		align = "MC",
+--		font = hVar.FONTC,
+--		x = 140,
+--		y = -(h/2.2),
+--		width = 300,
+--		text = hVar.tab_string["RSDYZ_Now_Def"],
+--		border = 1,
+--	})
+--
+--	_childUI["ZHU"] = hUI.label:new({
+--		parent = _parent,
+--		size = 28,
+--		align = "MC",
+--		font = hVar.FONTC,
+--		x = 70,
+--		y = -(h/1.6) - 60,
+--		width = 300,
+--		text = hVar.tab_string["ZHU_JIAN"],
+--		border = 1,
+--	})
+--
+--	_childUI["FU1"] = hUI.label:new({
+--		parent = _parent,
+--		size = 28,
+--		align = "MC",
+--		font = hVar.FONTC,
+--		x = 70 + 84,
+--		y = -(h/1.6) - 60,
+--		width = 300,
+--		text = hVar.tab_string["FU_JIAN"],
+--		border = 1,
+--	})
+--
+--	_childUI["FU2"] = hUI.label:new({
+--		parent = _parent,
+--		size = 28,
+--		align = "MC",
+--		font = hVar.FONTC,
+--		x = 70 + 170,
+--		y = -(h/1.6) - 60,
+--		width = 300,
+--		text = hVar.tab_string["FU_JIAN"],
+--		border = 1,
+--	})
+--
+--	_childUI["apartline_back_d"] = hUI.image:new({
+--		parent = _parent,
+--		model = "UI:panel_part_09",
+--		x = w/2,
+--		y = -(h/2.5),
+--		w = w+20,
+--		h = 8,
+--	})
+--
+--	local attackMode = nil
+--	local defMode = nil
+--	local atkOrDef = 0 --0进攻 1防守
+--
+--	_childUI["attack"] = nil
+--	_childUI["def"] = nil
+--
+--	_childUI["attack"] = hUI.button:new({
+--		parent = _parent,
+--		icon = "ICON:action_attack",
+--		iconWH = 24,
+--		model = "UI:ButtonBack",
+--		dragbox = _frm.childUI["dragBox"],
+--		x = 80,
+--		y = -(h/2.5) + 20,
+--		w = 110,
+--		h = 40,
+--		--align = "LB",
+--		label = {text = hVar.tab_string["RSDYZ_Attack"],size = 30,font = hVar.FONTC,border = 1,},
+--		code = function(self)
+--			attackMode()
+--			local num = 4
+--			if g_phone_mode == 1 or g_phone_mode == 2 then
+--				num = 3
+--			end
+--			--Game_Zone_OnGameEvent(GZone_Event_TypeDef.Lua,{GZone_Event_TypeDef.GetBattleSummary_Fire,luaGetplayerDataID(),num})
+--			sendId = GZone_Event_TypeDef.GetBattleSummary_Fire
+--			sendNum = num
+--		end,
+--	})
+--
+--	_childUI["def"] = hUI.button:new({
+--		parent = _parent,
+--		model = "UI:ButtonBack",
+--		icon = "ui/pvp/iron.png",
+--		iconWH = 24,
+--		dragbox = _frm.childUI["dragBox"],
+--		x = 130+50,
+--		y = -(h/2.5)+20,
+--		w = 110,
+--		h = 40,
+--		--align = "LB",
+--		label = {text = hVar.tab_string["RSDYZ_Def"],size = 30,font = hVar.FONTC,border = 1,},
+--		code = function(self)
+--			defMode()
+--		end,
+--	})
+--
+--	_childUI["RSDYZ_Shop"] = hUI.button:new({
+--		parent = _parent,
+--		model = "UI:ButtonBack",
+--		icon = "ui/hall.png",
+--		iconWH = 24,
+--		dragbox = _frm.childUI["dragBox"],
+--		x = w - 100,
+--		y = -(h/2.5)+20,
+--		w = 170,
+--		h = 40,
+--		align = "MC",
+--		scaleT = 0.9,
+--		label = {text = hVar.tab_string["RSDYZ_Shop"],size = 30,font = hVar.FONTC,border = 1,},
+--		code = function(self)
+--			hGlobal.event:event("LocalEvent_Phone_ShowNetShopEx_Page","Page_Rune")
+--		end,
+--	})
+--
+--	_childUI["pointNum"] = hUI.label:new({
+--		parent = _parent,
+--		size = 34,
+--		align = "MC",
+--		font = hVar.FONTC,
+--		x = w - 240,
+--		y = -(h/2.5)+20,
+--		width = 300,
+--		text = RSDYZ_COINS,
+--		border = 1,
+--	})
+--
+--	_childUI["point"] = hUI.image:new({
+--		parent = _parent,
+--		model = "UI:rsdyz_point",
+--		x = w - 310,
+--		y = -(h/2.5)+25,
+--		w = 42,
+--		h = 36,
+--	})
+--
+--	_childUI["fDef"] = hUI.button:new({
+--		parent = _parent,
+--		model = "UI:ButtonBack",
+--		icon = "ui/bimage_bbs.png",
+--		iconWH = 24,
+--		dragbox = _frm.childUI["dragBox"],
+--		x = 145,
+--		y = -(h/1.7),
+--		w = 160,
+--		h = 40,
+--		align = "MC",
+--		scaleT = 0.9,
+--		label = {text = hVar.tab_string["RSDYZ_Def_Set"],size = 30,font = hVar.FONTC,border = 1,},
+--		code = function(self)
+--			hGlobal.event:event("LocalEvent_ShowRsdyzAttackFrm_Def",1)
+--		end,
+--	})
+--	_childUI["fDef"]:setstate(-1)
+--
+--	_childUI["choice_border"] = hUI.image:new({
+--		parent = _parent,
+--		model = "UI:Button_SelectBorder",
+--		x = w/2,
+--		y = -(h/2.5),
+--		w = 110,
+--		h = 40,
+--	})
+--
+--	_childUI["go"] = hUI.button:new({
+--		parent = _parent,
+--		model = "UI:ButtonBack",
+--		icon = "ICON:action_attack",
+--		iconWH = 24,
+--		dragbox = _frm.childUI["dragBox"],
+--		x = _w/2,
+--		y = -_h + 40,
+--		w = 170,
+--		h = 40,
+--		scaleT = 0.9,
+--		label = {text = hVar.tab_string["RSDYZ_Attack_Go"],size = 26,font = hVar.FONTC,border = 1,},
+--		code = function(self)
+--			if RSDYZ_POINTS > 0 then
+--				hGlobal.event:event("LocalEvent_ShowRsdyzAttackFrm",1)
+--			else
+--				--Game_Zone_OnGameEvent(GZone_Event_TypeDef.Lua,{GZone_Event_TypeDef.Shop,luaGetplayerDataID(),xlPlayer_GetUID(),2,1})--roleid,uid,type 1查询游戏币 2游戏币购买体力,买几管体力
+--				SendCmdFunc["buy_shopitem"](50000,hVar.tab_item[50000].gamecoin,"RSYZ move point",0,tostring(luaGetplayerDataID()))
+--			end
+--		end,
+--	})
+--	_childUI["buyTiLi"] = hUI.label:new({
+--		parent = _parent,
+--		size = 26,
+--		align = "MC",
+--		font = hVar.FONTC,
+--		x = _w - 170,
+--		y = -_h + 40,
+--		width = 300,
+--		text = "",
+--		border = 1,
+--	})
+--
+--
+--	_childUI["go_Def"] = hUI.button:new({
+--		parent = _parent,
+--		model = "UI:ButtonBack",
+--		icon = "ui/bimage_bbs.png",
+--		iconWH = 24,
+--		dragbox = _frm.childUI["dragBox"],
+--		x = 150,
+--		y = -_h + 50,
+--		w = 230,
+--		h = 40,
+--		scaleT = 0.9,
+--		label = {text = hVar.tab_string["RSDYZ_Def_Reset"],size = 30,font = hVar.FONTC,border = 1,},
+--		code = function(self)
+--			hGlobal.event:event("LocalEvent_ShowRsdyzAttackFrm_Def",1)
+--		end,
+--	})
+--
+--	_childUI["Atk_rest"] = hUI.label:new({
+--		parent = _parent,
+--		size = 26,
+--		align = "MC",
+--		font = hVar.FONTC,
+--		x = 170,
+--		y = -_h + 40,
+--		width = 300,
+--		text = hVar.tab_string["RSDYZ_Rest"]..RSDYZ_POINTS,
+--		border = 1,
+--	})
+--
+--	local _removeList = {}
+--
+--	--_childUI["def_gx"] = hUI.label:new({
+--		--parent = _parent,
+--		--size = 26,
+--		--align = "MC",
+--		--font = hVar.FONTC,
+--		--x = 86,
+--		--y = -_h + 132,
+--		--width = 300,
+--		--text = hVar.tab_string["RSDYZ_DEF_GX"],
+--		--border = 1,
+--	--})
+--
+--	--_childUI["gx"] = hUI.label:new({
+--		--parent = _parent,
+--		--size = 22,
+--		--align = "RC",
+--		--font = "numWhite",
+--		--x = 260,
+--		--y = -_h + 132,
+--		--width = 300,
+--		--text = RSDYZ_GONGXUN,
+--		--border = 1,
+--	--})
+--
+--	--_childUI["delete_bar"] = hUI.valbar:new({
+--		--parent = _parent,
+--		--model = "UI:ValueBar",
+--		--back = {model = "UI:ValueBar_Back",x=0,y=0,w=230,h=40},
+--		--w = 230,
+--		--h = 40,
+--		--x = 36,
+--		--y = -_h + 116,
+--		--align = "LT",
+--	--})
+--	--GongXianBar = _childUI["delete_bar"]
+--	--if RSDYZ_GONGXUN > RSDYZ_GX_LINGQU then
+--		--GongXianBar:setV(RSDYZ_GX_LINGQU,RSDYZ_GX_LINGQU)
+--	--else
+--		--GongXianBar:setV(RSDYZ_GONGXUN,RSDYZ_GX_LINGQU)
+--	--end
+--
+--	attackMode = function()
+--		for i = 1,#_removeList do
+--			hApi.safeRemoveT(_childUI,_removeList[i]) 
+--		end
+--		_removeList = {}
+--		--_childUI["attack"].handle.s:setScaleY(1.25)
+--		--_childUI["def"].handle.s:setScaleY(1.0)
+--		--_childUI["SelectedHeroTitle"]:setText(hVar.tab_string["RSDYZ_Choice_Atk"])
+--		--Game_Zone_OnGameEvent(GZone_Event_TypeDef.Lua,{GZone_Event_TypeDef.GetBattleSummary_Fire,luaGetplayerDataID(),5})
+--		_childUI["fDef"]:setstate(-1)
+--		_childUI["go"]:setstate(1)
+--		_childUI["go_Def"]:setstate(-1)
+--		_childUI["Now_Def"]:setText("")
+--		_childUI["ZHU"]:setText("")
+--		_childUI["FU1"]:setText("")
+--		_childUI["FU2"]:setText("")
+--		_childUI["Atk_rest"]:setText(hVar.tab_string["RSDYZ_Rest"]..RSDYZ_POINTS)
+--		_childUI["choice_border"].handle._n:setPosition(_childUI["attack"].data.x,_childUI["attack"].data.y)
+--		--_childUI["go"]:setText(hVar.tab_string["RSDYZ_Attack_Go"])
+--		atkOrDef = 0
+--		for i = 1,3 do
+--			if _childUI["d"..i] ~= nil then
+--				_childUI["d"..i].handle._n:setVisible(false)
+--			end
+--			if _childUI["k"..i] ~= nil then
+--				_childUI["k"..i].handle._n:setVisible(false)
+--			end
+--			for j = 1,5 do
+--				if _childUI["e"..i..j] ~= nil then
+--					_childUI["e"..i..j].handle._n:setVisible(false)
+--				end
+--			end
+--		end
+--
+--		if inRSDYZ == 1 then
+--			_childUI["go"]:setstate(-1)
+--		end
+--
+--		if RSDYZ_POINTS > 0 then
+--			--_childUI["go"]:setstate(1)
+--			_childUI["go"]:setText(hVar.tab_string["RSDYZ_Attack_Go"])
+--			_childUI["buyTiLi"]:setText("")
+--		else
+--			--_childUI["go"]:setstate(0)
+--			_childUI["go"]:setText(hVar.tab_string["RSDYZ_BUY_POINTS"])
+--			_childUI["buyTiLi"]:setText(hVar.tab_string["RSDYZ_BUY_POINTS_10_10"])
+--		end
+--
+--		actLogNum = 0
+--		lastBattleID = 0
+--		--GongXianBar.handle._n:setVisible(false)
+--		--_childUI["def_gx"]:setText("")
+--		--_childUI["gx"]:setText("")
+--	end
+--
+--	defMode = function()
+--		for i = 1,#_removeList do
+--			hApi.safeRemoveT(_childUI,_removeList[i]) 
+--		end
+--		_removeList = {}
+--		--Game_Zone_OnGameEvent(GZone_Event_TypeDef.Lua,{GZone_Event_TypeDef.GetBattleSummary_Fire_defence,15,5})
+--		local num = 5
+--		if g_phone_mode == 1 or g_phone_mode == 2 then
+--			num = 4
+--		end
+--		--Game_Zone_OnGameEvent(GZone_Event_TypeDef.Lua,{GZone_Event_TypeDef.GetBattleSummary_Fire_defence,luaGetplayerDataID(),num})
+--		sendId = GZone_Event_TypeDef.GetBattleSummary_Fire_defence
+--		sendNum = num
+--		--_childUI["attack"].handle.s:setScaleY(1.0)
+--		--_childUI["def"].handle.s:setScaleY(1.25)
+--		--_childUI["SelectedHeroTitle"]:setText(hVar.tab_string["RSDYZ_Choice_Def"])
+--		_childUI["choice_border"].handle._n:setPosition(_childUI["def"].data.x,_childUI["def"].data.y)
+--		--_childUI["go"]:setText(hVar.tab_string["RSDYZ_Def_Reset"])
+--		atkOrDef = 1
+--		_childUI["fDef"]:setstate(-1)
+--		_childUI["go"]:setstate(-1)
+--		_childUI["go_Def"]:setstate(1)
+--		if defStr == nil or defStr == "" or defStr == {} then
+--			_childUI["fDef"]:setstate(1)
+--			_childUI["go_Def"]:setstate(-1)
+--			_childUI["ZHU"]:setText("")
+--			_childUI["FU1"]:setText("")
+--			_childUI["FU2"]:setText("")
+--		else
+--			_childUI["ZHU"]:setText(hVar.tab_string["ZHU_JIAN"])
+--			_childUI["FU1"]:setText(hVar.tab_string["FU_JIAN"])
+--			_childUI["FU2"]:setText(hVar.tab_string["FU_JIAN"])
+--		end
+--		_childUI["Now_Def"]:setText(hVar.tab_string["RSDYZ_Now_Def"])
+--		
+--		_childUI["Atk_rest"]:setText("")
+--		for i = 1,3 do
+--			if _childUI["d"..i] ~= nil then
+--				_childUI["d"..i].handle._n:setVisible(true)
+--			end
+--			if _childUI["k"..i] ~= nil then
+--				_childUI["k"..i].handle._n:setVisible(true)
+--			end
+--			for j = 1,5 do
+--				if _childUI["e"..i..j] ~= nil then
+--					_childUI["e"..i..j].handle._n:setVisible(true)
+--				end
+--			end
+--		end
+--		_childUI["buyTiLi"]:setText("")
+--		--GongXianBar.handle._n:setVisible(true)
+--		--if RSDYZ_GONGXUN > RSDYZ_GX_LINGQU then
+--			--GongXianBar:setV(RSDYZ_GX_LINGQU,RSDYZ_GX_LINGQU)
+--		--else
+--			--GongXianBar:setV(RSDYZ_GONGXUN,RSDYZ_GX_LINGQU)
+--		--end
+--		--_childUI["def_gx"]:setText(hVar.tab_string["RSDYZ_DEF_GX"])
+--		--_childUI["gx"]:setText(RSDYZ_GONGXUN)
+--	end
+--
+--	RSDYZ_InfoAddTimer = function()
+--		hApi.addTimerForever(timerName,hVar.TIMER_MODE.GAMETIME,1000,function()
+--			--print(sendId,sendNum)
+--			if sendId ~= 0 and sendNum ~= 0 then
+--				Game_Zone_OnGameEvent(GZone_Event_TypeDef.Lua,{sendId,luaGetplayerDataID(),sendNum})
+--				sendId = 0
+--				sendNum = 0
+--			end
+--		end)
+--	end
+--
+--	RSDYZ_ClearTimer = function()
+--		hApi.clearTimer(timerName)
+--	end
+--	
+--	hGlobal.event:listen("LocalEvent_ShowRsdyzInfoFrm","Griffin_showWdldAttackFrm",function(isShow,inGame)
+--		_frm:show(isShow)
+--		if isShow == 1 then
+--			SendCmdFunc["get_DBS_DATA"]("t_cha","hero_ex_defence")
+--			_frm:active()
+--			attackMode()
+--			RSDYZ_InfoAddTimer()
+--		else
+--			RSDYZ_ClearTimer()
+--		end
+--		inRSDYZ = inGame or 0
+--		if inRSDYZ == 1 then
+--			_childUI["go"]:setstate(-1)
+--			Game_Zone_OnGameEvent(GZone_Event_TypeDef.Lua,{GZone_Event_TypeDef.GetZoneData,luaGetplayerDataID(),luaGetplayerDataID()})
+--			--Game_Zone_OnGameEvent(GZone_Event_TypeDef.Lua,{GZone_Event_TypeDef.GetBattleSummary_Fire,luaGetplayerDataID(),4})
+--		end
+--	end)
+--
+--	hGlobal.event:listen("LocalEvent_SetRsdyzPointsAndCoin","Griffin_showWdldAttackFrm",function(points,coins,battle_gongxian)
+--		RSDYZ_POINTS = points
+--		RSDYZ_COINS = coins
+--		RSDYZ_GONGXUN = battle_gongxian
+--		_childUI["Atk_rest"]:setText(hVar.tab_string["RSDYZ_Rest"]..RSDYZ_POINTS)
+--		_childUI["pointNum"]:setText(RSDYZ_COINS)
+--
+--		if RSDYZ_POINTS > 0 then
+--			--_childUI["go"]:setstate(1)
+--			_childUI["go"]:setText(hVar.tab_string["RSDYZ_Attack_Go"])
+--			_childUI["buyTiLi"]:setText(hVar.tab_string[""])
+--		else
+--			--_childUI["go"]:setstate(0)
+--			_childUI["go"]:setText(hVar.tab_string["RSDYZ_BUY_POINTS"])
+--			_childUI["buyTiLi"]:setText(hVar.tab_string["RSDYZ_BUY_POINTS_10_10"])
+--		end
+--
+--		--if atkOrDef == 0 then
+--			--GongXianBar.handle._n:setVisible(false)
+--		--elseif atkOrDef == 1 then
+--			--GongXianBar.handle._n:setVisible(true)
+--			--if RSDYZ_GONGXUN > RSDYZ_GX_LINGQU then
+--				--GongXianBar:setV(RSDYZ_GX_LINGQU,RSDYZ_GX_LINGQU)
+--			--else
+--				--GongXianBar:setV(RSDYZ_GONGXUN,RSDYZ_GX_LINGQU)
+--			--end
+--		--end
+--	end)
+--
+--	hGlobal.event:listen("LocalEvent_CleanRsdyzPointsAndCoin","Griffin_showWdldAttackFrm",function()
+--		for i = 1,#_removeList do
+--			hApi.safeRemoveT(_childUI,_removeList[i]) 
+--		end
+--		_removeList = {}
+--		actLogNum = 0
+--	end)
+--
+--	local createEndLog = nil
+--
+--	local createActLog = function()
+--		local dy = 0
+--		local dx = 0
+--		if g_phone_mode == 1 then
+--			dy = 10
+--		elseif g_phone_mode == 2 then
+--			dy = 10
+--			dx = 10
+--		end
+--		actLogNum = actLogNum + 1
+--		local index = actLogNum
+--		if _childUI["t_time_a"] == nil then
+--			_childUI["t_time_a"] = hUI.label:new({
+--				parent = _parent,
+--				size = 24,
+--				align = "LC",
+--				font = hVar.FONTC,
+--				x = 100,
+--				y = -(h/2.3),
+--				width = 300,
+--				text = hVar.tab_string["RSDYZ_Defence_TIME"],
+--				border = 1,
+--			})
+--			_removeList[#_removeList+1] = "t_time_a"
+--		end
+--
+--		if _childUI["t_killP_a"] == nil then
+--			_childUI["t_killP_a"] = hUI.label:new({
+--				parent = _parent,
+--				size = 24,
+--				align = "LC",
+--				font = hVar.FONTC,
+--				x = 250,
+--				y = -(h/2.3),
+--				width = 300,
+--				text = hVar.tab_string["RSDYZ_Defence_ZHANJIANG"],
+--				border = 1,
+--			})
+--			_removeList[#_removeList+1] = "t_killP_a"
+--		end
+--
+--		if _childUI["t_killB_a"] == nil then
+--			_childUI["t_killB_a"] = hUI.label:new({
+--				parent = _parent,
+--				size = 24,
+--				align = "LC",
+--				font = hVar.FONTC,
+--				x = 450,
+--				y = -(h/2.3),
+--				width = 300,
+--				text = hVar.tab_string["RSDYZ_Defence_GUOGUAN"],
+--				border = 1,
+--			})
+--			_removeList[#_removeList+1] = "t_killB_a"
+--		end
+--
+--		if _childUI["t_get_a"] == nil then
+--			_childUI["t_get_a"] = hUI.label:new({
+--				parent = _parent,
+--				size = 24,
+--				align = "LC",
+--				font = hVar.FONTC,
+--				x = 690,
+--				y = -(h/2.3),
+--				width = 300,
+--				text = hVar.tab_string["RSDYZ_Defence_GET"],
+--				border = 1,
+--			})
+--			_removeList[#_removeList+1] = "t_get_a"
+--		end
+--
+--		if _childUI["t_line_a"] == nil then
+--			_childUI["t_line_a"] = hUI.image:new({
+--				parent = _parent,
+--				model = "UI:panel_part_09",
+--				x = w/2,
+--				y = -(h/2.3)-20,
+--				w = w+20,
+--				h = 8,
+--			})
+--			_removeList[#_removeList+1] = "t_line_a"
+--		end
+--
+--		_childUI["bg"..index] = hUI.image:new({
+--			parent = _parent,
+--			model = "UI:MADEL_BANNER",
+--			x = 410,
+--			y = -(h/2.0) - (index - 1)*60 - 16 - dy,
+--			w = 770,
+--			h = 54,
+--		})
+--		_removeList[#_removeList+1] = "bg"..index
+--
+--		_childUI["time_a"..index] = hUI.label:new({
+--			parent = _parent,
+--			size = 24,
+--			align = "LC",
+--			font = hVar.FONTC,
+--			x = 40,
+--			y = -(h/2.3) - (index - 1)*60 - 50 - dy,
+--			width = 300,
+--			text = string.sub(atkTime,1,-4),
+--			border = 1,
+--		})
+--		_removeList[#_removeList+1] = "time_a"..index
+--
+--		_childUI["zhangjiang_a"..index] = hUI.label:new({
+--			parent = _parent,
+--			size = 24,
+--			align = "LC",
+--			font = hVar.FONTC,
+--			x = 330,
+--			y = -(h/2.3) - (index - 1)*60 - 50 - dy,
+--			width = 300,
+--			text = atkPlayerNum,
+--			border = 1,
+--		})
+--		_removeList[#_removeList+1] = "zhangjiang_a"..index
+--		
+--		if atkBossNum == 0 then
+--			_childUI["chuangguan_a"..index] = hUI.label:new({
+--				parent = _parent,
+--				size = 24,
+--				align = "LC",
+--				font = hVar.FONTC,
+--				x = 520,
+--				y = -(h/2.3) - (index - 1)*60 - 50 - dy,
+--				width = 300,
+--				text = atkBossNum,
+--				border = 1,
+--			})
+--			_removeList[#_removeList+1] = "chuangguan_a"..index
+--		end
+--		for i = 1,#bossList do
+--			_childUI["boss"..index..i] = hUI.image:new({
+--				parent = _parent,
+--				model = hVar.tab_unit[bossList[i]].model,
+--				x = 540 - atkBossNum/2 * 40 + (i - 1) * 40,
+--				y = -(h/2.3) - (index - 1)*60 - 50 - dy,
+--				w = 36,
+--				h = 36,
+--			})
+--			_removeList[#_removeList+1] = "boss"..index..i
+--		end
+--
+--		_childUI["point_a"..index] = hUI.image:new({
+--			parent = _parent,
+--			model = "UI:rsdyz_point",
+--			x = 702,
+--			y = -(h/2.3) - (index - 1)*60 - 50 - dy,
+--			w = 24,
+--			h = 24,
+--		})
+--		_removeList[#_removeList+1] = "point_a"..index
+--
+--		_childUI["pf_a"..index] = hUI.label:new({
+--			parent = _parent,
+--			size = 24,
+--			align = "LC",
+--			font = hVar.FONTC,
+--			x = 712,
+--			y = -(h/2.3) - (index - 1)*60 - 50 - dy,
+--			width = 300,
+--			text = "+"..atkGetCoin,
+--			border = 1,
+--		})
+--		_removeList[#_removeList+1] = "pf_a"..index
+--
+--	end
+--	hGlobal.event:listen("LocalEvent_SetRSDYZActInfoLast","Griffin_showWdldAttackFrm",function()
+--		createActLog()
+--		createEndLog()
+--		bossList = {}
+--		atkTime = ""
+--		bestPos = 0
+--		lastBattleID = 0
+--		atkGetCoin = 0
+--		atkBossNum = 0
+--		atkPlayerNum = 0
+--	end)
+--
+--	hGlobal.event:listen("LocalEvent_SetRSDYZActInfo","Griffin_showWdldAttackFrm",function(tab,index)
+--		--local lastBattleID = 0
+--		--local atkPlayerNum = 0
+--		--local atkBossNum = 0
+--		--local atkGetCoin = 0
+--		if lastBattleID == tab.battleid  or lastBattleID == 0 then
+--			lastBattleID = tab.battleid
+--			atkTime = tab.time_begin
+--			if tab.result == 1 then
+--				atkGetCoin = atkGetCoin + tab.getcoin
+--				if tab.defence_name == "boss" and tab.defence_id == 0 then
+--					atkBossNum = atkBossNum + 1
+--					local bossID = tonumber(string.sub(tab.ext,2))
+--					if bossID and bossID > 0 then
+--						bossList[#bossList + 1] = bossID
+--					end
+--				else
+--					atkPlayerNum = atkPlayerNum + 1
+--				end
+--				--local cut = string.find(tab.ext,"@")
+--				--if cut then
+--					--local pos = string.sub(tab.ext,cut)
+--					--if pos ~= nil and pos ~= "" then
+--						--local tp = tonumber(pos)
+--						--if tp > bestPos then
+--							--bestPos = tp
+--						--end
+--					--end
+--				--end
+--			end
+--		else
+--			createActLog()
+--			bossList = {}
+--			atkTime = tab.time_begin
+--			bestPos = 0
+--			lastBattleID = tab.battleid
+--			atkGetCoin = 0
+--			atkBossNum = 0
+--			atkPlayerNum = 0
+--			if tab.result == 1 then
+--				atkGetCoin = atkGetCoin + tab.getcoin
+--				if tab.defence_name == "boss" and tab.defence_id == 0 then
+--					atkBossNum = atkBossNum + 1
+--					if bossID and bossID > 0 then
+--						bossList[#bossList + 1] = bossID
+--					end
+--				else
+--					atkPlayerNum = atkPlayerNum + 1
+--				end
+--				--local cut = string.find(tab.ext,"@")
+--				--if cut then
+--					--local pos = string.sub(tab.ext,cut)
+--					--if pos ~= nil and pos ~= "" then
+--						--local tp = tonumber(pos)
+--						--if tp > bestPos then
+--							--bestPos = tp
+--						--end
+--					--end
+--				--end
+--			end
+--		end
+--		--print(lastBattleID,atkPlayerNum,atkBossNum,atkGetCoin)
+--	end)
+--
+--	hGlobal.event:listen("LocalEvent_SetRSDYZDefInfo","Griffin_showWdldAttackFrm",function(tab,index)
+--		local dy = 0
+--		local dx = 0
+--		if g_phone_mode == 1 then
+--			dy = 10
+--		elseif g_phone_mode == 2 then
+--			dy = 10
+--			dx = 10
+--		end
+--		if _childUI["t_hero"] == nil then
+--			_childUI["t_hero"] = hUI.label:new({
+--				parent = _parent,
+--				size = 24,
+--				align = "LC",
+--				font = hVar.FONTC,
+--				x = 326,
+--				y = -(h/2.3),
+--				width = 300,
+--				text = hVar.tab_string["hero"],
+--				border = 1,
+--			})
+--			_removeList[#_removeList+1] = "t_hero"
+--		end
+--
+--		if _childUI["t_time"] == nil then
+--			_childUI["t_time"] = hUI.label:new({
+--				parent = _parent,
+--				size = 24,
+--				align = "LC",
+--				font = hVar.FONTC,
+--				x = 448,
+--				y = -(h/2.3),
+--				width = 300,
+--				text = hVar.tab_string["RSDYZ_Defence_TIME"],
+--				border = 1,
+--			})
+--			_removeList[#_removeList+1] = "t_time"
+--		end
+--
+--		if _childUI["t_name"] == nil then
+--			_childUI["t_name"] = hUI.label:new({
+--				parent = _parent,
+--				size = 24,
+--				align = "LC",
+--				font = hVar.FONTC,
+--				x = 530,
+--				y = -(h/2.3),
+--				width = 300,
+--				text = hVar.tab_string["RSDYZ_Defence_OK"],
+--				border = 1,
+--			})
+--			_removeList[#_removeList+1] = "t_name"
+--		end
+--
+--		if _childUI["t_pos"] == nil then
+--			_childUI["t_pos"] = hUI.label:new({
+--				parent = _parent,
+--				size = 24,
+--				align = "LC",
+--				font = hVar.FONTC,
+--				x = 660,
+--				y = -(h/2.3),
+--				width = 300,
+--				text = hVar.tab_string["RSDYZ_Defence_POS"],
+--				border = 1,
+--			})
+--			_removeList[#_removeList+1] = "t_pos"
+--		end
+--
+--		if _childUI["t_get"] == nil then
+--			_childUI["t_get"] = hUI.label:new({
+--				parent = _parent,
+--				size = 24,
+--				align = "LC",
+--				font = hVar.FONTC,
+--				x = 720,
+--				y = -(h/2.3),
+--				width = 300,
+--				text = hVar.tab_string["RSDYZ_Defence_GET"],
+--				border = 1,
+--			})
+--			_removeList[#_removeList+1] = "t_get"
+--		end
+--
+--		if _childUI["t_line"] == nil then
+--			_childUI["t_line"] = hUI.image:new({
+--				parent = _parent,
+--				model = "UI:panel_part_09",
+--				x = 540,
+--				y = -(h/2.3)-10,
+--				w = 536,
+--				h = 8,
+--			})
+--			_removeList[#_removeList+1] = "t_line"
+--		end
+--
+--		local ack_name = tab.offense_name
+--		local info_str = tab.ext
+--
+--		local b_time = tab.time_begin
+--		local getCoin = tab.getcoin
+--		local pl = string.find(info_str,":")
+--		local pll = string.find(info_str,"@")
+--		--local aStr = string.sub(info_str,1,pl-1)
+--		local pStr = ""
+--		local dStr = ""
+--		if pll ~= nil then
+--			dStr = string.sub(info_str,pl+2,pll-1)
+--			pStr = string.sub(info_str,pll+1)
+--		else
+--			dStr = string.sub(info_str,pl+2)
+--		end
+--		b_time = string.sub(b_time,6,-4)
+--		b_time = string.gsub(b_time, "-", "/")
+--
+--		local dw_bg = 0
+--		if g_phone_mode == 1 then
+--			dw_bg = 0
+--		elseif g_phone_mode == 2 then
+--			dw_bg = 20
+--		end
+--		_childUI["bg"..index] = hUI.image:new({
+--			parent = _parent,
+--			model = "UI:MADEL_BANNER",
+--			x = 530 + dx,
+--			y = -(h/2.0) - (index - 1)*60 - 2 - dy,
+--			w = 494 + dw_bg,
+--			h = 54,
+--		})
+--		_removeList[#_removeList+1] = "bg"..index
+--
+--		local dtt = hApi.Split(dStr,",")
+--		for i = 1,#dtt do
+--			if dtt[i] and dtt[i] ~= "" then
+--				_childUI["dh"..i..index] = hUI.image:new({
+--					parent = _parent,
+--					model = hVar.tab_unit[tonumber(dtt[i])].icon,
+--					x = 310 + (i-1)*40 + dx,
+--					y = -(h/2.0) - (index - 1)*60 - dy,
+--					w = 36,
+--					h = 36,
+--				})
+--				_removeList[#_removeList+1] = "dh"..i..index
+--			end
+--		end
+--		local dy_time = 0
+--		if g_phone_mode == 1 then
+--			dy_time = 5
+--		elseif g_phone_mode == 2 then
+--			dy_time = 6
+--		end
+--		_childUI["df"..index] = hUI.label:new({
+--			parent = _parent,
+--			size = 20,
+--			align = "LC",
+--			font = hVar.FONTC,
+--			x = 420 + dx,
+--			y = -(h/2.2) - (index - 1)*60 - 26 - dy + dy_time,
+--			width = 300,
+--			text = b_time,
+--			border = 1,
+--		})
+--		_removeList[#_removeList+1] = "df"..index
+--
+--		_childUI["af"..index] = hUI.label:new({
+--			parent = _parent,
+--			size = 20,
+--			align = "MC",
+--			font = hVar.FONTC,
+--			x = 580 + dx,
+--			y = -(h/2.0) - (index - 1)*60 - dy,
+--			width = 300,
+--			text = ack_name,
+--			border = 1,
+--		})
+--		_removeList[#_removeList+1] = "af"..index
+--
+--		_childUI["pos"..index] = hUI.label:new({
+--			parent = _parent,
+--			size = 20,
+--			align = "LC",
+--			font = hVar.FONTC,
+--			x = 674 + dx,
+--			y = -(h/2.0) - (index - 1)*60 - dy,
+--			width = 300,
+--			text = pStr,
+--			border = 1,
+--		})
+--		_removeList[#_removeList+1] = "pos"..index
+--
+--		_childUI["point"..index] = hUI.image:new({
+--			parent = _parent,
+--			model = "UI:rsdyz_point",
+--			x = w - 74 + dx,
+--			y = -(h/2.0) - (index - 1)*60 - dy,
+--			w = 24,
+--			h = 24,
+--		})
+--		_removeList[#_removeList+1] = "point"..index
+--
+--		_childUI["pf"..index] = hUI.label:new({
+--			parent = _parent,
+--			size = 20,
+--			align = "LC",
+--			font = hVar.FONTC,
+--			x = w - 64 + dx,
+--			y = -(h/2.0) - (index - 1)*60 - dy,
+--			width = 300,
+--			text = "+"..getCoin,
+--			border = 1,
+--		})
+--		_removeList[#_removeList+1] = "pf"..index
+--
+--		--local att = hApi.Split(aStr,",")
+--		--for i = 1,#att do
+--			--if att[i] and att[i] ~= "" then
+--				--_childUI["ah"..i..index] = hUI.image:new({
+--					--parent = _parent,
+--					--model = hVar.tab_unit[tonumber(att[i])].icon,
+--					--x = 620 + (i-1)*66,
+--					--y = -(h/2.1) - (index - 1)*70,
+--					--w = 64,
+--					--h = 64,
+--				--})
+--				--_removeList[#_removeList+1] = "ah"..i..index
+--			--end
+--		--end
+--	end)
+--
+--	hGlobal.event:listen("LocalEvent_SetGGZJInfo","Griffin_showWdldAttackFrm",function(str)--设置过关斩将公告
+--		if str and type(str) == "string" then
+--			_childUI["GONG_GAO"]:setText(str)
+--		end
+--	end)
+--	local explvtab = {0,500,1500,3000,5000}
+--	local findBetween = function(exp,tab)
+--		local index = 0
+--		for i = 1,#tab-1 do
+--			if exp >= tab[i] and exp < tab[i+1] then
+--				index = i
+--				break
+--			end
+--		end
+--		if exp == tab[#tab] then
+--			index = #tab
+--		end
+--		return index
+--	end
+----经验空槽83px
+--	local getHeroLv = function(exp,explv)
+--		local lv = findBetween(exp,explv)--当前等级
+--		local restExp = exp - explv[lv]--本级剩余经验
+--		local needExp = 0--本级需要经验
+--		if lv == #explv then
+--			restExp = 1
+--			needExp = 1
+--		else
+--			needExp = explv[lv+1] - explv[lv]
+--		end
+--		return lv,restExp,needExp
+--	end
+--
+--	local createHeroLv = function(lv,restExp,needExp,hx,hy,pos)
+--		--print(restExp,"rrrrr","\n")
+--		local b = "UI:RSDYZ_low_bar"
+--		local t = "UI:RSDYZ_top1"
+--		if lv >= 1 and lv <= 10 then
+--			b = "UI:RSDYZ_low_bar"
+--			t = "UI:RSDYZ_top1"
+--		elseif lv >= 11 and lv <= 20 then
+--			b = "UI:RSDYZ_low_bar"
+--			t = "UI:RSDYZ_top2"
+--		elseif lv >= 21 and lv <= 30 then
+--			b = "UI:RSDYZ_low_bar"
+--			t = "UI:RSDYZ_top3"
+--		elseif lv >= 31 and lv <= 40 then
+--			b = "UI:RSDYZ_high_bar"
+--			t = "UI:RSDYZ_top4"
+--		end
+--		
+--		_childUI["e"..pos.."5"] = hUI.image:new({
+--			parent = _parent,
+--			model = "UI:ExpBG",
+--			x = hx - 1,
+--			y = hy - 46,
+--			w = 68,
+--			h = 10,
+--		})
+--
+--		local el = math.ceil(70*restExp/needExp)
+--		if el == 0 then
+--			el = 1
+--		end
+--		_childUI["e"..pos.."2"] = hUI.image:new({
+--			parent = _parent,
+--			model = "UI:RSDYZ_exp",
+--			x = hx + 2 - (37 - el/2),
+--			y = hy - 46 + 5 - 6,
+--			w = el,
+--			h = 12,
+--		})
+--
+--		_childUI["e"..pos.."1"] = hUI.image:new({
+--			parent = _parent,
+--			model = b,
+--			x = hx - 1,
+--			y = hy - 46 - 6,
+--			w = 74,
+--			h = 24,
+--		})
+--
+--
+--		_childUI["e"..pos.."3"] = hUI.image:new({
+--			parent = _parent,
+--			model = t,
+--			x = hx - 1,
+--			y = hy - 58 - 6,
+--			w = 44,
+--			h = 36,
+--		})
+--
+--		_childUI["e"..pos.."4"] = hUI.label:new({
+--			parent = _parent,
+--			size = 18,
+--			align = "MC",
+--			font = hVar.FONTC,
+--			x = hx - 2,
+--			y = hy - 56 - 6,
+--			width = 300,
+--			text = lv,
+--			border = 1,
+--		})
+--
+--		
+--
+--	end
+--
+--	hGlobal.event:listen("LocalEvent_RsdyzDefExp","Griffin_ShowRsdyzEndFrm",function(k,v)
+--		--defExpT
+--		--print(k,v,"\n")
+--		k = tostring(k)
+--		v = tonumber(v)
+--		if defExpT[k] == nil then
+--			defExpT[k] = 0
+--		end
+--		defExpT[k] = v
+--		
+--	end)
+--
+--	hGlobal.event:listen("LocalEvent_SetMyDef","Griffin_showWdldAttackFrm",function(str)
+--		hApi.safeRemoveT(_childUI,"d1")
+--		hApi.safeRemoveT(_childUI,"d2") 
+--		hApi.safeRemoveT(_childUI,"d3")
+--		hApi.safeRemoveT(_childUI,"k1")
+--		hApi.safeRemoveT(_childUI,"k2") 
+--		hApi.safeRemoveT(_childUI,"k3")
+--		for i = 1,3 do
+--			for j = 1,5 do
+--				hApi.safeRemoveT(_childUI,"e"..i..j)
+--			end
+--		end
+--		defStr = str
+--		_childUI["fDef"]:setstate(-1)
+--		--if defStr == nil or defStr == "" or defStr == {} then
+--			--_childUI["fDef"]:setstate(1)
+--			--_childUI["go"]:setstate(-1)
+--		--end
+--		if type(str) == "string" then
+--			if str ~= "" then
+--				local tt = hApi.Split(str,";")
+--				for i = 1,#tt do
+--					tt[i] = tonumber(tt[i])
+--				end
+--				_childUI["k1"] = hUI.image:new({
+--					parent = _parent,
+--					model = "UI:NewKuang",
+--					x = 70,
+--					y = -(h/1.8),
+--					w = 74,
+--					h = 74,
+--				})
+--				_childUI["d1"] = hUI.image:new({
+--					parent = _parent,
+--					model = hVar.tab_unit[tt[1]].icon,
+--					x = 70,
+--					y = -(h/1.8),
+--					w = 64,
+--					h = 64,
+--				})
+--				local k = tostring(tt[1])
+--				if defExpT[k] == nil then defExpT[k] = 0 end
+--				local lv,restExp,needExp = getHeroLv(defExpT[k],explvtab)
+--				createHeroLv(lv,restExp,needExp,70,-(h/1.8),1)
+--				_childUI["k2"] = hUI.image:new({
+--					parent = _parent,
+--					model = "UI:NewKuang",
+--					x = 154,
+--					y = -(h/1.8),
+--					w = 74,
+--					h = 74,
+--				})
+--				_childUI["d2"] = hUI.image:new({
+--					parent = _parent,
+--					model = hVar.tab_unit[tt[2]].icon,
+--					x = 154,
+--					y = -(h/1.8),
+--					w = 64,
+--					h = 64,
+--				})
+--				k = tostring(tt[2])
+--				if defExpT[k] == nil then defExpT[k] = 0 end
+--				lv,restExp,needExp = getHeroLv(defExpT[k],explvtab)
+--				createHeroLv(lv,restExp,needExp,154,-(h/1.8),2)
+--				_childUI["k3"] = hUI.image:new({
+--					parent = _parent,
+--					model = "UI:NewKuang",
+--					x = 240,
+--					y = -(h/1.8),
+--					w = 74,
+--					h = 74,
+--				})
+--				_childUI["d3"] = hUI.image:new({
+--					parent = _parent,
+--					model = hVar.tab_unit[tt[3]].icon,
+--					x = 240,
+--					y = -(h/1.8),
+--					w = 64,
+--					h = 64,
+--				})
+--				k = tostring(tt[3])
+--				if defExpT[k] == nil then defExpT[k] = 0 end
+--				lv,restExp,needExp = getHeroLv(defExpT[k],explvtab)
+--				createHeroLv(lv,restExp,needExp,240,-(h/1.8),3)
+--			end
+--		elseif type(str) == "table" then
+--			_childUI["d1"] = hUI.image:new({
+--				parent = _parent,
+--				model = hVar.tab_unit[str[1]].icon,
+--				x = 70,
+--				y = -(h/1.8),
+--				w = 64,
+--				h = 64,
+--			})
+--			local k = tostring(str[1])
+--			if defExpT[k] == nil then defExpT[k] = 0 end
+--			local lv,restExp,needExp = getHeroLv(defExpT[k],explvtab)
+--			createHeroLv(lv,restExp,needExp,70,-(h/1.8),1)
+--			_childUI["d2"] = hUI.image:new({
+--				parent = _parent,
+--				model = hVar.tab_unit[str[2]].icon,
+--				x = 154,
+--				y = -(h/1.8),
+--				w = 64,
+--				h = 64,
+--			})
+--			k = tostring(str[2])
+--			if defExpT[k] == nil then defExpT[k] = 0 end
+--			lv,restExp,needExp = getHeroLv(defExpT[k],explvtab)
+--			createHeroLv(lv,restExp,needExp,154,-(h/1.8),2)
+--			_childUI["d3"] = hUI.image:new({
+--				parent = _parent,
+--				model = hVar.tab_unit[str[3]].icon,
+--				x = 240,
+--				y = -(h/1.8),
+--				w = 64,
+--				h = 64,
+--			})
+--			k = tostring(str[3])
+--			if defExpT[k] == nil then defExpT[k] = 0 end
+--			lv,restExp,needExp = getHeroLv(defExpT[k],explvtab)
+--			createHeroLv(lv,restExp,needExp,240,-(h/1.8),3)
+--		end
+--		if atkOrDef ~= 1 then
+--			for i = 1,3 do
+--				if _childUI["d"..i] ~= nil then
+--					_childUI["d"..i].handle._n:setVisible(false)
+--				end
+--				if _childUI["k"..i] ~= nil then
+--					_childUI["k"..i].handle._n:setVisible(false)
+--				end
+--				for j = 1,5 do
+--					if _childUI["e"..i..j] ~= nil then
+--						_childUI["e"..i..j].handle._n:setVisible(false)
+--					end
+--				end
+--			end
+--		end
+--	end)
+--	
+--	local ex,ey,ew,eh = hVar.SCREEN.w/2 - 250,hVar.SCREEN.h/2 + 150,500,300
+--	local endFrm = hUI.frame:new({
+--		x = ex,
+--		y = ey,
+--		h = eh,
+--		w = ew,
+--		dragable = 2,
+--		show = 0,
+--		--background = "UI:tip_item",
+--		border = 1,
+--		autoactive = 0,
+--		codeOnTouch = function(self,x,y,IsInside,tTempPos)
+--			
+--		end,
+--		codeOnClose = function(self)
+--			hGlobal.event:event("LocalEvent_ShowMapAllUI",true)
+--		end
+--	})
+--
+--	local endParent = endFrm.handle._n
+--	local endChildUI = endFrm.childUI
+--
+--	endChildUI["title"] = hUI.label:new({
+--		parent = endParent,
+--		size = 28,
+--		align = "MC",
+--		font = hVar.FONTC,
+--		x = ew/2,
+--		y = -30,
+--		width = 300,
+--		text = hVar.tab_string["RSDYZ_All_DEAD"],
+--		border = 1,
+--	})
+--
+--	endChildUI["cal"] = hUI.label:new({
+--		parent = endParent,
+--		size = 26,
+--		align = "LC",
+--		font = hVar.FONTC,
+--		x = 20,
+--		y = -70,
+--		width = 300,
+--		text = hVar.tab_string["RSDYZ_Cal"],
+--		border = 1,
+--	})
+--
+--	endChildUI["killP"] = hUI.label:new({
+--		parent = endParent,
+--		size = 26,
+--		align = "LC",
+--		font = hVar.FONTC,
+--		x = 20,
+--		y = -120,
+--		width = 300,
+--		text = hVar.tab_string["RSDYZ_Defence_ZHANJIANG"]..":",
+--		border = 1,
+--	})
+--
+--	endChildUI["killB"] = hUI.label:new({
+--		parent = endParent,
+--		size = 26,
+--		align = "LC",
+--		font = hVar.FONTC,
+--		x = 20,
+--		y = -170,
+--		width = 300,
+--		text = hVar.tab_string["RSDYZ_Defence_GUOGUAN"]..":",
+--		border = 1,
+--	})
+--
+--	endChildUI["get"] = hUI.label:new({
+--		parent = endParent,
+--		size = 26,
+--		align = "LC",
+--		font = hVar.FONTC,
+--		x = 20,
+--		y = -220,
+--		width = 300,
+--		text = hVar.tab_string["RSDYZ_Defence_GET"]..":",
+--		border = 1,
+--	})
+--	local endRemoveList = {}
+--
+--	local goMain = function()
+--		if g_current_scene == g_world then
+--			if hGlobal.WORLD.LastWorldMap~=nil then
+--				local mapname = hGlobal.WORLD.LastWorldMap.data.map
+--				if hApi.Is_RSYZ_Map(mapname) ~= -1 then
+--					Game_Zone_OnGameEvent(GZone_Event_TypeDef.Lua,{GZone_Event_TypeDef.BattleEnd_Fire,luaGetplayerDataID(),g_RSDYZ_BattleID})
+--				end
+--				hGlobal.WORLD.LastWorldMap:del()
+--			end
+--		end
+--		
+--		hGlobal.event:event("LocalEvent_OpenPhoneMainMenu")
+--		hGlobal.event:event("LocalEvent_ShowRsdyzEndFrm",0)
+--		
+--		for i = 1,#endRemoveList do
+--			hApi.safeRemoveT(endChildUI,endRemoveList[i]) 
+--		end
+--		endRemoveList = {}
+--	end
+--
+--	endChildUI["back"] = hUI.button:new({
+--		parent = endParent,
+--		model = "UI:ButtonBack",
+--		dragbox = endChildUI["dragBox"],
+--		x = ew/2,
+--		y = -270,
+--		w = 110,
+--		h = 40,
+--		scaleT = 0.9,
+--		align = "MC",
+--		label = {text = hVar.tab_string["RSDYZ_Attack_End"],size = 24,font = hVar.FONTC,border = 1,},
+--		code = function(self)
+--			goMain()
+--		end,
+--	})
+--
+--	createEndLog = function()
+--		for i = 1,#endRemoveList do
+--			hApi.safeRemoveT(endChildUI,endRemoveList[i]) 
+--		end
+--		endRemoveList = {}
+--
+--		endChildUI["pCont"] = hUI.label:new({
+--			parent = endParent,
+--			size = 26,
+--			align = "LC",
+--			font = hVar.FONTC,
+--			x = 300,
+--			y = -120,
+--			width = 300,
+--			text = atkPlayerNum,
+--			border = 1,
+--		})
+--		endRemoveList[#endRemoveList + 1] = "pCont"
+--
+--		if atkBossNum == 0 then
+--			endChildUI["bCont"] = hUI.label:new({
+--				parent = endParent,
+--				size = 26,
+--				align = "LC",
+--				font = hVar.FONTC,
+--				x = 300,
+--				y = -170,
+--				width = 300,
+--				text = atkBossNum,
+--				border = 1,
+--			})
+--			endRemoveList[#endRemoveList + 1] = "bCont"
+--		elseif atkBossNum >= 1 then
+--			for i = 1,atkBossNum do
+--				endChildUI["boss"..i] = hUI.image:new({
+--					parent = endParent,
+--					model = hVar.tab_unit[bossList[i]].model,
+--					x = 330 - atkBossNum/2 * 40 + (i - 1) * 40,
+--					y = -170,
+--					w = 36,
+--					h = 36,
+--				})
+--				endRemoveList[#endRemoveList+1] = "boss"..i
+--			end
+--		end
+--
+--		endChildUI["point_a"] = hUI.image:new({
+--			parent = endParent,
+--			model = "UI:rsdyz_point",
+--			x = 300,
+--			y = -216,
+--			w = 24,
+--			h = 24,
+--		})
+--		endRemoveList[#endRemoveList+1] = "point_a"
+--
+--		endChildUI["pf_a"] = hUI.label:new({
+--			parent = endParent,
+--			size = 24,
+--			align = "LC",
+--			font = hVar.FONTC,
+--			x = 310,
+--			y = -220,
+--			width = 300,
+--			text = "+"..atkGetCoin,
+--			border = 1,
+--		})
+--		endRemoveList[#endRemoveList+1] = "pf_a"
+--
+--	end
+--
+--	hGlobal.event:listen("LocalEvent_ShowRsdyzEndFrm","Griffin_ShowRsdyzEndFrm",function(isShow,bw)
+--		endFrm:show(isShow)
+--		if isShow == 1 then
+--			if bw == 1 then
+--				endChildUI["title"]:setText(hVar.tab_string["RSDYZ_All_KILL"])
+--			elseif bw == 0 then
+--				endChildUI["title"]:setText(hVar.tab_string["RSDYZ_All_DEAD"])
+--			end
+--			endFrm:active()
+--		end
+--	end)
+--
+--	local hx,hy,hw,hh = hVar.SCREEN.w/2 - 350,hVar.SCREEN.h/2 + 250,700,500
+--	how2PlayFrm = hUI.frame:new({
+--		x = hx,
+--		y = hy,
+--		h = hh,
+--		w = hw,
+--		dragable = 2,
+--		show = 0,
+--		--background = "UI:tip_item",
+--		closebtn = "BTN:PANEL_CLOSE",
+--		closebtnX = hw - 10,
+--		closebtnY = -14,
+--		border = 1,
+--		autoactive = 0,
+--		codeOnTouch = function(self,x,y,IsInside,tTempPos)
+--			
+--		end,
+--		codeOnClose = function(self)
+--			hGlobal.event:event("LocalEvent_ShowMapAllUI",true)
+--		end
+--	})
+--
+--	local how2PlayParent = how2PlayFrm.handle._n
+--	local how2PlayChildUI = how2PlayFrm.childUI
+--
+--	how2PlayChildUI["title"] = hUI.label:new({
+--		parent = how2PlayParent,
+--		size = 32,
+--		align = "MC",
+--		font = hVar.FONTC,
+--		x = hw/2,
+--		y = -40,
+--		width = 300,
+--		text = hVar.tab_string["RSDYZ_HOW2PLAY"],
+--		border = 1,
+--	})
+--
+--	how2PlayChildUI["attack"] = hUI.label:new({
+--		parent = how2PlayParent,
+--		size = 32,
+--		align = "LC",
+--		font = hVar.FONTC,
+--		x = 20,
+--		y = -70,
+--		width = 300,
+--		RGB = {255,215,0},
+--		text = hVar.tab_string["RSDYZ_Attack"]..":",
+--		border = 1,
+--	})
+--
+--	how2PlayChildUI["attack_h"] = hUI.label:new({
+--		parent = how2PlayParent,
+--		size = 28,
+--		align = "LC",
+--		font = hVar.FONTC,
+--		x = 20,
+--		y = -150,
+--		width = 660,
+--		--RGB = {255,215,0},
+--		text = hVar.tab_string["RSDYZ_how_attack"],
+--		border = 1,
+--	})
+--
+--	how2PlayChildUI["def"] = hUI.label:new({
+--		parent = how2PlayParent,
+--		size = 32,
+--		align = "LC",
+--		font = hVar.FONTC,
+--		x = 20,
+--		y = -250,
+--		width = 300,
+--		RGB = {255,215,0},
+--		text = hVar.tab_string["RSDYZ_Def"]..":",
+--		border = 1,
+--	})
+--
+--	how2PlayChildUI["def_h"] = hUI.label:new({
+--		parent = how2PlayParent,
+--		size = 28,
+--		align = "LC",
+--		font = hVar.FONTC,
+--		x = 20,
+--		y = -330,
+--		width = 660,
+--		--RGB = {255,215,0},
+--		text = hVar.tab_string["RSDYZ_how_def"],
+--		border = 1,
+--	})
+--end

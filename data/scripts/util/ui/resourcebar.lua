@@ -1,0 +1,292 @@
+--------------------------------
+-- 加载底部资源条 这是一个很扭曲的东西， 请不要来 责怪我  --陶晶 2014-8-1
+--------------------------------
+--hGlobal.UI.InitResourceBar = function()
+--	
+--	hGlobal.LocalResourceIndex = {}
+--	hGlobal.LocalRecource = {}
+--	local x,y,w,h = 0,hVar.SCREEN.h,440,50
+--
+--	if g_phone_mode ~= 0 then
+--		w = 180
+--		h = 600
+--	end
+--	
+--	hGlobal.UI.ResourceBar = hUI.frame:new({
+--		x = x,
+--		y = y,
+--		w = w,
+--		h = h,
+--		z = -1,
+--		background = -1,
+--		dragable = -1,
+--		autoactive = 0,
+--		show = 0,
+--	})
+--
+--	local gridW = 58
+--	local _frm = hGlobal.UI.ResourceBar
+--	local _parent = _frm.handle._n
+--	local _childUI = _frm.childUI
+--
+--	local _ResourceBarBG = nil
+--	if hVar.SCREEN.w>1024 then
+--		--因为地图最大只有1024，多出来的部分要遮住
+--		_ResourceBarBG = hUI.frame:new({
+--			dragable = 0,
+--			border = 0,
+--			x = 0,
+--			y = y,
+--			w = hVar.SCREEN.w-1024,
+--			h = h + 180,
+--			z = -2,
+--			show = 0,
+--		})
+--
+--		_ResourceBarBG.childUI["ResourceBar_back_lin"] = hUI.image:new({
+--			parent = _ResourceBarBG.handle._n,
+--			model = "UI:panel_part_09",
+--			x = _ResourceBarBG.data.w,
+--			y = -_ResourceBarBG.data.h/2 + 30,
+--			w = h + 180,
+--			h = 16,
+--			z = -1,
+--		})
+--
+--		_ResourceBarBG.childUI["ResourceBar_back_lin"].handle._n:setRotation(90)
+--	end
+--	
+--	--其实用来排序的
+--	local ResourceEnable = {
+--		hVar.RESOURCE_TYPE.WOOD,
+--		hVar.RESOURCE_TYPE.FOOD,
+--		hVar.RESOURCE_TYPE.STONE,
+--		hVar.RESOURCE_TYPE.LIFE,
+--		hVar.RESOURCE_TYPE.CRYSTAL,
+--		hVar.RESOURCE_TYPE.GOLD,
+--	}
+--
+--	local TYJYResourceEnable = {2,3,6}
+--
+--	local __LocalPlayerResource
+--	local _Icon = {}--{"ICON:icon01_x6y2","ICON:icon01_x15y2","ICON:icon01_x3y2","ICON:resource_gold",}--"ICON:icon01_x15y1","ICON:icon01_x9y2","ICON:icon01_x12y1"}
+--	--红晶，蓝晶，紫晶，金钱
+--	local _image_lab_pos = {}
+--	for i = 1,#ResourceEnable do
+--		_image_lab_pos[i] = {}
+--		_Icon[i] = {}
+--		local v = ResourceEnable[i]
+--		hGlobal.LocalResourceIndex[v] = i
+--		_Icon[i][1] = (hVar.RESOURCE_ART[v] or hVar.RESOURCE_ART[hVar.RESOURCE_TYPE.NONE]).icon
+--		--尝试使用本地玩家的资源数据
+--		hGlobal.LocalRecource[i] = (__LocalPlayerResource~=nil and __LocalPlayerResource[v]) or 0
+--
+--		_childUI["resiamge"..i] = hUI.image:new({
+--			parent = _parent,
+--			model = _Icon[i][1],
+--			align = "MC",
+--			x = 30,
+--			y = -58*(i-1) + 6,
+--			w = 48,
+--			h = 48,
+--		})
+--		_image_lab_pos[i][1] = {30,-58*(i-1) - 20}						--用于下面对图标的位置设置（x,y）
+--
+--		_childUI["resourceLabel_"..i] = hUI.label:new({
+--			parent = _parent,
+--			font = "numWhite",
+--			text = "", --geyachao: 默认不显示其它资源的文字 tostring(hGlobal.LocalRecource[i]),
+--			align = "LT",
+--			size = 16,
+--			x = 58,
+--			y = -58*(i-1) + 16,
+--		})
+--		_image_lab_pos[i][2] = {48,-58*(i-1) - 17}						--用于下面对Label的位置设置(x,y)changed by pangyong 2015/6/15
+--
+--		local r = _childUI["resourceLabel_"..i]
+--		r.handle._icon = _childUI["resiamge"..i].handle.s
+--		r.data.num = hGlobal.LocalRecource[rIndex]
+--		r.data._num = hGlobal.LocalRecource[rIndex]
+--		r.data._nStep = 1
+--		r.data._posTime = 0
+--	end
+--	
+--	--资源条在大地图和城镇显示
+--	hGlobal.event:listen("LocalEvent_PlayerFocusWorld","__hideResourceBar",function(sSceneType,oWorld,oMap)
+--		_frm:show(0)
+--
+--		if _ResourceBarBG~=nil then
+--			_ResourceBarBG:show(0)
+--		end
+--
+--		if oWorld == nil then return end
+--
+--		if hGlobal.LocalPlayer~=nil then
+--			__LocalPlayerResource = hGlobal.LocalPlayer.data.resource
+--		end
+--
+--		if oWorld.data.map == "world/level_tyjy" then
+--			for i = 1,#ResourceEnable do
+--				_childUI["resiamge"..i].handle._n:setVisible(false)
+--				_childUI["resourceLabel_"..i].handle._n:setVisible(false)
+--			end
+--
+--			for i = 1,#TYJYResourceEnable do
+--				local v = TYJYResourceEnable[i]
+--				--改变位置
+--				_childUI["resiamge"..v].handle._n:setPosition(_image_lab_pos[i][1][1],_image_lab_pos[i][1][2])
+--				_childUI["resourceLabel_"..v].handle._n:setPosition(_image_lab_pos[i][2][1],_image_lab_pos[i][2][2])
+--				_childUI["resiamge"..v].data.x,_childUI["resiamge"..v].data.y = _image_lab_pos[i][1][1],_image_lab_pos[i][1][2]
+--				_childUI["resourceLabel_"..v].data.x,_childUI["resourceLabel_"..v].data.y = _image_lab_pos[i][2][1],_image_lab_pos[i][2][2]
+--				_childUI["resiamge"..v].handle._n:setVisible(true)
+--				_childUI["resourceLabel_"..v].handle._n:setVisible(true)
+--			end
+--		else
+--			for i = 1,#ResourceEnable do
+--				--改变位置
+--				_childUI["resiamge"..i].handle._n:setPosition(_image_lab_pos[i][1][1],_image_lab_pos[i][1][2])
+--				_childUI["resourceLabel_"..i].handle._n:setPosition(_image_lab_pos[i][2][1],_image_lab_pos[i][2][2])
+--				_childUI["resiamge"..i].data.x,_childUI["resiamge"..i].data.y = _image_lab_pos[i][1][1],_image_lab_pos[i][1][2]
+--				_childUI["resourceLabel_"..i].data.x,_childUI["resourceLabel_"..i].data.y = _image_lab_pos[i][2][1],_image_lab_pos[i][2][2]
+--
+--				_childUI["resiamge"..i].handle._n:setVisible(true)
+--				_childUI["resourceLabel_"..i].handle._n:setVisible(true)
+--			end
+--		end
+--
+--		--有问题待查(已查)2014/7/11
+--		if (sSceneType=="worldmap" or sSceneType=="town") then
+--			_frm:show(1)
+--			--ip5左边有个黑条子
+--			if _ResourceBarBG~=nil then
+--				if sSceneType=="town" then
+--					_ResourceBarBG:show(1)
+--				else
+--					_ResourceBarBG:show(0)
+--				end
+--			end
+--		end
+--	end)
+--
+--	local __plus = function(v,a,vx)
+--		if a>0 and v<vx then
+--			return math.min(vx,v+a)
+--		elseif a<0 and v>vx then
+--			return math.max(vx,v+a)
+--		else
+--			return vx
+--		end
+--	end
+--	local __step = function(s,e)
+--		local n = e-s
+--		if n==0 then
+--			return 0
+--		else
+--			local v = math.abs(n)
+--			local dur = 750
+--			local p = v
+--			if p>9 then
+--				p = math.max(9,math.ceil(v*100/dur))
+--			end
+--			if n>0 then
+--				return p
+--			else
+--				return -1*p
+--			end
+--		end
+--	end
+--
+--	local __ImmediateLoadValue = 0
+--	local __RefreshLocalResource = function(tick)
+--		for i = 1,#ResourceEnable do
+--			if (i == 4) or (i == 6) then --geyachao: TD只显示血量和金钱
+--				if _childUI["resourceLabel_"..i] and _childUI["resourceLabel_"..i].handle._n:isVisible() then
+--					local r = _childUI["resourceLabel_"..i]
+--					if _frm.data.show==1 and __ImmediateLoadValue~=1 then
+--						if r.data.num~=hGlobal.LocalRecource[i] then
+--							local _v = hGlobal.LocalRecource[i] - r.data.num
+--							r.data.num = hGlobal.LocalRecource[i]
+--							r.data._nStep = __step(r.data._num,r.data.num)
+--							hUI.floatNumber:new({
+--								parent = _frm.handle._n,
+--								font = _v>0 and "numGreen" or "numRed",
+--								text = (_v>=0 and "+".._v or _v),
+--								size = 12,
+--								x = r.data.x + 18,
+--								y = r.data.y + 16 -32,
+--								align = "LB",
+--								moveY = 32,
+--								lifetime = 1000,
+--								fadeout = -330,
+--							})
+--							if tick and r.data._posTime<=tick then
+--								r.data._posTime = tick + 4000
+--								local a = CCScaleBy:create(0.1,1.5,1.5)
+--								r.handle._icon:runAction(CCSequence:createWithTwoActions(a,a:reverse()))
+--							end
+--						end
+--						if r.data._num~=r.data.num then
+--							r.data._num = __plus(r.data._num,r.data._nStep,r.data.num)
+--							
+--							--geyachao: 生命显示 xx/xx模式
+--							if (i == 4) then
+--								local oWorld = hGlobal.WORLD.LastWorldMap
+--								if oWorld then
+--									r:setText(tostring(r.data._num .. "/" .. oWorld.data.tdMapInfo.totalLife))
+--								else
+--									r:setText(tostring(r.data._num))
+--								end
+--							else
+--								r:setText(tostring(r.data._num))
+--							end
+--						end
+--					else
+--						if r.data.num~=hGlobal.LocalRecource[i] then
+--							r.data.num,r.data._num = hGlobal.LocalRecource[i],hGlobal.LocalRecource[i]
+--							
+--							--geyachao: 生命显示 xx/xx模式
+--							if (i == 4) then
+--								local oWorld = hGlobal.WORLD.LastWorldMap
+--								if oWorld then
+--									r:setText(tostring(r.data._num .. "/" .. oWorld.data.tdMapInfo.totalLife))
+--								else
+--									r:setText(tostring(r.data._num))
+--								end
+--							else
+--								r:setText(tostring(r.data._num))
+--							end
+--						end
+--					end
+--				end
+--			end
+--		end
+--		__ImmediateLoadValue = 0
+--	end
+--	hApi.addTimerForever("__UI_ResourceBarRefresh",hVar.TIMER_MODE.GAMETIME,1,__RefreshLocalResource,1)
+--
+--	--初始化本地玩家时重新设置显示数值
+--	hGlobal.event:listen("LocalEvent_InitLocalPlayer","__InitPlayerResourceUI",function(oPlayer)
+--		local res = oPlayer.data.resource
+--		if type(res)=="table" then
+--			__ImmediateLoadValue = 1
+--			for i = 1,#ResourceEnable do
+--				local v = ResourceEnable[i]
+--				hGlobal.LocalResourceIndex[v] = i
+--				_Icon[i] = (hVar.RESOURCE_ART[v] or hVar.RESOURCE_ART[hVar.RESOURCE_TYPE.NONE]).icon
+--				--尝试使用本地玩家的资源数据
+--				hGlobal.LocalRecource[i] = res[v] or 0
+--			end
+--			__RefreshLocalResource()
+--		end
+--	end)
+--
+--	--重新设置本地玩家资源
+--	hGlobal.UI.ResetLocalResource = function()
+--		__ImmediateLoadValue = 1
+--		for i = 1,#ResourceEnable do
+--			local v = ResourceEnable[i]
+--			hGlobal.LocalRecource[i] = hGlobal.LocalPlayer.data.resource[v]
+--		end
+--		__RefreshLocalResource()
+--	end
+--end

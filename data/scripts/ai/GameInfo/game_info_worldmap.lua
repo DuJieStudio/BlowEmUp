@@ -1,0 +1,301 @@
+--heroGameInfo.worldMap = {enableLog = false}
+--
+--local Log = function(info)
+--	if heroGameInfo.worldMap.enableLog then
+--		xlLG("worldMap",info)
+--	end
+--end
+--
+--
+--function heroGameInfo.worldMap.Init()
+--	heroGameInfo.worldMap.mapsize = {}
+--	heroGameInfo.worldMap.mapsize.w = hGlobal.WORLD.LastWorldMap.data.w
+--	heroGameInfo.worldMap.mapsize.h = hGlobal.WORLD.LastWorldMap.data.h
+--	local h = heroGameInfo.worldMap.mapsize.h
+--	local w = heroGameInfo.worldMap.mapsize.w
+--	Log("heroGameInfo.worldMap.Init h:" .. h .. " w:" .. w)
+--	
+--	--BUILDING
+--	heroGameInfo.worldMap.cities = {}
+--	heroGameInfo.worldMap.towns = {}
+--	heroGameInfo.worldMap.giving = {}
+--	heroGameInfo.worldMap.hire = {}
+--	heroGameInfo.worldMap.shop = {}
+--	
+--	--物品
+--	heroGameInfo.worldMap.resource = {}
+--	
+--	--中立怪
+--	heroGameInfo.worldMap.monster = {}
+--	
+--	--英雄
+--	--heroGameInfo.worldMap.heros = {} --注意凡是英雄存的都是hero 而不是unit
+--		
+--
+--	--AI英雄
+--	heroGameInfo.worldMap.aiheros = {} --注意凡是英雄存的都是hero 而不是unit
+--	
+--	--显示战斗力的对象列表 u
+--	heroGameInfo.worldMap.units = {}
+--	
+--	hGlobal.WORLD.LastWorldMap:enumunit(heroGameInfo.worldMap.EnumUnit)
+--
+--end
+--
+----[[
+-------------------------------
+----读取单位的奖励
+--hApi.ReadUnitLoot = function(oUnit,tRet)
+--	local tgrData = oUnit:gettriggerdata()
+--	if type(tgrData.loot)=="table" then
+--		local loot = tgrData.loot
+--		for i = 1,#loot do
+--			tRet[#tRet+1] = {unpack(loot)}
+--		end
+--	end
+--	return tRet
+--end
+--
+-------------------------------
+----读取单位奖励内容
+--hApi.LoadEventReward = function(rewardList,rewardTab)
+--	if type(rewardList)=="table" then
+--		for i = 1,#rewardList do
+--			local typ,ex,num = unpack(rewardList[i])
+--			if typ=="res" then
+--				local rType = hVar.RESOURCE_TYPE[ex]
+--				if rType~=nil and hVar.RESOURCE_ART[rType]~=nil then
+--					rewardTab[#rewardTab+1] = {
+--						model = hVar.RESOURCE_ART[rType].icon,
+--						num = math.max(1,num),
+--						index = i,
+--					}
+--				end
+--			elseif typ=="attr" then
+--				if ex=="exp" then
+--					rewardTab[#rewardTab+1] = {
+--						model = "ICON:ATTR_exp",
+--						num = math.max(1,num),
+--						index = i,
+--					}
+--				end
+--			end
+--		end
+--	end
+--	return rewardTab
+--end
+----]]
+--local  function DebugGivingHouseInfo(u)
+--	local tgrData = u:gettab() --u:gettriggerdata()
+--	print("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv name:" .. tgrData.name .. " type:" .. type(tgrData.loot))
+--	print("vvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvvv name:" .. tgrData.name .. " type:" .. type(u.data.loot))
+--	if type(tgrData.loot)=="table" then
+--		local loot = tgrData.loot
+--		for i = 1,#loot do
+--			--tRet[#tRet+1] = {unpack(loot)}
+--			local t1,t2,num = unpack(loot[i])
+--			print("name:" .. tgrData.name .. " t1:" .. t1 .. " t2:" .. t2 .. " num:" .. num)
+--		end
+--	end
+--	
+--end
+--
+--function heroGameInfo.worldMap.EnumUnit(u)
+--	--print("u.x:" .. u.data.gridX .. " u.y:" .. u.data.gridY .. " u.IsDead:" .. u.data.IsDead)
+--	local tab = u:gettab()
+--	if nil == tab then
+--		Log("heroGameInfo.worldMap.EnumUnit error tab is nil: " .. u.data.id)
+--		return
+--	end
+--	--print("heroGameInfo.worldMap.EnumUnit() tab type:" .. tab.type .. " name:" .. tab.name)
+--	--中立单位
+--	if hVar.UNIT_TYPE.UNIT == tab.type then
+--		local monster = heroGameInfo.worldMap.monster
+--		monster[#monster + 1] = u
+--		local combatScore = heroGameAI.CalculateSystem.Calculate(u,nil,heroGameAI.CalculateSystem.CALC_TYPE_DEF.COMBATSCORE)
+--		heroGameInfo.worldMap.units[#heroGameInfo.worldMap.units + 1] = u
+--	elseif hVar.UNIT_TYPE.HERO == tab.type then
+--	    --local heros = heroGameInfo.worldMap.heros
+--		--local playerheros = heroGameInfo.worldMap.playerheros
+--		--local aiheros = heroGameInfo.worldMap.aiheros
+--		local oPlayer = u:getowner()
+--		local h = u:gethero()
+--		
+--		if type(h) == "table" then
+--			if oPlayer == hGlobal.LocalPlayer then
+--				--playerheros[#playerheros + 1] = h
+--				xlCha_SetPlayerType(u.handle._c,1)
+--			else
+--				--aiheros[#aiheros + 1] = h
+--				xlCha_SetPlayerType(u.handle._c,2)
+--			end			
+--		end
+--
+--		--heros[#heros + 1] = h
+--		local combatScore = heroGameAI.CalculateSystem.Calculate(u,nil,heroGameAI.CalculateSystem.CALC_TYPE_DEF.COMBATSCORE)
+--		heroGameInfo.worldMap.units[#heroGameInfo.worldMap.units + 1] = u
+--	elseif hVar.UNIT_TYPE.BUILDING == tab.type then
+--		local id = u.data.id
+--		local subType = hApi.GetBuildingTypeExByID(id)
+--		if hVar.BUILDING_TYPE_EX.TOWN == subType then
+--			local cities = heroGameInfo.worldMap.cities
+--			cities[#cities + 1] = u
+--		elseif hVar.BUILDING_TYPE_EX.PROVIDE == subType then
+--			local towns = heroGameInfo.worldMap.towns
+--			towns[#towns + 1] = u
+--		elseif hVar.BUILDING_TYPE_EX.VISIT == subType then
+--			local giving = heroGameInfo.worldMap.giving
+--			giving[#giving + 1] = u
+--			--DebugGivingHouseInfo(u)
+--		elseif hVar.BUILDING_TYPE_EX.HIRE == subType then
+--			local hire = heroGameInfo.worldMap.hire
+--			hire[#hire + 1] = u
+--			--print("aaaaaaaaaaaaaaaaa name:" .. u.data.name .. " x:" .. u.data.gridX .. " y:" .. u.data.gridY)
+--		elseif hVar.BUILDING_TYPE_EX.SHOP == subType then
+--			local shop = heroGameInfo.worldMap.shop
+--			shop[#shop + 1] = u
+--		end
+--		--DebugGivingHouseInfo(u)
+--	elseif hVar.UNIT_TYPE.SCEOBJ == tab.type then
+--
+--	elseif hVar.UNIT_TYPE.RESOURCE == tab.type then
+--		local resource = heroGameInfo.worldMap.resource
+--		resource[#resource + 1] = u
+--		--xlLG("ai",'init resourceList index = ' .. #resource .. " name:" .. u.data.name .. "\n")
+--	end
+--end
+--
+--function heroGameInfo.worldMap.AddUnit(u)
+--	local tab = u:gettab()
+--	if nil == tab then
+--		return
+--	end
+--
+--	if hVar.UNIT_TYPE.UNIT == tab.type then
+--		local monster = heroGameInfo.worldMap.monster
+--		monster[#monster + 1] = u
+--		heroGameInfo.worldMap.units[#heroGameInfo.worldMap.units + 1] = u
+--	elseif hVar.UNIT_TYPE.HERO == tab.type then
+--		local oPlayer = u:getowner()
+--		local h = u:gethero()
+--		
+--		if type(h) == "table" then
+--			if oPlayer == hGlobal.LocalPlayer then
+--				--playerheros[#playerheros + 1] = h
+--				xlCha_SetPlayerType(u.handle._c,1)
+--			else
+--				--aiheros[#aiheros + 1] = h
+--				xlCha_SetPlayerType(u.handle._c,2)
+--			end			
+--		end
+--		heroGameInfo.worldMap.units[#heroGameInfo.worldMap.units + 1] = u
+--	elseif hVar.UNIT_TYPE.BUILDING == tab.type then
+--		local id = u.data.id
+--		local subType = hApi.GetBuildingTypeExByID(id)
+--		if hVar.BUILDING_TYPE_EX.TOWN == subType then
+--			local cities = heroGameInfo.worldMap.cities
+--			cities[#cities + 1] = u
+--		elseif hVar.BUILDING_TYPE_EX.PROVIDE == subType then
+--			local towns = heroGameInfo.worldMap.towns
+--			towns[#towns + 1] = u
+--		elseif hVar.BUILDING_TYPE_EX.VISIT == subType then
+--			local giving = heroGameInfo.worldMap.giving
+--			giving[#giving + 1] = u
+--			--DebugGivingHouseInfo(u)
+--		elseif hVar.BUILDING_TYPE_EX.HIRE == subType then
+--			local hire = heroGameInfo.worldMap.hire
+--			hire[#hire + 1] = u
+--			--print("aaaaaaaaaaaaaaaaa name:" .. u.data.name .. " x:" .. u.data.gridX .. " y:" .. u.data.gridY)
+--		elseif hVar.BUILDING_TYPE_EX.SHOP == subType then
+--			local shop = heroGameInfo.worldMap.shop
+--			shop[#shop + 1] = u
+--		end
+--	elseif hVar.UNIT_TYPE.RESOURCE == tab.type then
+--		local resource = heroGameInfo.worldMap.resource
+--		resource[#resource + 1] = u
+--	end
+--end
+--
+--function heroGameInfo.worldMap.RemoveResource(r)
+--	local res = heroGameInfo.worldMap.resource
+--	for i = 1,table.maxn(res) do
+--		if res[i] == r then
+--			res[i] = nil
+--			return
+--		end
+--	end
+--end
+--
+--function heroGameInfo.worldMap.AddMonster(m)
+--	local monster = heroGameInfo.worldMap.monster
+--	for i = 1,table.maxn(monster) do
+--		if monster[i] == nil then
+--			monster[i] = m
+--			return
+--		end
+--	end
+--
+--	monster[table.maxn(monster) + 1] = m
+--	return
+--end
+--
+--function heroGameInfo.worldMap.RemoveMonster(m)
+--	local monster = heroGameInfo.worldMap.monster
+--	for i = 1,table.maxn(monster) do
+--		if monster[i] == m then
+--			monster[i] = nil
+--			return
+--		end
+--	end
+--end
+--
+--function heroGameInfo.worldMap.EnumUnit4CombatScore(u)
+--	--print("u.x:" .. u.data.gridX .. " u.y:" .. u.data.gridY .. " u.IsDead:" .. u.data.IsDead)
+--	local tab = u:gettab()
+--	if nil == tab then
+--		Log("heroGameInfo.worldMap.EnumUnit error tab is nil: " .. u.data.id)
+--		return
+--	end
+--	--print("heroGameInfo.worldMap.EnumUnit() tab type:" .. tab.type .. " name:" .. tab.name)
+--	--中立单位	
+--	if u.data.IsDead == 0 then
+--		if hVar.UNIT_TYPE.UNIT == tab.type  then
+--			heroGameInfo.worldMap.units[#heroGameInfo.worldMap.units + 1] = u
+--		elseif hVar.UNIT_TYPE.HERO == tab.type then
+--			heroGameInfo.worldMap.units[#heroGameInfo.worldMap.units + 1] = u
+--		end
+--	end
+--end
+--
+--function heroGameInfo.worldMap.ShowUnitsCombatScore(bShow)
+--	heroGameInfo.worldMap.units = {}
+--	hGlobal.WORLD.LastWorldMap:enumunit(heroGameInfo.worldMap.EnumUnit4CombatScore)
+--	print("heroGameInfo.worldMap.ShowUnitsCombatScore show:" .. tostring(bShow) .. " units:" .. #heroGameInfo.worldMap.units)
+--	if true == bShow then
+--		for i = 1,#heroGameInfo.worldMap.units do
+--			if nil == heroGameInfo.worldMap.units[i].chaUI["number"] then
+--			else
+--				local oHero = heroGameInfo.worldMap.units[i]:gethero()
+--				if oHero then
+--					hApi.RefreshCombatScore(heroGameInfo.worldMap.units[i])
+--				end
+--				heroGameInfo.worldMap.units[i].chaUI["number"].handle._n:setVisible(true)
+--			end
+--		end
+--	else
+--		for i = 1,#heroGameInfo.worldMap.units do
+--			if nil == heroGameInfo.worldMap.units[i].chaUI["number"] then
+--			else
+--				heroGameInfo.worldMap.units[i].chaUI["number"].handle._n:setVisible(false)
+--			end
+--		end		
+--	end
+--end
+--
+--hGlobal.event:listen("Event_HeroLoot","__AI__UnitDead",function(oWorld,oUnit,oTarget)
+--	local u = oUnit
+--	local o = oTarget
+--	local w = oWorld
+--	print("__AI__UnitDead " .. u.data.name .. " " .. o.data.name)
+--	heroGameInfo.worldMap.RemoveResource(o)
+--end)

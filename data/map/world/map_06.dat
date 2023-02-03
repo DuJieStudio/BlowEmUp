@@ -1,0 +1,8 @@
+map_background = "world/map_06"
+units_list = {}
+units_list[1] = {4,5060,0,128,80,180,0}
+units_list[2] = {4,5060,0,96,144,0,0}
+units_list[3] = {4,5061,0,16,16,0,0}
+units_list[4] = {4,5061,0,160,48,180,0}
+
+map_area = {}

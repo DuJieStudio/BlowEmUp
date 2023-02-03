@@ -1,0 +1,12 @@
+[2023-02-02 17:24:30]stack traceback:
+	...rs\User2023\Desktop\source\data/scripts/load_gamesys.lua:71: in metamethod '__index'
+	...r2023\Desktop\source\./data/scripts/util/public/hApi.lua:34659: in field 'ShowShorcutTip'
+	...ktop\source\./data/scripts/util/ui/systmenu_mainbase.lua:772: in function <...ktop\source\./data/scripts/util/ui/systmenu_mainbase.lua:766>
+	(...tail calls...)
+	[C]: in function 'xpcall'
+	...rs\User2023\Desktop\source\./data/scripts/util/ui/ui.lua:1090: in function <...rs\User2023\Desktop\source\./data/scripts/util/ui/ui.lua:1071>
+	(...tail calls...)
+	[C]: in function 'xpcall'
+	...rs\User2023\Desktop\source\./data/scripts/util/ui/ui.lua:409: in upvalue '__CallTouchCode'
+	...rs\User2023\Desktop\source\./data/scripts/util/ui/ui.lua:662: in function <...rs\User2023\Desktop\source\./data/scripts/util/ui/ui.lua:528>
+	(...tail calls...)

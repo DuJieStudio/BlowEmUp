@@ -1,0 +1,302 @@
+----------------------------------
+---- 英雄装备
+----------------------------------
+--
+----file changed by pangyong 2015/3/25
+--hGlobal.UI.InitHeroEquipFram = function(mode)
+--	local tInitEventName = {"LocalEvent_Phone_ShowHeroEquip","__showheroequip"}
+--	if mode ~= "include" then										--如果模式不是include，则返回关键字表，而下面的内容临时不做处理，底层更加返回的关键字处理下面的监听事件
+--		return tInitEventName
+--	end
+--
+--	--设置用于主框架的参数
+--	local _wc, _hc, _wb	= 653, 546, 960
+--	local _xc, _yc		= hVar.SCREEN.w/2 - _wb/2, hVar.SCREEN.h/2+ _hc/2 - 19				--提取屏幕数值设置参数
+--
+--	local _fram		= nil
+--	local _parent		= nil
+--	local _SetPosion	= nil										--如果不在此处定义，则在fram.new 中无法使用
+--	local _childUI		= nil	
+--	local _x, _y		= 68, -33
+--	local _TipTokenItem	= {{0,1,{3,0,0,0}}}								--点击装备列表中的东西以后显示这个物品(parameter1:装备ID，下面有设置。parameter2:未知	parameter3:红钻石的槽，parameter4:钻石个数)
+--
+--	--[创建主框]
+--	hGlobal.UI.PhoneHeroEquipFram = hUI.frame:new({
+--		x	    = _xc,
+--		y	    = _yc,
+--		dragable    = 3,										--0:不能拖拽,1:可拖拽,2:全屏幕,{tx,ty,bx,by}:允许拖拽的区域,3:全屏可点击，但是点到该框外面的话就会跳动以下关闭窗口 4：全屏可点击，但是点到该框外面的话就会跳动以下窗口
+--		w	    = _wc,										--因为用于英雄背景的图标有白边，所以框的宽度减少22，以过滤掉白边
+--		h	    = _hc,
+--		show	    = 1,										--是否系显示默认面板
+--		--background  = "UI:tip_item",									--设置背景
+--		--bgAlpha	=   220,
+--		border	    = "UI:TileFrmBasic_thin",								--小边框,在此框架中已经默认"panel/panel_part_00.png"为背景色
+--		codeOnTouch = function(self,x,y,IsInside,tTempPos)			
+--			_childUI["SelectBorder"].handle._n:setVisible(false)					--点击控件以外区域，使选择框不可视
+--			_childUI["receiveBtn"]:setstate(0)							--点击控件以外区域，使“确定领取”按钮无效化
+--		end,
+--	})
+--	
+--	--设置用于部件的参数
+--	_fram		= hGlobal.UI.PhoneHeroEquipFram
+--	_parent		= _fram.handle._n
+--	_childUI	= _fram.childUI
+--
+--	--[标题]
+--	_childUI["Title"] = hUI.label:new({
+--		parent	= _parent,
+--		font	= hVar.FONTC,
+--		size	= 29,
+--		align	= "MC",											--居中显示
+--		RGB	= {255,0,0},										--红色标题
+--		x	= _x + 260,
+--		y	= _y + 6,
+--		width	= _wc - 5,
+--		text	= hVar.tab_string["__TEXT_equip_title"],
+--	})
+--	
+--	--[创建底框 和 选择框 以及 上下分线 ]
+--	local offx	= 128											--双槽的长度（作为创建图标时右移的单位长度）
+--	local offy	= 63											--槽的高度(少一个像素，去掉透明的那行像素)（作为下移的长度）
+--	local _xd, _yd	= _x + 69, _y - 56
+--	do
+--		local nItemNum	= 28										--共有28个双底框
+--		local nNum	= 2										--每创建2个双底框，空一格
+--		local nCount	= 4										--一行放4个双底框
+--
+--		--上分线
+--		for i = 1, nCount/nNum do 
+--			_childUI["up_line"..i] = hUI.bar:new({
+--				parent = _parent,
+--				model	= "UI:title_line",
+--				align = "LT",
+--				x = _xd - 64 + (i - 1) * 320,
+--				y = _yd + 38,
+--				w = 128 * nNum + 1,
+--				h = 6,
+--			})
+--		end
+--		--下分线
+--		ylinte = _yd - (nItemNum/4 - 1) * offy
+--		for i = 1, nCount/nNum do
+--			_childUI["down_line"..i] = hUI.bar:new({
+--				parent = _parent,
+--				model  = "UI:title_line",
+--				align  = "LT",
+--				x = _xd + (i - 1) * 320 - 64 ,
+--				y = ylinte - 30,
+--				w = 128 * nNum + 1,
+--				h = 6,
+--			})
+--		end
+--
+--		--创建底框
+--		local num	= 1										--记录个数
+--		local yline	= _yd
+--		for j = 1, nItemNum/4 do									--列
+--			--左边
+--			for i = 1, nNum do									--行
+--				_childUI["group_groove_iamge"..num] = hUI.image:new({
+--					parent = _parent,
+--					model = "ICON:bag_slot",
+--					align = "LT",
+--					x = _xd + (i - 1) * offx,
+--					y = _yd - (j - 1) * offy,
+--				})
+--				num = num + 1
+--			end
+--
+--			--右边
+--			for i = nNum + 1, 4 do
+--				_childUI["group_groove_iamge"..num] = hUI.image:new({
+--					parent = _parent,
+--					model = "ICON:bag_slot",
+--					align = "LT",
+--					x = _xd + i * offx - 64,
+--					y = _yd - (j - 1) * offy,
+--				})
+--				num = num + 1
+--			end
+--		end
+--
+--		--选中框
+--		_childUI["SelectBorder"] = hUI.image:new({
+--			parent	= _parent,
+--			mode	= "image",
+--			model	= "UI:skillup2",
+--			align	= "LC",
+--			w	= 72,
+--			h	= 68,
+--		})
+--		
+--		--背景图案（两柄武器）
+--		_childUI["group_groove_iamge1"] = hUI.image:new({
+--			parent = _parent,
+--			model  = "ui/itempageflag1.png",							--此图片资源为直接使用，定义表中没有定义
+--			x = _xd - 98,
+--			y = _yd - 180,
+--		})
+--		_childUI["group_groove_iamge2"] = hUI.image:new({
+--			parent = _parent,
+--			model  = "ui/itempageflag2.png",
+--			x = _xd + 224,
+--			y = _yd - 180,
+--		})
+--	end
+--	
+--	--[装备 和 底部的透明按钮]
+--	local _xe, _ye, ox, oy = _x + 37, _y - 55, 64, 63							--有一行为透明，所以oy为63
+--	do
+--		local weaponlist = {}										--武器
+--		local ornamentlist = {}										--装饰
+--		local countl = 0
+--		local countr = 0
+--		local itemlist = hVar.NET_SHOP_ITEM["Page_Elite"]
+--
+--		--提取装备ID
+--		for i = 1, #itemlist do
+--			local tmp = true
+--			--首冲奖励道具排除在外
+--			for n = 1, #hVar.GiftItem[n] do
+--				if hVar.GiftItem[n][4] == "i" and itemlist[i][1] == hVar.GiftItem[n][1] then
+--					tmp = false
+--					break
+--				end
+--			end
+--			--ID小于100的为无效道具
+--			if tmp and itemlist[i][1] >= 100 then
+--				if hVar.tab_item[itemlist[i][1]].type == hVar.ITEM_TYPE.WEAPON then		--判断是武器，还是服饰
+--					countl = countl + 1
+--					weaponlist[countl] = itemlist[i]					--提取武器装备
+--				else
+--					countr = countr + 1
+--					ornamentlist[countr] = itemlist[i]					--提取装饰装备
+--				end
+--			end
+--		end
+--
+--		--创建武器
+--		for i = 1, #weaponlist do
+--			_childUI["group_weapon_background"..i] = hUI.image:new({				--红色背景
+--				parent	= _parent,
+--				model	= "ICON:Back_red",
+--				x = _xe + (i-1)%4 * ox,
+--				y = _ye - math.modf((i-1)/4) * oy,
+--				w = 54,
+--				h = 54,
+--				z = 0,
+--			})
+--			_childUI["group_weapon_background"..i].handle.s:setOpacity(100)				--背景透明度
+--			_childUI["group_equip_weapon"..i] = hUI.image:new({					--武器
+--				parent	= _parent,
+--				model	= hVar.tab_item[weaponlist[i][1]].icon,
+--				x = _xe + (i-1)%4 * ox,
+--				y = _ye - math.modf((i-1)/4) * oy,
+--				w = 48,
+--				h = 48,
+--				z =0,
+--			})
+--			_childUI["group_weapon_button"..i] = hUI.button:new({					--透明按钮
+--				parent  = _parent,
+--				dragbox = _fram.childUI["dragBox"],
+--				model   = -1,									--设置按钮透明
+--				x = _xe + (i-1)%4 * ox,
+--				y = _ye - math.modf((i-1)/4) * oy,
+--				w = 64,
+--				h = 62,
+--				scaleT = 0.9,									--比例
+--				code   = function()
+--					_SetPosition(_xe + (i-1)%4 * ox - 31, _ye - math.modf((i-1)/4) * oy + 3)				--设置选择框的位置
+--					_TipTokenItem[1][1] = weaponlist[i][1]
+--					hGlobal.event:event("LocalEvent_ShowItemTipFram",_TipTokenItem,nil,1,_xc+_wc + 8, _yc - 16)	--显示选择框
+--				end,
+--			})
+--		end
+--
+--		--创建服饰
+--		for i = 1, #ornamentlist do
+--			_childUI["group_ornament_background"..i] = hUI.image:new({				--红色背景
+--				parent	= _parent,
+--				model	= "ICON:Back_red",
+--				x = _xe + ((i-1)%4 + 5) * ox,
+--				y = _ye - math.modf((i-1)/4) * oy,
+--				w = 54,
+--				h = 54,
+--				z = 0,
+--			})
+--			_childUI["group_ornament_background"..i].handle.s:setOpacity(100)				--背景透明度
+--			_childUI["group_equip_ornament"..i] = hUI.image:new({
+--				parent	= _parent,
+--				model	= hVar.tab_item[ornamentlist[i][1]].icon,
+--				x = _xe + ((i-1)%4 + 5) * ox,
+--				y = _ye - math.modf((i-1)/4) * oy,
+--				w = 48,
+--				h = 48,
+--				z = 0,
+--			})
+--			_childUI["group_ornament_button"..i] = hUI.button:new({
+--				parent  = _parent,								--所属窗口
+--				dragbox = _fram.childUI["dragBox"],						--必须传，不然这个按钮不能点击
+--				model   = -1,									--设置按钮透明
+--				x = _xe + ((i-1)%4 + 5) * ox,
+--				y = _ye - math.modf((i-1)/4) * oy,
+--				w = 64,
+--				h = 62,
+--				scaleT = 0.9,									--比例
+--				code   = function()
+--					_SetPosition(_xe + ((i-1)%4 + 5) * ox - 31, _ye - math.modf((i-1)/4) * oy + 3)			--设置选择框的位置
+--					_TipTokenItem[1][1] = ornamentlist[i][1]
+--					hGlobal.event:event("LocalEvent_ShowItemTipFram",_TipTokenItem,nil,1,_xc+_wc + 8, _yc - 16)	--显示选择框
+--				end,
+--			})
+--		end
+--	end
+--
+--	--[“确定领取”按钮]
+--	_childUI["receiveBtn"] = hUI.button:new({
+--		parent  = _parent,										--所属窗口
+--		dragbox = _fram.childUI["dragBox"],								--必须传，不然这个按钮不能点击
+--		model = "UI:ButtonBack",
+--		label = hVar.tab_string["__TEXT_receive_certain"],						--按钮上的文字
+--		border = 1,											--文字黑边
+--		font  = hVar.FONTC,
+--		x = _wc/2,
+--		y = -_hc + 21,
+--		w = 130,
+--		h = 34,
+--		scaleT = 0.9,											--比例
+--		code = function(self)
+--			hApi.PlaySound("button")
+--			-------------------------------------------------------------------------------------------------
+--			--------------------------------------领取处理
+--			-------------------------------------------------------------------------------------------------
+--			
+--			--红装兑换卷 类型是 9999 
+--			self:setstate(0)
+--			hUI.NetDisable(3000)
+--			SendCmdFunc["log_heroequip"](luaGetplayerDataID(),9999,1,_TipTokenItem[1][1])
+--			_fram:show(0)
+--		end,
+--	})
+--
+--	--[设置选择框的位置]
+--	_SetPosition = function(xp, yp)
+--		_childUI["receiveBtn"]:setstate(1)								--设置“确定领取”按钮有效
+--		_childUI["SelectBorder"].handle._n:setVisible(true)						--设置选择框可视
+--		_childUI["SelectBorder"].handle._n:setPosition(xp,yp)						--设置选择框位置
+--	end
+--
+--	--[监听画面启动]
+--	hGlobal.event:listen(tInitEventName[1], tInitEventName[2], function()
+--		--[初始设置]
+--		_fram.childUI["SelectBorder"].handle._n:setVisible(false)					--设置选择框不可视
+--		_fram.childUI["receiveBtn"]:setstate(0)								--设置“确定领取”按钮无效化
+--		
+--		--初始化点击装备列表
+--		_TipTokenItem	= {{0,1,{3,0,0,0}}}
+--
+--		--[显示窗口]
+--		_fram:show(1)
+--		_fram:active()
+--	end)
+--end

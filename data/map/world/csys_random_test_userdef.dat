@@ -1,0 +1,204 @@
+map_background = "world/csys_random_test_userdef"
+units_list = {}
+units_list[1] = {10,14,0,204,180,180,1}
+units_list[2] = {11,69998,1,276,180,180,2}
+
+
+units_data = {}
+units_data[1] = {
+	uniqueID = 1,
+	dropFlag = -1,
+	totalWave = 1,
+	totalLife = 1,
+}
+units_data[2] = {
+	uniqueID = 2,
+	pointType = 2,
+}
+
+
+
+map_area = {}
+
+
+units_list.b_random_map = true
+units_list.random_RoomClass = {
+	RoomTryTimes = 1000, -- 扔房间的尝试次数。当要求房间都连接时，需要这个数很大（比如1000)才能生成比较满的地图
+	MaxRoomCnt = -1, -- <0 不限制，否则最多房间数目为MaxRoomCnt
+	MinRoomSize = 16, --add wall width --24
+	MaxRoomSize = 18, --36
+	CornerSize = 2,
+  WallSize = 3,
+	WallWidth = 1, --1
+ 	DistanceOfWalls = 3, --3
+	BossRoom = true,
+	DoorRate = 0,-- 最高100，100会尽可能在每个有墙不外接的房间加上门
+}
+
+units_list.random_RoomClass.BossRoomInfo = 
+{
+	w = 21, h = 21, doorsize = 6, max_road_len = 24
+}
+
+units_list.random_RoomClass.Rooms =
+{
+	{--特定长宽房间，可定义为通道，强行连接
+		w = 8, h = 16, add_type = "connect", Roomtype = "road" --w = 6, h = 16, add_type = "connect", Roomtype = "road"
+	},
+	{
+		w = 8, h = 16, add_type = "connect", Roomtype = "road"
+	},
+	{
+		w = 8, h = 24, add_type = "connect", Roomtype = "road"
+	},
+	{
+		w = 8, h = 24, add_type = "connect", Roomtype = "road"
+	},	
+	{
+		w = 20, h = 12, add_type = "connect", Roomtype = "road"
+	},	
+	{
+		w = 20, h = 8, add_type = "connect", Roomtype = "road"
+	},	
+	{
+		w = 16, h = 8, add_type = "connect", Roomtype = "road"
+	},
+	{
+		w = 16, h = 8, add_type = "connect", Roomtype = "road"
+	},
+	{
+		w = 24, h = 8, add_type = "connect", Roomtype = "road"
+	},
+	--{ Roomtype = "room"},--不要求强行连接，随机到这个时，会出现不连接的房间
+	--{add_type = "", Roomtype = "room"},--不要求强行连接，随机到这个时，会出现不连接的房间
+	{add_type = "connect", Roomtype = "room"},--普通房间，长宽随机,强行连接
+	{add_type = "connect", Roomtype = "room"},
+
+}
+
+units_list.random_ObjectInfo = {
+	wall_l = {
+			objId = 4001,
+			offsetX = 24,
+			offsetY = 24,
+		},
+		wall_r = {
+			objId = 4002,
+			offsetX = 24,
+			offsetY = 24,
+		},
+		wall_t = {
+			objId = 4003,
+			offsetX = 48,
+			offsetY = 0,
+		},
+		wall_b = {
+			objId = 4004,
+			offsetX = 48,
+			offsetY = 0,
+		},
+		corner_lt = {
+			objId = 4005,
+			offsetX = 48,
+			offsetY = 24,
+			rot = 0,
+		},
+		corner_rt = {
+			objId = 4006,
+			offsetX = 24,
+			offsetY = 24,
+			rot = 0,
+		},
+		corner_lb = {
+			objId = 4007,
+			offsetX = 48,
+			offsetY = 24,
+			rot = 0,
+		},
+		corner_rb = {
+			objId = 4008,
+			offsetX = 24,
+			offsetY = 24,
+			rot = 0,
+		},
+		
+		corner_lt1 = { --合并
+			objId = 4014,
+			offsetX = 48,
+			offsetY = 24,
+			rot = 0,
+		},
+		corner_rt1 = { --合并
+			objId = 4015,
+			offsetX = 24,
+			offsetY = 24,
+			rot = 0,
+		},
+		corner_lb1 = { --合并
+			objId = 4016,
+			offsetX = 48,
+			offsetY = 24,
+			rot = 0,
+
+		},
+		corner_rb1 = { --合并
+			objId = 4017,
+			offsetX = 24,
+			offsetY = 24,
+			rot = 0,
+		},
+		
+		door_h = {
+			objId = 4009,
+			offsetX = 24,
+			offsetY = 0,
+			rot = 0,
+		},
+		door_v = {
+			objId = 4010,
+			offsetX = 24,
+			offsetY = 0,
+			rot = 0,
+		},
+		swall_v = {
+			objId = 4011,
+			offsetX = 24,
+			offsetY = 0,
+		},
+		swall_h = {
+			objId = 4012,
+			offsetX = 24,
+			offsetY = 0,
+		},
+		
+		blocks = 
+		{
+			{
+				objId = 5158,
+				offsetX = 0,
+				offsetY = 0,
+				rot = 0,
+			},
+			{
+				objId = 5159,
+				offsetX = 0,
+				offsetY = 0,
+				rot = 0,
+			},
+			{
+				objId = 5148,
+				offsetX = 0,
+				offsetY = 0,
+				rot = 0,
+			},
+			{
+				objId = 5149,
+				offsetX = 0,
+				offsetY = 0,
+				rot = 0,
+			},
+		},
+}
+
+
+--units_list.random_seed = 1622216850

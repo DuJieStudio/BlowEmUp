@@ -1,0 +1,1150 @@
+--hGlobal.UI.InitMyMedal = function()
+--	local _frm
+--	local _childUI
+--	local _parent
+--	local _SelectButFram = {}
+--	local sv = nil
+--	local _curPage = 1
+--	local _touchY = 0
+--	local _index = 1
+--	local _PageNumber = 1
+--	local madelNum = #hVar.tab_medal
+--	local temomodel = nil
+--	local MaxLen = {}
+--	------------点击成就弹出来的窗口----------------------
+--	for k,v in pairs(hVar.MAP_INFO) do
+--		if v.mapType and v.mapType == 1 and v.level and v.level > 0 then
+--			MaxLen[v.level] = k
+--		end
+--	end
+--
+--	hGlobal.UI.Phone_MyMedalFrm =hUI.frame:new({
+--			x = hVar.SCREEN.w/2 - 440,
+--			y = hVar.SCREEN.h/2 + 240,
+--			h = 524,
+--			w = 880,
+--			show = 0,
+--			dragable = 2,
+--			titlebar = 0,
+--			bgAlpha = 0,
+--			bgMode = "tile",
+--			background = "UI:tip_item",
+--			border = 1,
+--			autoactive = 0,
+--			codeOnDragEx = function(touchX,touchY,touchMode)
+--				if touchMode == 0 then
+--					if sv ~= nil then
+--						_touchY = touchY
+--					end
+--				end
+--				if touchMode == 2 then
+--					if _curPage == 1 then
+--						if sv ~= nil then
+--							_touchY = _touchY - touchY
+--							if math.abs(_touchY) > 60 then
+--								_PageNumber = math.ceil(_touchY/60)
+--								_PageNumber = math.abs(_PageNumber)
+--								if _touchY < 0 then
+--									if _index+4 <= math.ceil(madelNum/2) - _PageNumber then
+--										_index = _index + _PageNumber
+--									else
+--										_index = math.ceil(madelNum/2) - 4
+--									end
+--									sv.scrollview:setContentOffsetInDuration(ccp(0,(80*_index)-9655),0.3)
+--								elseif _touchY > 0 then
+--									if _index - _PageNumber > 1 then
+--										_index = _index - _PageNumber
+--									else
+--										_index = 1
+--									end
+--									sv.scrollview:setContentOffsetInDuration(ccp(0,(80*_index)-9655),0.3)
+--	
+--								end
+--							else
+--								if _touchY ~= 0 then
+--									sv.scrollview:setContentOffsetInDuration(ccp(0,(80*_index)-9655),0.3)
+--								end
+--							end
+--						end
+--					else
+--						if sv ~= nil then
+--							_touchY = _touchY - touchY
+--							if math.abs(_touchY) > 28 then
+--								_PageNumber = math.ceil(_touchY/28)
+--								_PageNumber = math.abs(_PageNumber)
+--								if _touchY < 0 then
+--									
+--									if _index+9 <= #MaxLen - _PageNumber then
+--										_index = _index + _PageNumber
+--									else
+--										_index = #MaxLen - 9
+--									end
+--									sv.scrollview:setContentOffsetInDuration(ccp(0,(42*_index)-9617),0.3)
+--	
+--								elseif _touchY > 0 then
+--									
+--									if _index - _PageNumber > 1 then
+--										_index = _index - _PageNumber
+--									else
+--										_index = 1
+--									end
+--									sv.scrollview:setContentOffsetInDuration(ccp(0,(42*_index)-9617),0.3)
+--								end
+--							else
+--								if _touchY ~= 0 then
+--									sv.scrollview:setContentOffsetInDuration(ccp(0,(42*_index)-9617),0.3)
+--								end
+--							end
+--						end
+--					end
+--				end
+--			end,
+--	})
+--
+--	_frm = hGlobal.UI.Phone_MyMedalFrm
+--	 _childUI = _frm.childUI
+--	_parent = _frm.handle._n
+--
+--	--标题的分界线
+--	_childUI["apartline_back"] = hUI.image:new({
+--		parent = _parent,
+--		model = "UI:panel_part_09",
+--		x = 440,
+--		y = -105,
+--		w = 930,
+--		h = 8,
+--	})
+--	--标题
+--	_childUI["BattleTitle"] = hUI.label:new({
+--		parent = _parent,
+--		x = 430,
+--		y = -35,
+--		align = "MC",
+--		font = hVar.FONTC,
+--		size = 40,
+--		width = 300,
+--		text = hVar.tab_string["MyMapAchievement"],
+--	})
+--
+--	local getMadelName = function(index,i)--勋章 文字
+--		if hVar.tab_stringME[index] ~= nil then
+--			if hVar.tab_stringME[index][i] ~= nil then
+--				return hVar.tab_stringME[index][i]
+--			else
+--				return ""
+--			end
+--		else
+--			return ""
+--		end
+--	end
+--	
+--	------------------------------------------------------------------------------------------
+--	local madelFrame = nil--具体的勋章面板
+--	--创建一个具体的勋章面板
+--	madelFrame = hUI.frame:new({
+--		x = 300,
+--		y = 500,
+--		w = 450, 
+--		h = 400,
+--		dragable = 3,
+--		show = 0,
+--		bgMode = "tile",
+--		background = "UI:tip_item",
+--		border	= "UI:TileFrmBasic_thin",
+--		codeOnClose = function(self)
+--			hApi.safeRemoveT(self.childUI,"madelIcon")
+--		end
+--	})
+--	madelFrame.childUI["madelClose"] = hUI.button:new({
+--		parent = madelFrame.handle._n,
+--		dragbox = madelFrame.childUI["dragBox"],
+--		model = "BTN:PANEL_CLOSE",
+--		x = 435,
+--		y = -12,
+--		--w = hVar.CloseButtonWH[1],
+--		--h = hVar.CloseButtonWH[2],
+--		scaleT = 0.9,
+--		code = function(self)
+--			madelFrame:show(0)
+--			sv.scrollview:setTouchEnabled(true)
+--		end,
+--	})
+--	madelFrame.childUI["madelOff"] = hUI.image:new({
+--			parent = madelFrame.handle._n,
+--			model = "UI:talent_slot",
+--			x = 405,
+--			y = -357,
+--			--w = 40,
+--			--h = 40,
+--	})
+--	madelFrame.childUI["madelOn"] = hUI.image:new({
+--			parent = madelFrame.handle._n,
+--			model = "UI:talent",
+--			x = 405,
+--			y = -357,
+--			--w = 40,
+--			--h = 40,
+--	})
+--	madelFrame.childUI["madelName"]= hUI.label:new({
+--			size = 32,
+--			parent = madelFrame.handle._n,
+--			align = "MC",
+--			font = hVar.FONTC,
+--			x = 240,
+--			y = -30,
+--			width = 270,
+--			RGB = {255,215,0},
+--			border = 1,
+--			text = "",
+--	})
+--	madelFrame.childUI["madelInfo"]= hUI.label:new({
+--			size = 28,
+--			parent = madelFrame.handle._n,
+--			align = "LT",
+--			font = hVar.FONTC,
+--			x = 55,
+--			y = -65,
+--			width = 400,
+--			border = 1,
+--			text = "",
+--	})
+--	madelFrame.childUI["madelDetal"]= hUI.label:new({
+--			size = 28,
+--			parent = madelFrame.handle._n,
+--			align = "LT",
+--			font = hVar.FONTC,
+--			x = 55,
+--			y = -95,
+--			width = 370,
+--			border = 1,
+--			text = "",
+--	})
+--	madelFrame.childUI["madelProgressName"]= hUI.label:new({
+--			size = 28,
+--			parent = madelFrame.handle._n,
+--			align = "LT",
+--			font = hVar.FONTC,
+--			x = 55,
+--			y = -145,
+--			width = 350,
+--			border = 1,
+--			text = "",
+--	})
+--	madelFrame.childUI["madelProgressDetalBar"] = hUI.valbar:new({
+--		parent = madelFrame.handle._n,
+--		model = "UI:ValueBar",
+--		back = {model = "UI:ValueBar_Back",x=0,y=0,w=170,h=36},
+--		w = 170,
+--		h = 36,
+--		x = 210,
+--		y = -140,
+--		align = "LT",
+--	})
+--	madelFrame.childUI["madelProgressDetalBar"]:setV(0,100)
+--
+--	madelFrame.childUI["madelProgressDetal"]= hUI.label:new({
+--			size = 28,
+--			parent = madelFrame.handle._n,
+--			align = "LT",
+--			font = hVar.FONTC,
+--			x = 255,
+--			y = -145,
+--			width = 350,
+--			border = 1,
+--			text = "",
+--			z = 1,
+--	})
+--	madelFrame.childUI["madelGift"]= hUI.label:new({
+--		size = 28,
+--		parent = madelFrame.handle._n,
+--		align = "LT",
+--		font = hVar.FONTC,
+--		x = 55,
+--		y = -240,
+--		width = 350,
+--		border = 1,
+--		text = hVar.tab_string["MadelGift"],
+--	})
+--	madelFrame.childUI["madelGiftGot"] = hUI.image:new({
+--		parent = madelFrame.handle._n,
+--		model = "UI:finish",
+--		x = 230,
+--		y = -370,
+--	})
+--	madelFrame.childUI["madelGiftGot"].handle._n:setVisible(false)
+--	local MedalID = 0
+--	local skillID = 0
+--	local skillLV = 0
+--	local tempMaxLevel = 0
+--	madelFrame.childUI["madelGiftGet"] = hUI.button:new({
+--		parent = madelFrame.handle._n,
+--		dragbox = madelFrame.childUI["dragBox"],
+--		--w = 130,
+--		--h = 45,
+--		x = 230,
+--		y = -365,
+--		scaleT = 0.9,
+--		label = hVar.tab_string["MadelGiftGet"],
+--		code = function(self,x,y,sus)
+--			if MedalID > 0 then
+--				madelFrame.childUI["madelGiftGet"]:setstate(-1)
+--				madelFrame.childUI["madelGiftGot"].handle._n:setVisible(true)
+--				LuaSetPlayerMedal(hVar.MEDAL_TYPE[MedalID],2)
+--				hGlobal.event:event("localEvent_ShowBattlefieldSkillFrm",{{skillID,skillLV}},nil,nil,1)
+--			end
+--		end,
+--	})
+--	madelFrame.childUI["madelGiftGet"]:setstate(-1)
+--	madelFrame.childUI["madelIcon"] = nil
+--	local _MedalFrameActionCallback = function()
+--		madelFrame:active()
+--	end
+--	--显示勋章具体信息与否 点亮其上的勋章与否
+--	local showBigMedalFrame2 = function(i,bShow,bOn)
+--		madelFrame.childUI["madelGift"].handle._n:setVisible(true)
+--		MedalID = i
+--		madelFrame.childUI["madelGiftGet"]:setstate(-1)
+--		madelFrame.childUI["madelGiftGot"].handle._n:setVisible(false)
+--		if LuaGetPlayerMedal(hVar.MEDAL_TYPE[i]) == 1 then
+--			madelFrame.childUI["madelGiftGet"]:setstate(1)
+--		elseif LuaGetPlayerMedal(hVar.MEDAL_TYPE[i]) == 2 then
+--			madelFrame.childUI["madelGiftGot"].handle._n:setVisible(true)
+--		end
+--		if madelFrame.childUI["tBG"] ~= nil then
+--			hApi.safeRemoveT(madelFrame.childUI,"tBG")
+--		end
+--		if madelFrame.childUI["typeicon"] ~= nil then
+--			hApi.safeRemoveT(madelFrame.childUI,"typeicon")
+--		end
+--		if madelFrame.childUI["tIcon"] ~= nil then
+--			hApi.safeRemoveT(madelFrame.childUI,"tIcon")
+--		end
+--		if madelFrame.childUI["info"] ~= nil then
+--			hApi.safeRemoveT(madelFrame.childUI,"info")
+--		end
+--		for j = 1,skillLV do
+--			if madelFrame.childUI["Level_star"..j] ~= nil then
+--				hApi.safeRemoveT(madelFrame.childUI,"Level_star"..j)
+--			end
+--		end
+--		for j = 1,tempMaxLevel do
+--			if madelFrame.childUI["Level_star_slot"..j] ~= nil then
+--				hApi.safeRemoveT(madelFrame.childUI,"Level_star_slot"..j)
+--			end
+--		end
+--
+--		--if i == 5 or i == 6 then
+--			--skillID = tonumber(hVar.tab_stringME[i][5])
+--			--skillLV = tonumber(hVar.tab_stringME[i][6])
+--		--else
+--			--skillID = tonumber(hVar.tab_stringME[i][4])
+--			--skillLV = tonumber(hVar.tab_stringME[i][5])
+--		--end
+--		skillID = hVar.MadelGift[i][1]
+--		skillLV = hVar.MadelGift[i][2]
+--		if skillID > 0 then
+--			tempMaxLevel = hVar.tab_tactics[skillID].level
+--		else
+--			madelFrame.childUI["madelGift"].handle._n:setVisible(false)
+--			madelFrame.childUI["madelGiftGet"]:setstate(-1)
+--		end
+--		--madelFrame.childUI["madelSkillButton"] = hUI.button:new({
+--			--parent = madelFrame.handle._n,
+--			--dragbox = madelFrame.childUI["dragBox"],
+--			--model = hVar.tab_tactics[tacticsId].icon,
+--			--w = 45,
+--			--h = 45,
+--			--x = 195,
+--			--y = -270,
+--			--scaleT = 0.9,
+--			--code = function(self,x,y,sus)
+--				--hGlobal.event:event("localEvent_ShowBattlefieldSkillInfoFrm",tacticsId,tacticsLv,300,600,1,0)
+--			--end,
+--		--})
+--		if skillID > 0 then
+--			madelFrame.childUI["tBG"] = hUI.button:new({--战术技能的底板
+--				parent = madelFrame.handle._n,
+--				model = hApi.GetTacticsCardGB(tempMaxLevel,skillLV),
+--				dragbox = madelFrame.childUI["dragBox"],
+--				x = 230,
+--				y = -260,
+--				scaleT = 1.0,
+--				code = function(self)
+--					hGlobal.event:event("localEvent_ShowPhoneBattlefieldSkillGameInfoFrm",skillID,skillLV,300,600,1,0)
+--				end,
+--			})
+--
+--			madelFrame.childUI["typeicon"]= hUI.image:new({
+--				parent = madelFrame.handle._n,
+--				model = hApi.GetTacticsCardTypeIcon(skillID,"model"),
+--				dragbox = madelFrame.childUI["dragBox"],
+--				x = 227,
+--				y = -202,
+--			})
+--			madelFrame.childUI["tIcon"]= hUI.image:new({
+--				parent = madelFrame.handle._n,
+--				model = hVar.tab_tactics[skillID].icon,
+--				x = 230,
+--				y = -270,
+--				w = 50,
+--				h = 50,
+--			})
+--			madelFrame.childUI["info"] = hUI.label:new({
+--				parent =madelFrame.handle._n,
+--				x = 230,
+--				y = -231,
+--				size = 18,
+--				align = "MC",
+--				border = 1,
+--				font = hVar.FONTC,
+--				width = 400,
+--				text = hVar.tab_stringT[skillID][1],
+--			})
+--
+--			if tempMaxLevel >= 5 then
+--				-- 常规 排列，技能Lv 大于等于5
+--				for j = 1,tempMaxLevel do
+--					madelFrame.childUI["Level_star_slot"..j] = hUI.image:new({
+--						parent = madelFrame.handle._n,
+--						model = "UI:HERO_STAR",
+--						x = 198 + (j-1)% 5 * 16,
+--						y = -303 - math.ceil((j-5)/5)*16,
+--					})
+--					madelFrame.childUI["Level_star_slot"..j].handle.s:setOpacity(100)
+--				end
+--				
+--				for j = 1,skillLV do
+--					madelFrame.childUI["Level_star"..j] = hUI.image:new({
+--						parent = madelFrame.handle._n,
+--						model = "UI:HERO_STAR",
+--						x = 198 + (j-1)% 5 * 16,
+--						y = -303 - math.ceil((j-5)/5)*16,
+--					})
+--				end
+--			else
+--				local tempStartX = -1* (tempMaxLevel-1)*8
+--				--居中显示
+--				for j = 1,tempMaxLevel do
+--					madelFrame.childUI["Level_star_slot"..j] = hUI.image:new({
+--						parent = madelFrame.handle._n,
+--						model = "UI:HERO_STAR",
+--						x = 230 + tempStartX+(j-1)*16,
+--						y = -310,
+--					})
+--					madelFrame.childUI["Level_star_slot"..j].handle.s:setOpacity(100)
+--				end
+--				
+--				for j = 1,skillLV do
+--					madelFrame.childUI["Level_star"..j] = hUI.image:new({
+--						parent = madelFrame.handle._n,
+--						model = "UI:HERO_STAR",
+--						x = 230 + tempStartX+(j-1)*16,
+--						y = -310,
+--					})
+--				end
+--			end
+--		end
+--		madelFrame.childUI["madelProgressName"]:setText("")
+--		madelFrame.childUI["madelProgressDetal"]:setText("")
+--		madelFrame.childUI["madelProgressDetalBar"].handle._n:setVisible(false)
+--		if bShow >= 1 then
+--			hApi.safeRemoveT(madelFrame.childUI,"madelIcon")
+--			local temomodel = nil
+--			temomodel = hVar.tab_medal[i].icon
+--			if temomodel == nil then
+--				temomodel = "ICON:Imperial_Academy"
+--			end
+--			madelFrame.childUI["madelIcon"]= hUI.image:new({
+--				parent = madelFrame.handle._n,
+--				model = temomodel,
+--				x = 80,
+--				y = -25,
+--				w = 50,
+--				h = 50,
+--			})
+--			madelFrame.childUI["madelName"]:setText(getMadelName(i,1))
+--			madelFrame.childUI["madelInfo"]:setText(getMadelName(i,2))
+--			madelFrame.childUI["madelDetal"]:setText(getMadelName(i,3))
+--			if bOn >= 1 then
+--				madelFrame.childUI["madelOn"].handle._n:setVisible(true)
+--			else--没点亮的时候有进度显示进度
+--				madelFrame.childUI["madelOn"].handle._n:setVisible(false)
+--				if hVar.tab_medal[i].accumulate == 1 then
+--					madelFrame.childUI["madelProgressDetalBar"].handle._n:setVisible(true)
+--					madelFrame.childUI["madelProgressName"]:setText(getMadelName(i,4))
+--					local tNum = 0
+--					local nNum = 0
+--					local tTable = {}
+--					local bTable = {}
+--					if hVar.tab_medal[i].conditions[1][1] == "killunit" then
+--						dealNumberRelT(hVar.tab_medal[i].conditions[1][3],bTable,tTable)
+--						tNum = tTable[1]
+--						nNum = LuaGetPlayerCountVal("killunit",hVar.tab_medal[i].conditions[1][2])
+--						if hGlobal.WORLD.LastWorldMap ~= nil then
+--							if type(hGlobal.WORLD.LastWorldMap.data.daykillcount) == "table" then
+--								for k,v in pairs(hGlobal.WORLD.LastWorldMap.data.daykillcount) do
+--									if v[1] == hVar.tab_medal[i].conditions[1][2] then
+--										nNum = nNum + v[2]
+--									end
+--								end
+--							end
+--						end
+--					elseif hVar.tab_medal[i].conditions[1][1] == "forged" then
+--						tNum = hVar.tab_medal[i].conditions[1][2]
+--						nNum = LuaGetForgeCount()
+--					end
+--					madelFrame.childUI["madelProgressDetalBar"]:setV(nNum,tNum)
+--					madelFrame.childUI["madelProgressDetal"]:setText(nNum.."/ "..tNum)
+--				end
+--			end
+--			madelFrame:show(bShow)
+--			sv.scrollview:setTouchEnabled(false)
+--			madelFrame.handle._n:runAction(CCSequence:createWithTwoActions(CCJumpTo:create(0.1,ccp(madelFrame.data.x,madelFrame.data.y),5,1),CCCallFunc:create(_MedalFrameActionCallback)))
+--			
+--		end
+--	end
+--	----------------------------------------达人相关-----------------------------------------------------------------------------------------
+--	
+--	
+--	for i = 1,madelNum do
+--		_childUI["MasterNode"..i] = hUI.node:new({
+--			parent = _parent,
+--			x = 225 + (i-1)%2*420,
+--			y = 9945 - math.ceil((i-2)/2)*80,
+--			--x = 205 + (i-1)%2*385,
+--			--y = -185 - math.ceil((i-2)/2)*80,
+--		})
+--
+--		_childUI["MasterNode"..i].childUI["MasterFrame"]= hUI.image:new({
+--			parent = _childUI["MasterNode"..i].handle._n,
+--			model = "UI:MADEL_BANNER",
+--			x = 0,
+--			y = 0,
+--		})
+--
+--		_childUI["MasterNode"..i].childUI["MasterStar"]= hUI.image:new({
+--			parent = _childUI["MasterNode"..i].handle._n,
+--			model = "UI:talent_slot",
+--			x = 115,
+--			y = 3,
+--		})
+--		_childUI["MasterNode"..i].childUI["MasterStar2"]= hUI.image:new({
+--			parent = _childUI["MasterNode"..i].handle._n,
+--			model = "UI:talent",
+--			x = 115,
+--			y = 3,
+--		})
+--		_childUI["MasterNode"..i].childUI["MasterName"]= hUI.label:new({
+--			parent = _childUI["MasterNode"..i].handle._n,
+--			size = 32,
+--			align = "MC",
+--			font = hVar.FONTC,
+--			RGB = {255,215,0},
+--			border = 1,
+--			width = 200,
+--			text = getMadelName(i,1),
+--			x = 0,
+--			y = 0,
+--		})
+--
+--		temomodel = (hVar.tab_medal[i] or {}).icon
+--		if temomodel == nil then
+--			temomodel = "ICON:Imperial_Academy"
+--		end
+--		_childUI["MasterNode"..i].childUI["MasterIcon"]= hUI.image:new({
+--			parent = _childUI["MasterNode"..i].handle._n,
+--			model = temomodel,
+--			x = -115,
+--			y = 3,
+--		})
+--	end
+--
+--	local turnOnMedal = function()--点亮或熄灭勋章
+--		for i = 1,madelNum do
+--			if LuaGetPlayerMedal(hVar.MEDAL_TYPE[i]) >= 1 then
+--				_childUI["MasterNode"..i].childUI["MasterStar2"].handle._n:setVisible(true)
+--			else
+--				_childUI["MasterNode"..i].childUI["MasterStar2"].handle._n:setVisible(false)
+--			end
+--		end
+--	end
+--	-------------------------------------------------------------------------------------------------------
+--	---------------------------成就相关--------------------------------------------------------------------------------
+--	
+--	
+--	--成就说明面板
+--	local achiinfofram = nil 
+--	achiinfofram = hUI.frame:new({
+--			x = 300,
+--			y = 450,
+--			w = 420,
+--			h = 270,
+--			dragable = 3,
+--			show = 0,
+--			titlebar = 0,
+--			bgMode = "tile",
+--			background = "UI:tip_item",
+--			border	= "UI:TileFrmBasic_thin",
+--	})
+--	local _achichildUI = achiinfofram.childUI
+--
+--	_achichildUI["achiClose"] = hUI.button:new({
+--		parent = achiinfofram.handle._n,
+--		dragbox = achiinfofram.childUI["dragBox"],
+--		model = "BTN:PANEL_CLOSE",
+--		x = 420,
+--		y = -14,
+--		scaleT = 0.9,
+--		code = function(self)
+--			achiinfofram:show(0)
+--			sv.scrollview:setTouchEnabled(true)
+--		end,
+--	})
+--
+--	--成就名称
+--	_achichildUI["achiName"] = hUI.label:new({
+--		size = 32,
+--		parent = achiinfofram.handle._n,
+--		align = "MC",
+--		font = hVar.FONTC,
+--		x = 220,
+--		y = -50,
+--		width = 270,
+--		RGB = {255,215,0},
+--		border = 1,
+--		text = "",
+--	})
+--
+--	--成就图片背景
+--	_achichildUI["achi_slot"] = hUI.image:new({
+--		parent = achiinfofram.handle._n,
+--		model = "UI_frm:slot",
+--		animation = "lightSlim",
+--		x = 70,
+--		y = -65,
+--		w = 60,
+--	})
+--
+--	--成就信息
+--	_achichildUI["achiInfoLab"] = hUI.label:new({
+--		size = 30,
+--		parent = achiinfofram.handle._n,
+--		align = "LC",
+--		font = hVar.FONTC,
+--		x = 55,
+--		y = -140,
+--		width = 300,
+--		--RGB = {255,215,0},
+--		border = 1,
+--		text = hVar.tab_string["__TEXT_ThankForPlayer"],
+--	})
+--
+--	--显示 动画的回调
+--	local _showAchiFrmCallBack = function()
+--		achiinfofram:active()
+--	end
+--
+--	--根据地图level 获得 地图名字key
+--	local getmapnamefromlevel = function(level)
+--		for k,v in pairs(hVar.MAP_INFO) do
+--			if v.level and v.level == level then
+--				return k
+--			end
+--		end
+--	end
+--
+--	local getmapscore = function(level)
+--		local mapkey = getmapnamefromlevel(level)
+--		for k,v in pairs(hVar.MAP_SCORE) do
+--			if k == mapkey then
+--				return v
+--			end
+--		end
+--	end
+--	--显示 成就信息面板动画
+--	local _showAchiFrm = function(mode,level)
+--		_achichildUI["achiName"]:setText("")
+--		_achichildUI["achiInfoLab"]:setText("")
+--		hApi.safeRemoveT(_achichildUI,"achi_image")
+--		local model = nil
+--		local mapScore = getmapscore(level)
+--
+--		if mapScore ~= nil then
+--			--评价信息
+--			if mode == "star" then
+--				local star = mapScore[4][1]
+--				_achichildUI["achiName"]:setText(hVar.tab_string["__TEXT_LevelStar"])
+--				_achichildUI["achiInfoLab"]:setText(hVar.tab_string["__TEXT_LevelStarInfo1"]..star..hVar.tab_string["__TEXT_LevelStarInfo2"])
+--				model = "UI:STAR_YELLOW"
+--			--富可敌国
+--			elseif mode == "rich" then
+--				local gold = mapScore[5] or 0
+--				_achichildUI["achiName"]:setText(hVar.tab_string["__TEXT_Achievement"].." : "..hVar.tab_string["__TEXT_LevelRich"])
+--				_achichildUI["achiInfoLab"]:setText(hVar.tab_string["__TEXT_LevelRichInfo"]..gold.." "..hVar.tab_stringU[42000][1])
+--				model = "UI:ach_weathy"
+--			--闪电战
+--			elseif mode == "blitz" then
+--				local day = (mapScore[6] or 0) + 1 
+--				_achichildUI["achiName"]:setText(hVar.tab_string["__TEXT_Achievement"].." : "..hVar.tab_string["__TEXT_LevelBlitz"])
+--				_achichildUI["achiInfoLab"]:setText(day..hVar.tab_string["__TEXT_LevelBlitzInfo"])
+--				model = "UI:ach_lightning"
+--			--皇冠
+--			elseif mode == "imperial" then
+--				_achichildUI["achiName"]:setText(hVar.tab_string["__TEXT_Achievement"].." : "..hVar.tab_string["__TEXT_LevelImperial"])
+--				_achichildUI["achiInfoLab"]:setText(hVar.tab_string["__TEXT_LevelImperialInfo"])
+--				model = "UI:ach_king"
+--			else
+--
+--			end
+--			
+--			_achichildUI["achi_image"] = hUI.image:new({
+--				parent = achiinfofram.handle._n,
+--				model = model,
+--				x = 70,
+--				y = -65,
+--				w = 55,
+--			})
+--			
+--			achiinfofram:show(1)
+--			sv.scrollview:setTouchEnabled(false)
+--			achiinfofram.handle._n:runAction(CCSequence:createWithTwoActions(CCJumpTo:create(0.1,ccp(achiinfofram.data.x,achiinfofram.data.y),5,1),CCCallFunc:create(_showAchiFrmCallBack)))
+--
+--		end
+--	end
+--	---------------------------------
+--	--成就裁剪面中控件的宽高比值
+--	local _w = 0
+--	for i = 1,#MaxLen do
+--		_childUI["AchievementNode"..i] = hUI.node:new({
+--			parent = _parent,
+--			x = 55,
+--			y = 9982 - (i-1)*42,
+--			--x = 55,
+--			--y = -147 - (i-1)*42,
+--		})
+--
+--		_childUI["AchievementNode"..i].childUI["AchievementName"]= hUI.label:new({
+--			parent = _childUI["AchievementNode"..i].handle._n,
+--			size = 29,
+--			align = "LT",
+--			font = hVar.FONTC,
+--			text = hVar.MAP_INFO[MaxLen[i]].name,
+--			x = 0,
+--			y = 0,
+--		})
+--
+--		_childUI["AchievementNode"..i].childUI["AchievementFinish"]= hUI.image:new({
+--			parent = _childUI["AchievementNode"..i].handle._n,
+--			model = "UI:finish",
+--			x = 700,
+--			y = -10,
+--			w = 42+_w,
+--		})
+--		_childUI["AchievementNode"..i].childUI["AchievementFinish"].handle._n:setVisible(false)
+--
+--		for j = 1,3 do
+--			_childUI["AchievementNode"..i].childUI["AchievementFinishStar_slot_"..j] = hUI.image:new({
+--				parent = _childUI["AchievementNode"..i].handle._n,
+--				model = "UI:star_slot",
+--				x = 320 + (j-1)*40,
+--				y = -10,
+--				w = 34+_w,
+--			})
+--
+--			_childUI["AchievementNode"..i].childUI["AchievementFinishStar_"..j] = hUI.image:new({
+--				parent = _childUI["AchievementNode"..i].handle._n,
+--				model = "UI:STAR_YELLOW",
+--				x = 320 + (j-1)*40,
+--				y = -10,
+--				w = 34+_w,
+--			})
+--			_childUI["AchievementNode"..i].childUI["AchievementFinishStar_"..j].handle._n:setVisible(false)
+--		end
+--
+--		_childUI["AchievementNode"..i].childUI["AchievementRich_slot"]= hUI.image:new({
+--			parent = _childUI["AchievementNode"..i].handle._n,
+--			model = "UI:ach_weathy_slot",
+--			x = 480,
+--			y = -10,
+--			w = 40+_w,
+--		})
+--		_childUI["AchievementNode"..i].childUI["AchievementRich"]= hUI.image:new({
+--			parent = _childUI["AchievementNode"..i].handle._n,
+--			model = "UI:ach_weathy",
+--			x = 480,
+--			y = -10,
+--			w = 40+_w,
+--		})
+--		_childUI["AchievementNode"..i].childUI["AchievementRich"].handle._n:setVisible(false)
+--
+--		_childUI["AchievementNode"..i].childUI["AchievementBlitz_slot"]= hUI.image:new({
+--			parent = _childUI["AchievementNode"..i].handle._n,
+--			model = "UI:ach_lightning_slot",
+--			x = 540,
+--			y = -10,
+--			w = 39+_w,
+--			scale = 0.8,
+--		})
+--		_childUI["AchievementNode"..i].childUI["AchievementBlitz"]= hUI.image:new({
+--			parent = _childUI["AchievementNode"..i].handle._n,
+--			model = "UI:ach_lightning",
+--			x = 540,
+--			y = -10,
+--			w = 39+_w,
+--			scale = 0.8,
+--		})
+--		_childUI["AchievementNode"..i].childUI["AchievementBlitz"].handle._n:setVisible(false)
+--
+--		_childUI["AchievementNode"..i].childUI["AchievementImperial_slot"]= hUI.image:new({
+--			parent = _childUI["AchievementNode"..i].handle._n,
+--			model = "UI:ach_king_slot",
+--			x = 600,
+--			y = -10,
+--			w = 40+_w,
+--		})
+--		_childUI["AchievementNode"..i].childUI["AchievementImperial"]= hUI.image:new({
+--			parent = _childUI["AchievementNode"..i].handle._n,
+--			model = "UI:ach_king",
+--			x = 600,
+--			y = -10,
+--			w = 40+_w,
+--		})
+--		_childUI["AchievementNode"..i].childUI["AchievementImperial"].handle._n:setVisible(false)
+--	end
+--	----------------------------------------------------------------------------------------------
+--	------------------------判断成就的状态--------------------------------------------------------
+--	local function AchievementJudgeState()
+--		--[[
+--		for i = 1,#MaxLen do
+--			--通关信息
+--			_childUI["AchievementNode"..i].childUI["AchievementFinish"].handle._n:setVisible(false)
+--			if LuaGetPlayerMapAchi(MaxLen[i],hVar.ACHIEVEMENT_TYPE.LEVEL) == 1 then
+--				_childUI["AchievementNode"..i].childUI["AchievementFinish"].handle._n:setVisible(true)
+--			end
+--			
+--			
+--			--富可敌国
+--			_childUI["AchievementNode"..i].childUI["AchievementRich"].handle._n:setVisible(false)
+--			if LuaGetPlayerMapAchi(MaxLen[i],hVar.ACHIEVEMENT_TYPE.RICHMAN) == 1 then
+--				_childUI["AchievementNode"..i].childUI["AchievementRich"].handle._n:setVisible(true)
+--			end
+--
+--			--闪电战
+--			_childUI["AchievementNode"..i].childUI["AchievementBlitz"].handle._n:setVisible(false)
+--			if LuaGetPlayerMapAchi(MaxLen[i],hVar.ACHIEVEMENT_TYPE.BLITZ) == 1 then
+--				_childUI["AchievementNode"..i].childUI["AchievementBlitz"].handle._n:setVisible(true)
+--			end
+--			
+--			--皇冠
+--			_childUI["AchievementNode"..i].childUI["AchievementImperial"].handle._n:setVisible(false)
+--			if LuaGetPlayerMapAchi(MaxLen[i],hVar.ACHIEVEMENT_TYPE.IMPERIAL) == 1 then
+--				_childUI["AchievementNode"..i].childUI["AchievementImperial"].handle._n:setVisible(true)
+--			end
+--
+--			--打开全部的星星槽子
+--			local nScore = LuaGetPlayerMapAchi(MaxLen[i],hVar.ACHIEVEMENT_TYPE.MAPSTAR)
+--			for j = 1,3 do
+--				_childUI["AchievementNode"..i].childUI["AchievementFinishStar_"..j].handle._n:setVisible(false)
+--			end
+--
+--			if nScore ~= nil then
+--				local miniSta,maxStar ,starmini,starmax = nScore%2,math.ceil(nScore/2),"UI:star_half","UI:STAR_YELLOW"
+--				
+--				for j = 1,maxStar do
+--					_childUI["AchievementNode"..i].childUI["AchievementFinishStar_"..j].handle._n:setVisible(true)
+--				end
+--			end
+--		end
+--		]]
+--	end
+--	----------------------------------------------------------------------------------------------
+--	--------------------裁剪面代码----------------------------------------------------------------
+--	local function CreateScrollFrm()
+--		local csv = {}
+--		local createScroll = {}
+--		createScroll.scrollview = {}
+--		csv.scrollview = CCScrollView:create()
+--		csv.container = CCLayer:create()
+--		csv.state = {}
+--		csv.state.adjust = 0
+--		if csv.scrollview == nil then
+--			return nil
+--		else
+--			csv.container:setAnchorPoint(ccp(0,0))
+--			csv.container:setPosition(ccp(0,0))
+--
+--			csv.scrollview:setAnchorPoint(ccp(0,0))
+--			csv.scrollview:setPosition(ccp(0,0))
+--
+--			csv.scrollview:setContainer(csv.container)
+--			
+--			local function onscript(tag)
+--				if "ccTouchEnded" == tag then
+--					createScroll.scrollview.adjustview(csv)
+--				end
+--			end
+--			local layer = csv.scrollview
+--			layer:registerScriptHandler(onscript)
+--
+--			return csv
+--		end
+--	end
+--	local function CreateCutOut()
+--		sv = CreateScrollFrm()
+--		_frm.handle._n:addChild(sv.scrollview,1)
+--		sv.state.adjust = 40
+--		sv.scrollview:setDirection(1)
+--		sv.scrollview:setContentSize(CCSizeMake(880,10000))
+--		sv.scrollview:setViewSize(CCSizeMake(880,414))
+--		sv.scrollview:setPosition(ccp(0,-520))
+--		--sv.scrollview:setContentOffset(ccp(0,-9205))
+--		sv.scrollview:setContentOffset(ccp(0,-9575))
+--		sv.scrollview:setBounceable(false)
+--	end
+--	----------------------------标签页------------------------------------------------------------
+--	--按钮选中框
+--	_childUI["Selectedbox"] = hUI.bar:new({
+--		parent = _parent,
+--		model = "UI:PHOTO_FRAME_BAR",
+--		align = "MC",
+--		w = 96,
+--		h = 46,
+--		z = 1,
+--	})
+--	_childUI["Selectedbox"].handle._n:setVisible(false)
+--
+--	--选中效果
+--	local _setBtnState = function(btn)
+--		for i = 1,#_SelectButFram do
+--			if btn ~= _childUI[_SelectButFram[i]] then
+--				_childUI[_SelectButFram[i]]:setstate(1)
+--				_childUI[_SelectButFram[i]].handle._n:runAction(CCScaleTo:create(0.01,1,0.9))
+--				_childUI[_SelectButFram[i]]:setXY(_childUI[_SelectButFram[i]].data.x,-80)
+--			else
+--				btn:setstate(0)
+--				btn.handle._n:runAction(CCScaleTo:create(0.01,1,1))
+--				btn:setXY(btn.data.x,-80)
+--				btn.handle.s:setColor(ccc3(255,255,255))
+--				--btn.childUI["label"].handle.s:setColor(ccc3(255,255,255))
+--				_childUI["Selectedbox"].handle._n:setPosition(btn.data.x,-80+2)
+--				_childUI["Selectedbox"].handle._n:setVisible(true)
+--			end
+--		end
+--	end
+--	
+--	--达人
+--	_childUI["btnMaster"] = hUI.button:new({
+--		parent = _parent,
+--		model = "UI:button_talent",
+--		dragbox = _childUI["dragBox"],
+--		x = 190,
+--		y = -80,
+--		code = function()
+--			_curPage = 1
+--			_index = 1
+--			--改变按钮状态
+--			_setBtnState(_childUI["btnMaster"])
+--			--检查星星是否亮起
+--			turnOnMedal()
+--
+--			_childUI["BattleTitle"]:setText(hVar.tab_string["MyAchievement"])
+--
+--			--隐藏按钮状态控制 
+--			for i = 1,10 do
+--				_childUI["btnMasterEvent"..i]:setstate(1)
+--			end
+--			for i = 1,10 do
+--				_childUI["btnAchievementEvent_Star"..i]:setstate(-1)
+--				_childUI["btnAchievementEvent_Rich"..i]:setstate(-1)
+--				_childUI["btnAchievementEvent_Blitz"..i]:setstate(-1)
+--				_childUI["btnAchievementEvent_Imperial"..i]:setstate(-1)
+--			end
+--
+--			if sv ~= nil then
+--				sv.scrollview:setContentOffsetInDuration(ccp(0,(80*_index)-9655),0.3)
+--			end
+--
+--			for i = 1 ,#MaxLen do
+--				hApi.ReloadParent(_childUI["AchievementNode"..i].handle._n,_parent)
+--			end
+--
+--			for i = 1 ,madelNum do
+--				hApi.ReloadParent(_childUI["MasterNode"..i].handle._n,sv.container)
+--			end
+--		end,
+--	})
+--	_SelectButFram[#_SelectButFram+1] = "btnMaster"
+--	--成就
+--	_childUI["btnAchievement"] = hUI.button:new({
+--		parent = _parent,
+--		model = "UI:button_acv",
+--		dragbox = _childUI["dragBox"],
+--		x = 95,
+--		y = -80,
+--		code = function()
+--			_curPage = 2
+--			_index = 1
+--			--改变按钮状态
+--			_setBtnState(_childUI["btnAchievement"])
+--
+--			--隐藏按钮状态控制
+--			for i = 1,10 do
+--				_childUI["btnMasterEvent"..i]:setstate(-1)
+--			end
+--			for i = 1,10 do
+--				_childUI["btnAchievementEvent_Star"..i]:setstate(1)
+--				_childUI["btnAchievementEvent_Rich"..i]:setstate(1)
+--				_childUI["btnAchievementEvent_Blitz"..i]:setstate(1)
+--				_childUI["btnAchievementEvent_Imperial"..i]:setstate(1)
+--			end
+--
+--
+--			if sv ~= nil then
+--				sv.scrollview:setContentOffsetInDuration(ccp(0,(42*_index)-9617),0.3)
+--			end
+--
+--			AchievementJudgeState()
+--			_childUI["BattleTitle"]:setText(hVar.tab_string["MyMapAchievement"])
+--
+--			for i = 1 ,#MaxLen do
+--				hApi.ReloadParent(_childUI["AchievementNode"..i].handle._n,sv.container)
+--			end
+--
+--			for i = 1 ,madelNum do
+--				hApi.ReloadParent(_childUI["MasterNode"..i].handle._n,_parent)
+--			end
+--		end,
+--	})
+--	_SelectButFram[#_SelectButFram+1] = "btnAchievement"
+--	-------------------------------------------------------------------------------------------------
+--	----------------------隐藏按钮-------------------------------------------------------------------
+--	--达人
+--	for i = 1,10 do
+--		_childUI["btnMasterEvent"..i] = hUI.button:new({
+--			parent = _parent,
+--			model = -1,
+--			dragbox = _childUI["dragBox"],
+--			x = 225 + (i-1)%2*420,
+--			y = -144 - math.ceil((i-2)/2)*82,
+--			w = 300,
+--			h = 60,
+--			code = function()
+--				showBigMedalFrame2(i,1,LuaGetPlayerMedal(hVar.MEDAL_TYPE[i]))
+--			end,
+--		})
+--	end
+--	--成就
+--	for i = 1,10 do
+--		_childUI["btnAchievementEvent_Star"..i] = hUI.button:new({
+--			parent = _parent,
+--			model = -1,
+--			dragbox = _childUI["dragBox"],
+--			x = 418,
+--			y = -120 - (i-1)*42,
+--			w = 115,
+--			h = 30,
+--			code = function()
+--				_showAchiFrm("star",_index - 1+i)
+--			end,
+--		})
+--
+--		_childUI["btnAchievementEvent_Rich"..i] = hUI.button:new({
+--			parent = _parent,
+--			model = -1,
+--			dragbox = _childUI["dragBox"],
+--			x = 535,
+--			y = -120 - (i-1)*42,
+--			w = 30,
+--			h = 26,
+--			code = function()
+--				_showAchiFrm("rich",_index - 1+i)
+--			end,
+--		})
+--
+--		_childUI["btnAchievementEvent_Blitz"..i] = hUI.button:new({
+--			parent = _parent,
+--			model = -1,
+--			dragbox = _childUI["dragBox"],
+--			x = 595,
+--			y = -120 - (i-1)*42,
+--			w = 30,
+--			h = 30,
+--			code = function()
+--				_showAchiFrm("blitz",_index - 1+i)
+--			end,
+--		})
+--
+--		_childUI["btnAchievementEvent_Imperial"..i] = hUI.button:new({
+--			parent = _parent,
+--			model = -1,
+--			dragbox = _childUI["dragBox"],
+--			x = 655,
+--			y = -120 - (i-1)*42,
+--			w = 30,
+--			h = 26,
+--			code = function()
+--				_showAchiFrm("imperial",_index - 1+i)
+--			end,
+--		})
+--	end
+--	-------------------------------------------------------------------------------------------------
+--
+--	--退出按钮
+--	_childUI["btnClose1"] = hUI.button:new({
+--		parent = _parent,
+--		model = "BTN:PANEL_CLOSE",
+--		dragbox = _childUI["dragBox"],
+--		scaleT = 0.9,
+--		x = 870,
+--		y = -12,
+--		--w = hVar.CloseButtonWH[1],
+--		--h = hVar.CloseButtonWH[2],
+--		code = function()
+--			hGlobal.event:event("LocalEvent_ShowMapAllUI",true)
+--			_frm:show(0)
+--		end,
+--	})
+--
+--	hGlobal.event:listen("LocalEvent_Phone_ShowMyMedal","ShowPhoneMyMedal",function()
+--		_index = 1
+--		CreateCutOut()
+--
+--		-----------------------------------------------------------------------------------
+--		_curPage = 2
+--			_index = 1
+--			--改变按钮状态
+--			_setBtnState(_childUI["btnAchievement"])
+--
+--			--隐藏按钮状态控制
+--			for i = 1,10 do
+--				_childUI["btnMasterEvent"..i]:setstate(-1)
+--			end
+--			for i = 1,10 do
+--				_childUI["btnAchievementEvent_Star"..i]:setstate(1)
+--				_childUI["btnAchievementEvent_Rich"..i]:setstate(1)
+--				_childUI["btnAchievementEvent_Blitz"..i]:setstate(1)
+--				_childUI["btnAchievementEvent_Imperial"..i]:setstate(1)
+--			end
+--
+--
+--			if sv ~= nil then
+--				sv.scrollview:setContentOffsetInDuration(ccp(0,(42*_index)-9617),0.3)
+--			end
+--
+--			AchievementJudgeState()
+--			_childUI["BattleTitle"]:setText(hVar.tab_string["MyMapAchievement"])
+--
+--			for i = 1 ,#MaxLen do
+--				hApi.ReloadParent(_childUI["AchievementNode"..i].handle._n,sv.container)
+--			end
+--
+--			for i = 1 ,madelNum do
+--				hApi.ReloadParent(_childUI["MasterNode"..i].handle._n,_parent)
+--			end
+--		------------------------------------------------------------------------------------
+--
+--		_frm:show(1)
+--		_frm:active()
+--		checkMadel(6)
+--	end)
+--end

@@ -1,0 +1,45 @@
+--heroGameAI.playerAI = {}
+--
+--function heroGameAI.ShowAiControl(bShow)
+--	if bShow then
+--		xlUI_Show(win_ai_working,1)
+--		hUI.Disable(99999,"AI")
+--	else
+--		xlUI_Show(win_ai_working,0)
+--		hUI.Disable(0,"AI")
+--	end
+--end
+--
+--function heroGameAI.playerAI.Run(p)
+--	heroGameAI.LogAi(string.format("heroGameAI.playerAI.Run begin pid:%d\n",p.data.playerId))
+--
+--	heroGameAI.ShowAiControl(true)
+--	
+--	local heros = {}
+--	local ghs = p.heros
+--	for i = 1,table.maxn(ghs) do
+--		if type(ghs[i]) == "table" then
+--			local u = ghs[i]:getunit()
+--			if(type(u) == "table" and u.data.owner == p.data.playerId and u.handle._c) then
+--				heros[#heros + 1] = u
+--			end
+--		end
+--	end
+--
+--	if #heros > 0 then
+--		BT.playerBT.Run(p,heros,heroGameAI.playerAI.CallBack)
+--	else
+--		heroGameAI.playerAI.CallBack(p)
+--	end
+--end
+--
+--function heroGameAI.playerAI.CallBack(p)
+--	heroGameAI.LogAi(string.format("heroGameAI.playerAI.Run end pid:%d\n",p.data.playerId))
+--
+--	heroGameAI.ShowAiControl(false)
+--	if heroGameRule.IsNextPlayerAi() then
+--		heroGameRule.OnEndDay()
+--	else
+--		heroGameRule.OnGameEvent(heroGameRule.gameEvent_TypeDef.ENDDAY)
+--	end
+--end

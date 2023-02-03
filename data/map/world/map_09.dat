@@ -1,0 +1,4 @@
+map_background = "world/map_09"
+units_list = {}
+
+map_area = {}

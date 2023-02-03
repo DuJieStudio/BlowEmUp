@@ -1,0 +1,123 @@
+----*************************************************************
+---- Copyright (c) 2013, XinLine Co.,Ltd
+---- Author: Red
+---- Detail: 游戏核心模块
+-----------------------------------------------------------------
+--
+--
+--
+--
+--g_Game_Core = {}
+----*************************************************************
+---- 常量枚举类型定义
+-----------------------------------------------------------------
+--g_Game_Core.Mode_TypeDef = {None="None",Local="Local",Remote="Remote"}
+--
+--
+--
+--
+----*************************************************************
+---- 内部状态数据
+-----------------------------------------------------------------
+--g_Game_Core.State 						= 	{}
+--g_Game_Core.State.Mode 					= 	g_Game_Core.Mode_TypeDef.None
+--g_Game_Core.State.Log					= 	false--(1 == g_lua_src)
+--
+--
+--
+--
+----*************************************************************
+---- 程序内部接口
+-----------------------------------------------------------------
+--function g_Game_Core.log(msg)
+--	if true == g_Game_Core.State.Log then
+--		xlLG("game_core",msg)
+--	end
+--end
+--
+--g_Game_Core.oldoperate = hClass.player.operate
+--
+--
+----*************************************************************
+---- 程序外部接口
+-----------------------------------------------------------------
+--function g_Game_Core.init(mode)
+--	if mode == g_Game_Core.Mode_TypeDef.Remote or mode == g_Game_Core.Mode_TypeDef.Local then
+--		g_Game_Core.State.Mode = mode
+--	else
+--		g_Game_Core.State.Mode = g_Game_Core.Mode_TypeDef.None
+--	end
+--	
+--	g_Game_Core.log("g_Game_Core.init mode:" .. g_Game_Core.State.Mode .. "\n")
+--end
+--
+--function g_Game_Core.checkoperate(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	local d = self.data
+--	local w = oWorld
+--	local u = oOperatingUnit
+--	local oUnit = oOperatingUnit	
+--	
+--	--单位繁忙时不接受命令
+--	if w.data.type=="worldmap" and u~=nil and u~=0 and u.data.IsBusy==1 then
+--		_DEBUG_MSG("[LUA WARNING]英雄繁忙中!不接受任何命令")
+--		hUI.floatNumber:new({
+--			unit = u,
+--			size = 12,
+--			text = "!!!~~",
+--			font = "numRed",
+--			lifetime = 1000,
+--			fadeout = -500,
+--			y = 40,
+--			moveY = 32,
+--		})
+--		return false
+--	end
+--	
+--	
+--	
+--	if type(g_Game_Core.CmdOp[nOperate]) == "table" and type(g_Game_Core.CmdOp[nOperate].checkoperate) == "function" then
+--		return g_Game_Core.CmdOp[nOperate].checkoperate(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	else
+--		return nil --TODO
+--		--return false
+--	end
+--end
+--
+--function g_Game_Core.operate(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	local bRes = true
+--	if type(g_Game_Core.CmdOp[nOperate]) == "table" and type(g_Game_Core.CmdOp[nOperate].operate) == "function" then
+--		
+--		bRes = g_Game_Core.CmdOp[nOperate].operate(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--		g_Game_Core.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx g_Game_Core.operate newnewnew cid:" .. nOperate .. " res:" .. tostring(bRes) .. " \n")
+--	else
+--		if hVar.RESULT_FAIL == g_Game_Core.oldoperate(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY) then
+--			bRes = false
+--		else
+--			
+--		end
+--		
+--		bRes = 1
+--		g_Game_Core.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx g_Game_Core.operate oldoldold cid:" .. nOperate .. " \n")
+--	end
+--
+--	g_Game_Core.sendcmd(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY,bRes)
+--end
+--
+--function g_Game_Core.sendcmd(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY,bRes)
+--	g_Game_Core.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx g_Game_Core.sendcmd cid:" .. nOperate .. " res:" .. tostring(bRes) .. " \n")
+--	if g_Game_Core.Mode_TypeDef.Local == g_Game_Core.State.Mode then
+--		g_Game_Agent.recvcmd(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY,bRes)
+--	elseif g_Game_Core.Mode_TypeDef.Remote == g_Game_Core.State.Mode then
+--		
+--	end
+--end
+--
+--function g_Game_Core.recvcmd(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	g_Game_Core.log("xxxxxxxxxxxxxxxxxxxxxxxxxxxxx g_Game_Core.recvcmd cid:" .. nOperate .. " \n")
+--	local res = g_Game_Core.checkoperate(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY) 
+--	if true ==  res then
+--		return g_Game_Core.operate(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	elseif nil == res then
+--		return g_Game_Core.operate(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	end
+--end

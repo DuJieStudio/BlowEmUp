@@ -1,0 +1,413 @@
+---------------------------------
+----翰林院学习英雄技能面板
+---------------------------------
+--hGlobal.UI.InitImperialAcademyFrm = function()
+--	local _gridList = {}
+--	--changed by pangyong 2015/3/30
+--	local _ws, _hs   = 544, 462
+--	local _xs, _ys	= hVar.SCREEN.w/2 - _ws/2, hVar.SCREEN.h/2+ _hs/2 + 34				--提取屏幕数值设置参数
+--	hGlobal.UI.ImperialAcademyFrm  = hUI.frame:new({
+--		--x = 130,
+--		--y = 580,
+--		--dragable = 2,
+--		x = _xs,
+--		y = _ys,
+--		dragable = 3,
+--		show = 0,
+--		closebtn = "BTN:PANEL_CLOSE",
+--		closebtnX = 534,
+--		closebtnY = -15,
+--		--buttononly = 1,
+--		--background = "UI:PANEL_INFO_S",
+--		w = _ws,
+--		h = _hs,
+--		codeOnTouch = function(self,relTouchX,relTouchY,IsInside)
+--			for i = 1, #_gridList do
+--				local  _,sprite = _gridList[i]:selectitem(relTouchX,relTouchY,relTouchX+self.data.x,relTouchY+self.data.y)
+--			end
+--		end,
+--		codeOnClose = function(self)
+--			hGlobal.event:event("LocalEvent_ShowSkillInfoFram",nil,nil)
+--		end,
+--	})
+--
+--	local _frm = hGlobal.UI.ImperialAcademyFrm
+--	local _parent = _frm.handle._n
+--	local _childUI = _frm.childUI
+--	
+--	_childUI["apartline_back"] = hUI.image:new({
+--		parent = _parent,
+--		model = "UI:panel_part_09",
+--		x = 270,
+--		y = -130,
+--		w = 544,
+--		h = 8,
+--	})
+--
+--	--建筑名字以及Title
+--	_childUI["ImperialAcademyName"] = hUI.label:new({
+--		parent = _parent,
+--		size = 34,
+--		align = "MC",
+--		font = hVar.FONTC,
+--		border = 1,
+--		x = _frm.data.w/2+10,
+--		y = -60,
+--		width = 450,
+--		text = "",
+--	})
+--
+--	_childUI["ImperialAcademyTitle"] = hUI.label:new({
+--		parent = _parent,
+--		size = 26,
+--		align = "MC",
+--		font = hVar.FONTC,
+--		border = 1,
+--		x = _frm.data.w/2+30,
+--		y = -105,
+--		width = 400,
+--		text = hVar.tab_string["__TEXT_ImperialAcademyTitle"],
+--	})
+--	
+--	--可以学习的技能lab
+--	_childUI["academySkillTip"] = hUI.label:new({
+--		parent = _parent,
+--		size = 28,
+--		align = "LT",
+--		font = hVar.FONTC,
+--		border = 1,
+--		x = 50,
+--		y = -200,
+--		width = 450,
+--		text = hVar.tab_string["__TEXT_academySkill"],
+--	})
+--	
+--	--访问英雄
+--	_childUI["visitorTip"] = hUI.label:new({
+--		parent = _parent,
+--		size = 28,
+--		align = "LT",
+--		font = hVar.FONTC,
+--		border = 1,
+--		x = 50,
+--		y = -280,
+--		width = 450,
+--		text = hVar.tab_string["__TEXT_visitorHero"],
+--	})
+--
+--	--访问英雄name
+--	_childUI["visitorName"] = hUI.label:new({
+--		parent = _parent,
+--		size = 28,
+--		align = "MT",
+--		font = hVar.FONTC,
+--		border = 1,
+--		x = 105,
+--		y = -375,
+--		width = 450,
+--		text = "",
+--		RGB = {255,205,55},
+--	})
+--	
+--	--建筑的背景底图
+--	_childUI["unitImageBG"] = hUI.image:new({
+--		parent = _parent,
+--		model = "UI_frm:slot",
+--		animation = "lightSlim",
+--		w = 78,
+--		h = 78,
+--		x = 80,
+--		y = -80,
+--	})
+--
+--	local _learner = {}
+--	local _backup = {}
+--
+--	--创建翰林院的可学技能grid
+--	local _grid = {{}}
+--	for i = 1,3 do
+--		_grid[i] = 0
+--	end
+--	local __gridX,__gridY = nil,nil
+--	--建筑的技能列表grid
+--	_childUI["academySkill"] = hUI.bagGrid:new({
+--		parent = _parent,
+--		tab = hVar.tab_skill,
+--		tabModelKey = "icon",
+--		animation = function(id,model,gridX,gridY)
+--			return hApi.animationByFacing(model,"stand",0)
+--		end,
+--		align = "MC",
+--		grid = _grid,
+--		item = {},--{{100},{101},{102},{103}},
+--		slot = 0,--{model = "UI_frm:slot",animation = "normal",},
+--		num = 0,
+--		x = 200,
+--		y = -210,
+--		gridW = 62,
+--		gridH = 62,
+--		iconW = 55,
+--		iconH = 55,
+--		smartWH = 1,
+--		codeOnItemSelect = function(self,item,relX,relY,gridX,gridY)
+--			__gridX,__gridY = gridX,gridY
+--		end,
+--		codeOnItemDrop = function(self,item,relX,relY,screenX,screenY)
+--			for i = 1,#_gridList do
+--				local gx,gy,_,_ = _gridList[i]:xy2grid(relX-_frm.data.x,relY-_frm.data.y,"parent")
+--				if gx and gy then
+--					local id = 0
+--					if type(item)=="table" then
+--						id = item[1]
+--					end
+--
+--					--访问者的grid
+--					if i == 1 then
+--						if __gridX == gx and __gridY == gy then
+--							--changed by pangyong 2015/3/30 
+--							local skillX, skillY = hVar.SCREEN.w - 20, 200
+--							hGlobal.event:event("LocalEvent_ShowSkillInfoFram",nil,id,skillX,skillY,"RB")
+--						end
+--
+--						--点击某个技能图标会弹出技能说明面板
+--						local vHero = hApi.GetObject(_learner)
+--						if vHero then
+--							
+--							_childUI["visitorSkill"]:updateitem(vHero.data.academySkill)
+--						end
+--					else
+--						local vHero = hApi.GetObject(_learner)
+--						if vHero then
+--							vHero:setacademyskill(1,id)
+--							_gridList[i]:updateitem(vHero.data.academySkill)
+--						end
+--					end
+--				end
+--			end
+--		end,
+--	})
+--	_gridList[#_gridList + 1] = _childUI["academySkill"]
+--
+--	local _visitorGridIndex = nil
+--	local _gridhero = {{}}
+--	for i = 1,1 do
+--		_gridhero[i] = 0
+--	end
+--
+--	--访问英雄的技能列表grid
+--	_childUI["visitorSkill"] = hUI.bagGrid:new({
+--		parent = _parent,
+--		tab = hVar.tab_skill,
+--		tabModelKey = "icon",
+--		animation = function(id,model,gridX,gridY)
+--			return hApi.animationByFacing(model,"stand",0)
+--		end,
+--		align = "MC",
+--		grid = _gridhero,
+--		item = {},
+--		slot = {model = "ICON:Back_gold",animation = "normal",},
+--		num = 0,
+--		x = 200,
+--		y = -340,
+--		gridW = 62,
+--		gridH = 62,
+--		iconW = 55,
+--		iconH = 55,
+--		smartWH = 1,
+--		codeOnItemSelect = function(self,item,relX,relY,gridX,gridY)
+--			_visitorGridIndex = gridX+1
+--		end,
+--		codeOnItemDrop = function(self,item,relX,relY,screenX,screenY)
+--			local vHero = hApi.GetObject(_learner)
+--			if vHero then
+--				local gx,gy,_,_ = self:xy2grid(relX-_frm.data.x,relY-_frm.data.y,"parent")
+--				if gx and gy then
+--					local id = 0
+--					if type(item)=="table" then
+--						id = item[1]
+--					end
+--					vHero:setacademyskill(gx+1,0)
+--					vHero:setacademyskill(_visitorGridIndex,id)
+--				else
+--					vHero:setacademyskill(_visitorGridIndex,0)
+--				end
+--				self:updateitem(vHero.data.academySkill)
+--			end
+--		end,
+--	})
+--	_gridList[#_gridList + 1] = _childUI["visitorSkill"]
+--	
+--
+--	local _gx,_gy,_gw,_gbw  = 70,-351,40,44
+--	local _vx,_vy,_vw,_vbw = 105,-340,60,64
+--	--创建学习者和 候选学习者图片
+--	local _createlearnerinfo = function()
+--		local vHero = hApi.GetObject(_learner)
+--		local gHero = hApi.GetObject(_backup)
+--
+--		if gHero then
+--			_childUI["guardImageBG"] = hUI.image:new({
+--				parent = _parent,
+--				model = "UI_frm:slot",
+--				animation = "lightSlim",
+--				w = _gbw,
+--				h = _gbw,
+--				x = _gx,
+--				y = _gy,
+--			})
+--			_childUI["guardImage"] = hUI.image:new({
+--				parent = _parent,
+--				model = gHero.data.icon,
+--				w = _gw,
+--				h = _gw,
+--				x = _gx,
+--				y = _gy,
+--			})
+--		end
+--
+--		if vHero then
+--			--访问者背景底图
+--			_childUI["visitorImageBG"] = hUI.image:new({
+--				parent = _parent,
+--				model = "UI_frm:slot",
+--				animation = "lightSlim",
+--				w = _vbw,
+--				h = _vbw,
+--				x = _vx,
+--				y = _vy,
+--			})
+--
+--			_childUI["visitorImage"] = hUI.image:new({
+--				parent = _parent,
+--				model = vHero.data.icon,
+--				w = _vw,
+--				h = _vw,
+--				x = _vx,
+--				y = _vy,
+--			})
+--			
+--		end
+--		_childUI["visitorName"]:setText(hVar.tab_stringU[vHero.data.id][1])
+--		_childUI["visitorSkill"]:updateitem(vHero.data.academySkill)
+--		
+--		if vHero and gHero then
+--			_childUI["Abtn"]:setstate(1)
+--		end
+--	end
+--
+--	_childUI["Abtn"] = hUI.button:new({
+--		parent = _parent,
+--		model = -1, 
+--		dragbox = _frm.childUI["dragBox"],
+--		w = 104,
+--		h = 64,
+--		x = 105,
+--		y = -340,
+--		code = function(self,x,y,sus)
+--			--删除掉两个小头像
+--			hApi.safeRemoveT(_childUI,"visitorImageBG")
+--			hApi.safeRemoveT(_childUI,"visitorImage")
+--			hApi.safeRemoveT(_childUI,"guardImageBG")
+--			hApi.safeRemoveT(_childUI,"guardImage")
+--			--数据交换
+--			local vHero = hApi.GetObject(_learner)
+--			local gHero = hApi.GetObject(_backup)
+--			hApi.SetObject(_backup,vHero)
+--			hApi.SetObject(_learner,gHero)
+--			_createlearnerinfo()
+--		end,
+--	})
+--	_childUI["Abtn"]:setstate(-1)
+--	
+--	local _oTarget = {}
+--
+--	hGlobal.event:listen("Event_NewDay","__Refreshbtn__",function(nDayCount)
+--		if math.mod(nDayCount,7) == 0 then
+--			--_childUI["reflash"]:setstate(1)
+--		end
+--	end)
+--	
+--	local _skillList = {}
+--	hGlobal.event:listen("LocalEvent_ShowImperialAcademy","showMsgTip",function(opr,world,Unit,TownUnit,Target)
+--		hApi.SetObject(_oTarget,Target)
+--		_childUI["Abtn"]:setstate(-1)
+--		_switch = 0
+--		--设置建筑名字
+--		_childUI["ImperialAcademyName"]:setText(hVar.tab_stringU[Target.data.id][1])
+--		
+--		--设置建筑图片
+--		hApi.safeRemoveT(_childUI,"unitImage")
+--		_childUI["unitImage"] = hUI.thumbImage:new({
+--			parent = _parent,
+--			id = Target.data.id,
+--			facing = 0,
+--			w = 78,
+--			h = 78,
+--			x = 80,
+--			y = -80,
+--		})
+--		
+--		--先清理学习者相关信息
+--		hApi.safeRemoveT(_childUI,"visitorImageBG")
+--		hApi.safeRemoveT(_childUI,"visitorImage")
+--
+--		hApi.SetObject(_learner,nil)
+--	
+--		_childUI["visitorName"]:setText("")
+--		_childUI["visitorSkill"]:updateitem({})
+--		
+--		hApi.safeRemoveT(_childUI,"guardImageBG")
+--		hApi.safeRemoveT(_childUI,"guardImage")
+--
+--		hApi.SetObject(_backup,nil)
+--		
+--		local utab = Target:gettab()
+--		local al = utab.academylevel
+--
+--		--翰林院的技能
+--		local oTown = TownUnit:gettown()
+--		local _skillList = {}
+--		local academyskill = oTown.data.academyskill or {}
+--		--刷新翰林院科技
+--		for i = 1,al do
+--			_skillList[#_skillList+1] = academyskill[i]
+--		end
+--		_childUI["academySkill"]:updateitem(_skillList)
+--
+--		--获取主城数据
+--		local oTown = TownUnit:gettown()
+--		local Vu = nil --访问者
+--		local Gu = nil --守卫
+--		local learner = nil --学习者
+--		if oTown then
+--			Vu = oTown:getunit("visitor")
+--			Gu = oTown:getunit("guard")
+--			--如果有守卫而且是英雄对象
+--			local vHero = nil
+--			local gHero = nil
+--			if Gu then
+--				gHero = Gu:gethero()
+--				if gHero then
+--					hApi.SetObject(_backup,gHero)
+--				end
+--			end
+--
+--			learner = Vu
+--			--如果没有访问者，只有守备时，只让守备学习技能
+--			if learner == nil and Gu  then
+--				learner = Gu
+--				hApi.SetObject(_backup,nil)
+--			end
+--			--当只有访问者时
+--			if learner then
+--				vHero = learner:gethero()
+--				if vHero then
+--					hApi.SetObject(_learner,vHero)
+--					_createlearnerinfo()
+--				end
+--			end
+--		end
+--
+--		_frm:show(1,"appear")
+--	end)
+--end

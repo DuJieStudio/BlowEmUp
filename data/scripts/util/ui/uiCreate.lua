@@ -1,0 +1,79 @@
+--创建一个测试按钮
+--local _y = -4
+--local function GetBtnY()
+	--_y = _y - 46
+	--return _y
+--end
+
+--hGlobal.O:replace("__Frame_Test",hUI.frame:new({
+		--x = 700,
+		--y = 340,
+		--w = 200,
+		--h = 200,
+		--child = {
+			--{
+				--__UI = "button",
+				--mode = "imageButton",
+				--label = {text = _T("测试按钮 1"),size = 20},
+				--x = 100,
+				--y = GetBtnY(),
+				--scaleT = 0.9,
+				--code = function()
+					--print("------------------------")
+				--end,
+			--},
+			--{
+				--__UI = "button",
+				--mode = "imageButton",
+				--label = {text = _T("测试按钮 2"),size = 20},
+				--x = 100,
+				--y = GetBtnY(),
+				--scaleT = 0.9,
+				--code = function()
+					--print("------------------------")
+				--end,
+			--},
+		--},
+--}))
+
+
+--------------------------------
+-- 临时，无用
+--------------------------------
+--hGlobal.UI.InitCreepTalk = function()
+	--local __UnitTalkTemp = {}
+	--local __LastTalkTick = 0
+	--hApi.addTimer("__AI__CreepTalk",hVar.TIMER_MODE.GAMETIME,0,500,function(tick)
+		--local p = hGlobal.LocalPlayer
+		--local w = p:getfocusworld()
+		--if w==nil then
+			--return
+		--end
+		--if w.data.type=="worldmap" then
+			--local u = p:getfocusunit()
+			--if u==nil then
+				--return
+			--end
+			--if __LastTalkTick>tick then
+				--return
+			--end
+			--local gx,gy = u.data.gridX,u.data.gridY
+			--local talkU,talkV = nil,hApi.random(80,200)
+			--w:enumunitR(gx,gy,0,8,function(t)
+				--if t.data.IsDead==1 or p:allience(t:getowner())~=hVar.PLAYER_ALLIENCE_TYPE.ENEMY then
+					--return
+				--end
+				--local v = hApi.random(160,400)
+				--if talkV<=v then
+					--talkV = v
+					--talkU = t
+				--end
+			--end)
+			--if talkU~=nil then
+				--__LastTalkTick = tick + hApi.random(4000,9000)
+				--local _,oy = talkU:getbox()
+				--w:addeffect(2,3,{hVar.EFFECT_TYPE.UNIT,"EmTalk",talkU},0,-1*(oy or 0)+10)
+			--end
+		--end
+	--end)
+--end

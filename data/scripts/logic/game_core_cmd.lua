@@ -1,0 +1,922 @@
+----*************************************************************
+---- Copyright (c) 2013, XinLine Co.,Ltd
+---- Author: Red
+---- Detail: 游戏核心模块CMD部分 
+----		   checkoperate检测是否可以执行 必须返回true or false 
+----		   operate执行相关的数据操作	也必须返回true or false
+----		   runcall执行完后的ui等相关触发和处理
+-----------------------------------------------------------------
+--
+--
+--
+--
+--g_Game_Core.CmdOp = {}
+----*************************************************************
+---- 移动命令 UNIT_MOVE
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_MOVE] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_MOVE].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_MOVE].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_MOVE].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 雇佣命令 UNIT_HIRE
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_HIRE] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_HIRE].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	if type(vOrderId) == "table" then
+--		if oOperatingTarget~=nil and type(oOperatingTarget)~="table" then	
+--			return false
+--		end
+--		if type(oOperatingTarget)~="table" then
+--
+--			return false
+--		end
+--		return true
+--	elseif oWorld.data.type=="worldmap" and type(vOrderId) == "number" then
+--		--世界地图上发送购买物品但是无具体购买ID，数量的命令视为发送移动命令
+--		--local moveX,moveY = oWorld:safeGrid(gridX,gridY)
+--		--oOperatingUnit:movetogrid(moveX,moveY,oOperatingTarget,nOperate,vOrderId)
+--		return true
+--	elseif oWorld.data.type=="town" then
+--		return true
+--	end
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_HIRE].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	if type(vOrderId)=="table" then
+--		local oTown = oOperatingTarget:gettown()
+--		local indexOfTown = vOrderId[0]
+--		local tData
+--		local buyList = vOrderId
+--		
+--		if oTown~=nil then
+--			if indexOfTown and indexOfTown~=0 and oTown.data.townData[indexOfTown]~=nil then
+--				tData = oTown.data.townData[indexOfTown]
+--			else
+--				_DEBUG_MSG("[LUA HINT] 城镇内购买出现问题,indexOfTown="..tostring(indexOfTown))
+--			end
+--		else
+--			tData = oOperatingTarget.data
+--		end
+--		if tData~=nil then
+--			
+--			--说明是要从商店购买单位
+--			if hApi.HeroHireUnit(oWorld,oOperatingUnit,oOperatingTarget,tData,buyList)==hVar.RESULT_SUCESS then
+--				return true
+--			else
+--				return false
+--			end
+--		end
+--	elseif oWorld.data.type=="worldmap" and type(vOrderId) == "number" then
+--		--世界地图上发送购买物品但是无具体购买ID，数量的命令视为发送移动命令
+--		return true
+--	elseif oWorld.data.type=="town" then
+--		local oTown = oOperatingTarget:gettown()
+--		--城镇中发送命令，视为打开指定town.data.townData[vOrderId]的购买列表
+--		if oTown and type(vOrderId)=="number" then
+--			local tData = oTown.data.townData[vOrderId]
+--			if tData~=nil then
+--				hGlobal.event:call("Event_HeroTakeShop",oWorld,oOperatingUnit,oOperatingTarget,nOperate,tData)
+--			else
+--				_DEBUG_MSG("找不到城镇的出售表格(1)",vOrderId)
+--				return false
+--			end
+--		else
+--			_DEBUG_MSG("找不到城镇建筑的数据表格",vOrderId)
+--			return false
+--		end
+--	end
+--
+--
+--	return false
+--end
+--
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_HIRE].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	if oOperatingUnit.data.IsAi ~= 1 and type(vOrderId) == "table" then
+--		hGlobal.event:call("Event_HireConfirm",oOperatingUnit,oOperatingTarget,vOrderId)
+--	elseif type(vOrderId) == "number" then
+--		local moveX,moveY = oWorld:safeGrid(gridX,gridY)
+--		g_Game_Agent.removecmd()
+--		oOperatingUnit:movetogrid(moveX,moveY,oOperatingTarget,nOperate,vOrderId)
+--	end
+--end
+----]]
+----*************************************************************
+---- 商店命令 UNIT_SHOP
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_SHOP] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_SHOP].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_SHOP].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_SHOP].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 市场命令 UNIT_MARKET
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_MARKET] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_MARKET].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_MARKET].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_MARKET].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 技能命令 SKILL_IMMEDIATE
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SKILL_IMMEDIATE] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SKILL_IMMEDIATE].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SKILL_IMMEDIATE].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SKILL_IMMEDIATE].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 技能命令 SKILL_TO_GRID
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SKILL_TO_GRID] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SKILL_TO_GRID].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SKILL_TO_GRID].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SKILL_TO_GRID].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 技能命令 SKILL_TO_UNIT
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SKILL_TO_UNIT] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SKILL_TO_UNIT].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SKILL_TO_UNIT].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SKILL_TO_UNIT].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 技能命令 SKILL_TO_UNIT_WITH_MOVE
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SKILL_TO_UNIT_WITH_MOVE] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SKILL_TO_UNIT_WITH_MOVE].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SKILL_TO_UNIT_WITH_MOVE].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SKILL_TO_UNIT_WITH_MOVE].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 朝向命令 FACE_TO_GRID
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.FACE_TO_GRID] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.FACE_TO_GRID].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.FACE_TO_GRID].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.FACE_TO_GRID].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 队伍调整命令 TEAM_SHIFT
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.TEAM_SHIFT] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.TEAM_SHIFT].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.TEAM_SHIFT].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.TEAM_SHIFT].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 战场摆放单位命令 PLACE_TO
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLACE_TO] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLACE_TO].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLACE_TO].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLACE_TO].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 战场开局命令 PLAYER_ROUND_READY
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_ROUND_READY] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_ROUND_READY].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_ROUND_READY].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_ROUND_READY].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 战场跳过回合命令 PLAYER_SKIP_UNIT_OPERATE
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_SKIP_UNIT_OPERATE] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_SKIP_UNIT_OPERATE].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_SKIP_UNIT_OPERATE].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_SKIP_UNIT_OPERATE].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 战场等待命令 UNIT_WAIT
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_WAIT] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_WAIT].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_WAIT].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_WAIT].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 战场投降命令 PLAYER_SURRENDER
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_SURRENDER] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_SURRENDER].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_SURRENDER].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_SURRENDER].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 复活命令 HERO_REVIVE
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_REVIVE] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_REVIVE].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_REVIVE].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_REVIVE].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 升级命令 UNIT_UPGRADE
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_UPGRADE] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_UPGRADE].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_UPGRADE].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.UNIT_UPGRADE].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 设置驻守命令 SET_GUARD
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SET_GUARD] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SET_GUARD].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SET_GUARD].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SET_GUARD].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 设置访问者命令 SET_VISITOR
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SET_VISITOR] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SET_VISITOR].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SET_VISITOR].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.SET_VISITOR].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 拾取道具命令 HERO_GETITEM
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_GETITEM] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_GETITEM].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_GETITEM].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_GETITEM].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 扔道具命令 HERO_DROPITEM
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_DROPITEM] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_DROPITEM].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_DROPITEM].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_DROPITEM].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 调整背包命令 HERO_SORTITEM
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_SORTITEM] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_SORTITEM].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_SORTITEM].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_SORTITEM].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 穿装备命令 HERO_SETEQUIPMENT
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_SETEQUIPMENT] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_SETEQUIPMENT].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_SETEQUIPMENT].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_SETEQUIPMENT].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+----*************************************************************
+---- 脱装备命令 HERO_REMOVEEQUIPMENT
+-----------------------------------------------------------------
+----[[
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_REMOVEEQUIPMENT] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_REMOVEEQUIPMENT].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_REMOVEEQUIPMENT].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_REMOVEEQUIPMENT].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--end
+----]]
+--
+----*************************************************************
+---- 设置英雄属性 HERO_SETATTR
+-----------------------------------------------------------------
+----根据index 来映射需要改变的英雄属性
+--local HeroAttrList = {
+--	[1] = "lea",
+--	[2] = "led",
+--	[3] = "str",
+--	[4] = "int",
+--	[5] = "con",
+--}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_SETATTR] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_SETATTR].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	if oOperatingUnit and type(vOrderId) == "table" then
+--		return true
+--	end
+--	return false
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_SETATTR].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	local oHero = oOperatingUnit:gethero()
+--	
+--	if oHero then
+--		local tempAttr = {{HeroAttrList[vOrderId[1]],vOrderId[2]}}
+--
+--		for _,v1 in pairs(tempAttr) do
+--			oHero.data.ex_attr[v1[1]] = oHero.data.ex_attr[v1[1]] + v1[2]
+--		end
+--
+--		oHero:loadattr(tempAttr)
+--		LuaSaveHeroCard()
+--		return true
+--	end
+--	return false
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_SETATTR].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	local oHero = oOperatingUnit:gethero()
+--	if oHero then
+--		hGlobal.event:event("LocalEvent_HeroInfoFram_ExAttr",oHero)
+--		return 
+--	end
+--end
+--
+--
+--
+----*************************************************************
+---- 分兵命令 
+-----------------------------------------------------------------
+--
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.ARMY_PART] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.ARMY_PART].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	if type(vOrderId) == "table" and type(oOperatingTarget) == "number" then
+--		return true
+--	else
+--		return false
+--	end
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.ARMY_PART].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	local index = vOrderId[1]
+--	local UnitID = vOrderId[2]
+--	local Num = vOrderId[3]
+--	local Maxnum = vOrderId[4]
+--	
+--	for i = 1, 7 do
+--		if oOperatingUnit.data.team[i] == nil or oOperatingUnit.data.team[i] == 0 then
+--			oOperatingUnit.data.team[i] = {UnitID,Num}
+--			oOperatingUnit.data.team[index][2] = Maxnum - Num
+--			return true
+--		end
+--	end
+--
+--	if hGlobal.LocalPlayer:getfocusworld().data.type == "worldmap" then
+--		hGlobal.UI.TeamFrameBG:show(1)
+--	end
+--	return false
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.ARMY_PART].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	hGlobal.event:event("LocalEvent_PartArmy",oWorld,oOperatingUnit,oOperatingTarget)
+--end
+--
+----*************************************************************
+---- 兵种升级命令 ARMY_UPGRADE
+-----------------------------------------------------------------
+--
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.ARMY_UPGRADE] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.ARMY_UPGRADE].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	if type(vOrderId) == "table" and type(oOperatingTarget) == "number" then
+--		return true
+--	else
+--		return false
+--	end
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.ARMY_UPGRADE].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	local index = vOrderId[1]
+--	local UnitID = vOrderId[2]
+--	local upID = vOrderId[3]
+--	local Num = vOrderId[4]
+--	local Maxnum = vOrderId[5]
+--	local varList = vOrderId[6]
+--	if Num == Maxnum then
+--		oOperatingUnit.data.team[index][1] = upID
+--		--扣除金钱
+--		for i = 1,#hVar.UNIT_PRICE_DEFINE do
+--			hGlobal.LocalPlayer:addresource(hVar.UNIT_PRICE_DEFINE[i],-1*varList[i]*Num)
+--		end
+--		--刷新界面
+--		return true
+--	else
+--		for i = 1, 7 do
+--			if oOperatingUnit.data.team[i] == 0 then
+--				oOperatingUnit.data.team[i] = {upID,Num}
+--				oOperatingUnit.data.team[index][2] = Maxnum - Num
+--				--扣除金钱
+--				for j = 1,#hVar.UNIT_PRICE_DEFINE do
+--					hGlobal.LocalPlayer:addresource(hVar.UNIT_PRICE_DEFINE[j],-1*varList[j]*Num)
+--				end
+--				--刷新界面
+--				return true
+--			elseif oOperatingUnit.data.team[i][1] == upID then
+--				oOperatingUnit.data.team[index][2] = Maxnum - Num
+--				oOperatingUnit.data.team[i][2] = oOperatingUnit.data.team[i][2]+Num
+--				--扣除金钱
+--				for j = 1,#hVar.UNIT_PRICE_DEFINE do
+--					hGlobal.LocalPlayer:addresource(hVar.UNIT_PRICE_DEFINE[j],-1*varList[j]*Num)
+--				end
+--				--刷新界面
+--				return true
+--			end
+--		end 
+--	end
+--	return false
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.ARMY_UPGRADE].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	hGlobal.event:event("LocalEvent_UpgradeArmy",oWorld,oOperatingUnit,oOperatingTarget)
+--end
+--
+--
+----*************************************************************
+---- 使用道具命令 
+-----------------------------------------------------------------
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_USEITEM] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_USEITEM].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	if type(vOrderId) == "table" then
+--		return true
+--	else
+--		return false
+--	end
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_USEITEM].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	local oHero = oOperatingUnit:gethero()
+--	local itemID = vOrderId[1]
+--	local sBagName = vOrderId[2]
+--	local nBagIndex = vOrderId[3]
+--	local tradeid = vOrderId[4]
+--	if oHero then
+--		oHero:useitem(sBagName,nBagIndex,tradeid)
+--		return true
+--	end
+--	return false
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_USEITEM].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	hGlobal.event:event("Event_HeroUseItem",oOperatingUnit:gethero(),vOrderId)
+--end
+--
+----*************************************************************
+---- 让守卫英雄离开城镇命令 HERO_LEAVETOWN
+-----------------------------------------------------------------
+--
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_LEAVETOWN] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_LEAVETOWN].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	local oTown = oOperatingTarget:gettown()
+--	if oOperatingUnit == nil and oTown then
+--		return true
+--	end
+--	return false
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_LEAVETOWN].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	local oTown = oOperatingTarget:gettown()
+--	local gU = oTown:getunit("guard")
+--	local vU = oTown:getunit("visitor")
+--	if vU == nil then
+--		oTown:setguard(nil)
+--		oTown:setvisitor(gU)
+--	elseif vU and gU then --当有守卫时，将守卫和访问者替换
+--		oTown:setguard(vU)
+--		oTown:setvisitor(gU)
+--	end
+--
+--	hGlobal.LocalPlayer:focusunit(oTown:getunit("visitor"),"worldmap")
+--	return true
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_LEAVETOWN].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	
+--end
+--
+----*************************************************************
+---- 分解道具命令 HERO_DECOMPOSEITEM
+-----------------------------------------------------------------
+----g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_DECOMPOSEITEM] = {}
+----g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_DECOMPOSEITEM].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	--if type(vOrderId) == "table" then
+--		--return true
+--	--end
+--	--return false
+----end
+----g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_DECOMPOSEITEM].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	--local fromType = vOrderId[1]
+--	--local case = type(vOrderId[2])
+--	--local oHero = oOperatingUnit:gethero()
+--	--local tPlayerData = LuaGetPlayerData()
+--	
+--	--if type(oHero)~="table" then
+--		----不存在发布命令的英雄
+--		--_DEBUG_MSG("[LUA WARNING]无英雄的分解命令禁止处理")
+--		--return false
+--	----elseif oHero.data.HeroCard~=1 and fromType~="playerbag" then
+--		----可以分解，但是不给东西
+--		----_DEBUG_MSG("[LUA WARNING]无英雄卡片的英雄只能对玩家背包中的物品进行分解")
+--		----return false
+--	--elseif type(tPlayerData.mat)~="table" then
+--		----玩家的材料表不存在
+--		--_DEBUG_MSG("[LUA WARNING]玩家材料表不存在，无法分解")
+--		--return false
+--	--end
+--	--if case=="table" then
+--		--local val = {}
+--		--local nDecomposeCount = 0
+--		--for i = 1,#vOrderId[2] do
+--			--local fromIndex = vOrderId[2][i]
+--			--local result,itemID,_,oItem = oHero:shiftitem(fromType,fromIndex,"decompose",1)
+--			--if result==hVar.RESULT_SUCESS and hVar.tab_item[itemID] and type(oItem)=="table" then
+--				--nDecomposeCount = nDecomposeCount + 1
+--				--local itemLv = (hVar.tab_item[itemID].itemLv or 1)
+--				--LuaAddDeleteItemCount(itemLv,1,itemID)
+--				--if type(oItem[4])=="table" and oItem[4][2]~=-1 then
+--					----限时道具分解后不能获得任何材料
+--				--elseif oHero.data.HeroCard~=1 and fromType~="playerbag" then
+--					----不拥有卡片的英雄分解任何玩家背包以外的装备不给材料
+--				--else
+--					----一般道具分解，产生随机资源
+--					--hApi.GetMatrialByDecomposeItem(oItem,val)
+--				--end
+--			--end
+--		--end
+--		--if nDecomposeCount>0 then
+--			--for i = 1,#tPlayerData.mat do
+--				--LuaSetPlayerMaterial(i,LuaGetPlayerMaterial(i) + (val[i] or 0))
+--			--end
+--			
+--			----if g_phone_mode ~= 0 then
+--				--hGlobal.event:event("LocalEvent_Phone_SetPlayMatVal",g_curPlayerName,hVar.OPERATE_TYPE.HERO_DECOMPOSEITEM,val)
+--			----else
+--				----hGlobal.event:event("LocalEvent_SetPlayMatVal",g_curPlayerName,hVar.OPERATE_TYPE.HERO_DECOMPOSEITEM,val)
+--			----end
+--			--return true
+--		--end
+--	--elseif case=="number" then
+--		--local val = {}
+--		--local fromIndex = vOrderId[2]
+--		--local result,itemID,_,oItem = oHero:shiftitem(fromType,fromIndex,"decompose",1)
+--		--if result==hVar.RESULT_SUCESS and hVar.tab_item[itemID] and type(oItem)=="table" then
+--			--local itemLv = (hVar.tab_item[itemID].itemLv or 1)
+--			--LuaAddDeleteItemCount(itemLv,1,itemID)
+--			--if type(oItem[4])=="table" and oItem[4][2]~=-1 then
+--				----限时道具分解后不能获得任何材料
+--			--elseif oHero.data.HeroCard~=1 and fromType~="playerbag" then
+--				----不拥有卡片的英雄分解任何玩家背包以外的装备不给材料
+--			--else
+--				----一般道具分解，产生随机资源
+--				--hApi.GetMatrialByDecomposeItem(oItem,val)
+--			--end
+--			--for i = 1,#tPlayerData.mat do
+--				--LuaSetPlayerMaterial(i,LuaGetPlayerMaterial(i) + (val[i] or 0))
+--			--end
+--			----if g_phone_mode ~= 0 then
+--				--hGlobal.event:event("LocalEvent_Phone_SetPlayMatVal",g_curPlayerName,hVar.OPERATE_TYPE.HERO_DECOMPOSEITEM,val)
+--			----else
+--				----hGlobal.event:event("LocalEvent_SetPlayMatVal",g_curPlayerName,hVar.OPERATE_TYPE.HERO_DECOMPOSEITEM,val)
+--			----end
+--			--return true
+--		--end
+--	--end
+--	--return false
+----end
+----g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_DECOMPOSEITEM].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	--LuaSaveHeroCard()
+--	--return true
+----end
+--
+----*************************************************************
+---- 强化装备 HERO_FORGEITEM
+-----------------------------------------------------------------
+----g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_FORGEITEM] = {}
+----g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_FORGEITEM].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	--if type(vOrderId) == "table" then
+--		--return true
+--	--end
+--	--return false
+----end
+--
+----g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_FORGEITEM].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	--local fromType = vOrderId[1]
+--	--local fromIndex = vOrderId[2]
+--	--local oHero = oOperatingUnit:gethero()
+--	--local tPlayerData = LuaGetPlayerData()
+--	
+--	--if type(oHero)~="table" then
+--		----不存在发布命令的英雄
+--		--_DEBUG_MSG("[LUA WARNING]无英雄的锻造命令禁止处理")
+--		--return false
+--	--elseif oHero.data.HeroCard~=1 and fromType~="playerbag" then
+--		--_DEBUG_MSG("[LUA WARNING]无英雄卡片的英雄只能对玩家背包中的物品进行锻造")
+--		--return false
+--	--elseif type(tPlayerData.mat)~="table" then
+--		----玩家的材料表不存在
+--		--_DEBUG_MSG("[LUA WARNING]玩家材料表不存在，无法锻造")
+--		--return false
+--	--end
+--	--local oItem = oHero:getbagitem(fromType,fromIndex)
+--	--if oItem and type(oItem[3])=="table" and type(oItem[3][1])=="number" and oItem[3][1]>0 then
+--		--local nEnhanceCount = 0
+--		--local itemID = oItem[1]
+--		--local itemLv = hVar.tab_item[itemID].itemLv or 1
+--		--local itemMat = hVar.ITEMLEVEL[itemLv].DEPLETE
+--		--local tRecordEnhanceID = {}
+--		--local tTempAttr = {}
+--		--local IsMeetRequire = 0
+--		----如果是身上的装备，那么先记录一下锻造之前的属性
+--		--if fromType=="equip" then
+--			--if hApi.IsAttrMeetEquipRequire(oHero, oHero.attr,oItem[1])==1 then
+--				--IsMeetRequire = 1
+--				--hApi.GetEquipmentAttr(oItem[1],oItem[3],tTempAttr,-1)
+--			--end
+--		--end
+--		--for i = 2,#oItem[3] do
+--			--if oItem[3][i] ~= 0 then
+--				--tRecordEnhanceID[#tRecordEnhanceID+1] = oItem[3][i]
+--			--end
+--		--end
+--		--for i = 2,#oItem[3] do
+--			--if oItem[3][i] == 0 then
+--				--local nEnhanceID = hApi.RandItemEnhance(itemID)
+--				--if type(nEnhanceID)=="number" and nEnhanceID>0 then
+--					--nEnhanceCount = nEnhanceCount + 1
+--					--oItem[3][i] = nEnhanceID
+--					----设置玩家表中的材料数
+--					--for n = 1,#tPlayerData.mat do
+--						--LuaSetPlayerMaterial(n,LuaGetPlayerMaterial(n) - (itemMat[n] or 0))
+--					--end
+--					----if g_phone_mode ~= 0 then
+--						
+--						--hGlobal.event:event("LocalEvent_Phone_SetPlayMatVal",g_curPlayerName,hVar.OPERATE_TYPE.HERO_FORGEITEM)
+--						--hGlobal.event:event("LocalEvent_phone_afterForg",{itemID,tRecordEnhanceID,{nEnhanceID}})
+--					----else
+--						----hGlobal.event:event("LocalEvent_SetPlayMatVal",g_curPlayerName,hVar.OPERATE_TYPE.HERO_FORGEITEM)
+--						----hGlobal.event:event("LocalEvent_afterForg",{itemID,tRecordEnhanceID,{nEnhanceID}})
+--					----end
+--					
+--				--else
+--					--_DEBUG_MSG("[LUA WARNING]锻造失败，没有出现可用的锻造属性")
+--				--end
+--				--break
+--			--end
+--		--end
+--
+--		----如果 rewardEx 的最后一项 为0 则解锁道具 否则都设置道具为 锁定状态
+--		--if oItem[3][#oItem[3]]==0 then
+--			--hApi.SetItemForgedLock(oItem,0)
+--		--else
+--			--hApi.SetItemForgedLock(oItem,1)
+--		--end
+--		----如果成功锻造
+--		--if nEnhanceCount>0 then
+--			--local IsUpdateAttr = 0
+--			--if fromType=="equip" then
+--				--IsUpdateAttr = 1
+--				--if IsMeetRequire==1 then
+--					--hApi.GetEquipmentAttr(oItem[1],oItem[3],tTempAttr,1)
+--				--end
+--				--if #tTempAttr>0 then
+--					--oHero:loadattr(tTempAttr)
+--				--end
+--			--end
+--			--oHero:updatebag({{fromType,fromIndex}})
+--			--hGlobal.event:call("Event_HeroSortItem",oHero,IsUpdateAttr,hVar.OPERATE_TYPE.HERO_FORGEITEM)
+--			--return true
+--		--end
+--	--end
+--	--return false
+----end
+--
+----g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_FORGEITEM].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	--LuaSaveHeroCard()
+--	--local Key_ForgedCount = xlGetIntFromKeyChain(g_curPlayerName.."forged")
+--	--if Key_ForgedCount == 0 then
+--		--xlSaveIntToKeyChain(g_curPlayerName.."forged",LuaGetForgeCount())
+--	--else
+--		--xlSaveIntToKeyChain(g_curPlayerName.."forged",Key_ForgedCount+1)
+--	--end
+--	--return true
+----end
+--
+----*************************************************************
+---- 重铸装备 HERO_RECASTITEM
+-----------------------------------------------------------------
+--
+----g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_RECASTITEM] = {}
+----g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_RECASTITEM].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	--if type(vOrderId) == "table" then
+--		--return true
+--	--end
+--	--return false
+----end
+----g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_RECASTITEM].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	--local fromType = vOrderId[1]
+--	--local fromIndex = vOrderId[2]
+--	--local RecastTable = vOrderId[3]
+--	--local oHero = oOperatingUnit:gethero()
+--	--local tPlayerData = LuaGetPlayerData()
+--
+--	--if type(oHero)~="table" then
+--		----不存在发布命令的英雄
+--		--_DEBUG_MSG("[LUA WARNING]无英雄的重铸命令禁止处理")
+--		--return false
+--	--elseif oHero.data.HeroCard~=1 and fromType~="playerbag" then
+--		--_DEBUG_MSG("[LUA WARNING]无英雄卡片的英雄只能对玩家背包中的物品进行重铸")
+--		--return false
+--	--elseif type(tPlayerData.mat)~="table" then
+--		----玩家的材料表不存在
+--		--_DEBUG_MSG("[LUA WARNING]玩家材料表不存在，无法锻造")
+--		--return false
+--	--end
+--	----重铸装备栏中的道具
+--	--local oItem = oHero:getbagitem(fromType,fromIndex)
+--	--if oItem and type(oItem[3])=="table" and type(oItem[3][1])=="number" and oItem[3][1]>0 then
+--		--local tTempAttr = {}
+--		--local IsMeetRequire = 0
+--		--local IsUpdateAttr = 0
+--		----如果是身上的装备，那么先记录一下锻造之前的属性
+--		--if fromType=="equip" then
+--			--if hApi.IsAttrMeetEquipRequire(oHero, oHero.attr,oItem[1])==1 then
+--				--IsMeetRequire = 1
+--				--hApi.GetEquipmentAttr(0,oItem[3],tTempAttr,-1)
+--			--end
+--		--end
+--		----锻造属性设为空
+--		--if RecastTable == nil then
+--			--for i = 2,oItem[3][1]+1 do
+--				--oItem[3][i] = 0
+--			--end
+--		--else
+--			--for i = 1,#RecastTable do
+--				--if RecastTable[i]+1 >= 2 and RecastTable[i]+1 <= oItem[3][1]+1 then
+--					--oItem[3][RecastTable[i]+1] = 0
+--				--end
+--			--end
+--		--end
+--		----移除重铸掉的属性
+--		--if #tTempAttr>0 then
+--			--IsUpdateAttr = 1
+--			--oHero:loadattr(tTempAttr)
+--		--end
+--		--oHero:updatebag({{fromType,fromIndex}})
+--		
+--		--hGlobal.event:event("LocalEvent_afterRecast",g_curPlayerName)
+--		--hGlobal.event:call("Event_HeroSortItem",oHero,IsUpdateAttr,hVar.OPERATE_TYPE.HERO_RECASTITEM)
+--		--return true
+--	--end
+--	--return false
+----end
+----g_Game_Core.CmdOp[hVar.OPERATE_TYPE.HERO_RECASTITEM].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	--LuaSaveHeroCard()
+--	--return true
+----end
+--
+--
+----*************************************************************
+---- 设置战术技能书命令 PLAYER_SETSKILLBOOK
+-----------------------------------------------------------------
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_SETSKILLBOOK] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_SETSKILLBOOK].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	if type(vOrderId) == "table" then
+--		if type(vOrderId[1]) == "number" and type(vOrderId[2]) == "number" then
+--			return true
+--		end
+--	end
+--	return false
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_SETSKILLBOOK].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	local index = vOrderId[1]
+--	local skillID = vOrderId[2]
+--	local skillLv = vOrderId[3]
+--	
+--	if LuaSetActiveBattlefieldSkill(index,skillID,skillLv) == 1 then
+--		return true
+--	else
+--		print("set skill book over ...")
+--		return false
+--	end
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_SETSKILLBOOK].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	return true
+--end
+--
+--
+----*************************************************************
+---- 删除战术技能卡 PLAYER_DELETEBFSKILLCARD
+-----------------------------------------------------------------
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_DELETEBFSKILLCARD] = {}
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_DELETEBFSKILLCARD].checkoperate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	if type(vOrderId) == "table" then
+--		if type(vOrderId[1]) == "number" and type(vOrderId[2]) == "number" and type(vOrderId[3]) == "number" and type(vOrderId[4]) == "number" then
+--			return true
+--		end
+--	end
+--	return false
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_DELETEBFSKILLCARD].operate = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	local skillID = vOrderId[1]
+--	local skillLv = vOrderId[2]
+--	local skillNum = vOrderId[3]
+--	local index = vOrderId[4]
+--	
+--	local skillMaxLv = hVar.tab_tactics[skillID].level or 1
+--
+--	if LuaResolveBFSkillCount(skillID,skillLv,skillNum) == 1 then
+--		local score = hVar.BFSKILL2SOCRE[skillMaxLv][skillLv]
+--		LuaAddPlayerScore(tonumber(score))
+--		LuaSavePlayerData(g_localfilepath,g_curPlayerName,Save_PlayerData,Save_PlayerLog)
+--		return true
+--	else
+--		print("set skill book over ...")
+--		return false
+--	end
+--end
+--g_Game_Core.CmdOp[hVar.OPERATE_TYPE.PLAYER_DELETEBFSKILLCARD].runcall = function(self,oWorld,nOperate,oOperatingUnit,vOrderId,oOperatingTarget,gridX,gridY,worldX,worldY)
+--	local index = vOrderId[1]
+--	local skillID = vOrderId[2]
+--	local skillLv = vOrderId[3]
+--	local index = vOrderId[4]
+--
+--	--在游戏中弹出战术技能卡界面
+--	if g_phone_mode ~= 0 then
+--		hGlobal.event:event("localEvent_afterPhoneDeleteBFSkillCardGame",index)
+--	else
+--		hGlobal.event:event("localEvent_afterDeleteBFSkillCard",index)
+--	end
+--	return true
+--end

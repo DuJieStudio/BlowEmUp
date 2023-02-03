@@ -1,0 +1,33 @@
+map_background = "world/start_001"
+units_list = {}
+
+map_area = {}
+units_list.b_random_map = true
+units_list.random_RoomClass = {
+	MinRoomSize = 32, --add wall width
+	MaxRoomSize = 64,
+	CornerSize = 2,
+    WallSize = 6,
+    DoorSize = 6,
+	DistanceOfWalls = 10
+}
+units_list.random_ObjectInfo = {
+	wallX = {
+		objId = 5063,
+		offsetX = 0,
+		offsetY = 0,
+	},
+	wallY = {
+		objId = 5064,
+		offsetX = 0,
+		offsetY = 15,
+	},
+	corner = {
+		objId = 5065,
+		offsetX = 0,
+		offsetY = 0,
+	},
+	
+}
+
+units_list.random_seed = 1234568

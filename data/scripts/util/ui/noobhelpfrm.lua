@@ -1,0 +1,949 @@
+--g_NoobHelp_CloseFunc = {}		--新手提示专用函数存放表
+--hApi.CloseNoobHelp = function()
+--	if #g_NoobHelp_CloseFunc>0 then
+--		for i = #g_NoobHelp_CloseFunc,1,-1 do
+--			if type(g_NoobHelp_CloseFunc[i])=="function" then
+--				g_NoobHelp_CloseFunc[i]()
+--			end
+--			g_NoobHelp_CloseFunc[i] = nil
+--		end
+--	end
+--end
+--
+--hApi.ShowHint = function(bindTag,sHint,x,y,align)
+--	if hGlobal.LocalPlayer==nil then
+--		return
+--	end
+--	local w = hGlobal.LocalPlayer:getfocusworld()
+--	if w==nil then
+--		return
+--	end
+--	local frm = hUI.panel:new({
+--		bindTag = bindTag,
+--		world = w,
+--		parent = hUI.__static.uiLayer,
+--		child = {
+--			{
+--				__UI = "bar",
+--				__NAME = "bar",
+--				model = "UI:ValueBar_Back",
+--				align = "LC",
+--			},
+--			{
+--				__UI = "label",
+--				__NAME = "label",
+--				x = 16,
+--				align = "LC",
+--				size = 28,
+--				font = hVar.FONTC,
+--				text = sHint,
+--			},
+--		},
+--	})
+--
+--	local w = frm.childUI["label"].handle.s:getContentSize().width + 32
+--	if align=="R" then
+--		x = x - w
+--	elseif align=="M" then
+--		x = x - math.floor(w/2)
+--	end
+--
+--	frm.childUI["bar"]:setW(w)
+--	frm.handle._n:setPosition(x,y)
+--	frm.handle._n:getParent():reorderChild(frm.handle._n,-1)
+--
+--	local a = CCMoveBy:create(2.0,ccp(0,6))
+--	local aR = a:reverse()
+--	local seq = tolua.cast(CCSequence:createWithTwoActions(a,aR),"CCActionInterval")
+--	local seq = tolua.cast(CCJumpBy:create(1.5,ccp(0,0),6,1),"CCActionInterval")
+--	frm.handle._n:runAction(CCRepeatForever:create(seq))
+--
+--	return frm
+--end
+--
+--hApi.AddTipUI = function(pNode,x,y,z,sText,sAlign,jump)
+--	local oLabel = hUI.label:new({
+--		parent = pNode,
+--		x = x+16,
+--		y = y,
+--		z = z,
+--		align = "LC",
+--		size = 28,
+--		font = hVar.FONTC,
+--		text = sText,
+--	})
+--	local w = oLabel.handle.s:getContentSize().width + 32
+--	if sAlign=="R" then
+--		x = x - w
+--		hUI.uiSetXY(oLabel,x+16,y)
+--	elseif sAlign=="M" then
+--		x = x - math.floor(w/2)
+--		hUI.uiSetXY(oLabel,x+16,y)
+--	end
+--
+--	local oBar = hUI.bar:new({
+--		parent = oLabel.handle._n,
+--		model = "UI:ValueBar_Back",
+--		align = "LC",
+--		x = -16,
+--		y = -16,
+--		z = -1,
+--	})
+--	oBar:setW(w)
+--	if jump~=0 then
+--		local a = CCMoveBy:create(2.0,ccp(0,6))
+--		local aR = a:reverse()
+--		local seq = tolua.cast(CCSequence:createWithTwoActions(a,aR),"CCActionInterval")
+--		local seq = tolua.cast(CCJumpBy:create(1.5,ccp(0,0),6,1),"CCActionInterval")
+--		oLabel.handle._n:runAction(CCRepeatForever:create(seq))
+--	end
+--	hUI.deleteUIObject(oBar)
+--	hUI.deleteUIObject(oLabel)
+--end
+----强制聚焦新手引导
+--hApi.FocusGuideUITarget = function(oWorld,oUnit)
+--	if oWorld.data.type=="worldmap" then
+--		if oUnit:isInScreen(100,100)~=hVar.RESULT_SUCESS then
+--			local cx,cy = oUnit:getXY()
+--			local fx = hApi.NumBetween(cx,hVar.SCREEN.w/2,oWorld.data.sizeW-hVar.SCREEN.w/2)
+--			local fy = hApi.NumBetween(cy,hVar.SCREEN.h/2,oWorld.data.sizeH-hVar.SCREEN.h/2)
+--			hApi.setViewNodeFocus(fx,fy)
+--			return hVar.RESULT_SUCESS
+--		else
+--			return hVar.RESULT_FAIL
+--		end
+--	elseif oWorld.data.type=="town" then
+--		if oUnit:isInScreen(0,100)~=hVar.RESULT_SUCESS then
+--			local cx,cy = oUnit:getXY()
+--			local fx = cx
+--			local fy = cy
+--			local tParam = hVar.DEVICE_PARAM[g_phone_mode]
+--			if tParam then
+--				local bx,sw,by,sh,ox,oy = 0,0,0,0,0,0
+--				local w,h = oWorld.data.sizeW,oWorld.data.sizeH
+--				if tParam.town_view then
+--					bx,sw,by,sh,ox,oy = unpack(tParam.town_view)
+--				end
+--				local vw = hVar.SCREEN.w
+--				if vw>=w then
+--					fx = w/2 + ox
+--				else
+--					fx = hApi.NumBetween(cx,vw/2,w-vw/2)
+--				end
+--				local vh = hVar.SCREEN.h
+--				if vh>=h then
+--					fy = h/2 + oy
+--				else
+--					fy = hApi.NumBetween(cx,vh/2,h-vw/2)
+--				end
+--			end
+--			hApi.setViewNodeFocus(fx,fy)
+--			return hVar.RESULT_SUCESS
+--		else
+--			return hVar.RESULT_FAIL
+--		end
+--	end
+--end
+--
+--hApi.GetTownUnitById = function(id,state)
+--	local oWorld = hGlobal.LocalPlayer:getfocusworld()
+--	if oWorld and oWorld.data.type=="town" then
+--		local oUnitT = oWorld:getlordU("building")
+--		if oUnitT then
+--			local oTown = oUnitT:gettown()
+--			if oTown and type(oTown.data.unitList)=="table" then
+--				local tUnitList = oTown.data.unitList
+--				local nIndex = 0
+--				for i = 1,#tUnitList do
+--					if id==tUnitList[i][2] and (state==nil or oTown.data.upgradeState[i]==state) then
+--						nIndex = i
+--						break
+--					end
+--				end
+--				--并未找到单位
+--				if nIndex==0 then
+--					return
+--				end
+--				local oTarget
+--				oWorld:enumunit(function(u)
+--					if u.data.indexOfCreate==nIndex then
+--						oTarget = u
+--					end
+--				end)
+--				if oTarget~=nil then
+--					return oTarget,oTown
+--				end
+--			end
+--		end
+--	end
+--end
+--
+----强引导UI处理
+--hApi.CheckGuideUI = function(oUI,screenX,screenY)
+--	--当存在对话界面时不做处理
+--	if hGlobal.UI.TalkFrame and hGlobal.UI.TalkFrame.data.show==1 then
+--		return
+--	end
+--	if oUI.classname=="panel" then
+--		local tData = oUI.data.userparam
+--		local oWorld = hGlobal.LocalPlayer:getfocusworld()
+--		if oWorld and type(tData)=="table" then
+--			local worldX,worldY = hApi.view2world(screenX,hVar.SCREEN.h-screenY)
+--			if tData.opr=="SelectUnit" then
+--				local oUnit = hClass.unit:find(tData.unitID)
+--				if oUnit~=nil then
+--					if oWorld.data.type=="worldmap" then
+--						if hApi.FocusGuideUITarget(oWorld,oUnit)==hVar.RESULT_SUCESS then
+--							return 0
+--						end
+--					end
+--					local cha_tab = {hApi.GetWorldChaByHit(oWorld.data.scenetype,worldX,worldY)}
+--					if #cha_tab>0 then
+--						for i = 1,#cha_tab do
+--							if cha_tab[i]==oUnit.handle._c then
+--								oUI:settick(1)
+--								hUI.Disable(150)
+--								hGlobal.event:event("LocalEvent_HitOnTarget",oWorld,oUnit,worldX,worldY)
+--								break
+--							end
+--						end
+--					end
+--					return 0
+--				else
+--					p:settick(1)
+--				end
+--			end
+--		end
+--	elseif oUI.classname=="node" then
+--		if hApi.IsInBox(screenX,screenY,{oUI.data.x-oUI.data.w/2,oUI.data.y+oUI.data.h/2,oUI.data.w,oUI.data.h}) then
+--		else
+--			return 0
+--		end
+--	end
+--end
+--
+----显示强引导UI(指定单位)
+--local __CheckNum2 = {"number","number"}
+--hApi.ShowGuideUI = function(oUnit,sText,plusX,plusY,oriX,oriY,textX,textY)
+--	local oWorld = oUnit:getworld()
+--	if oWorld==nil then
+--		return
+--	end
+--	if type(sText)~="string" then
+--		sText = "HINT"
+--	end
+--	if string.find(sText,"#NAME#") then
+--		local sUnitName = hApi.GetUnitName(oUnit)
+--		if type(sUnitName)=="string" then
+--			sText = string.gsub(sText,"#NAME#",sUnitName)
+--		end
+--	end
+--	local sIcon = "MODEL_EFFECT:way_arrow"
+--	local cx,cy
+--	local px,py
+--	local cz
+--	if oUnit:gettown() then
+--		cx,cy = oUnit:getstopXY()
+--		cz = cy
+--		px,py = cx,cy
+--	else
+--		cx,cy = oUnit:getXY()
+--		cz = cy
+--		px,py = cx,cy
+--		local tx,ty,w,h = oUnit:getbox()
+--		if oUnit.data.type==hVar.UNIT_TYPE.BUILDING then
+--			py = cy + ty + w/2 + 4
+--			cy = cy + 30
+--		else
+--			py = cy + ty + 4
+--		end
+--	end
+--	--local cx,cy = oUnit:getXY()
+--	--local cz = cy
+--	--local px,py = cx,cy
+--	--local tx,ty,w,h = oUnit:getbox()
+--	--if oUnit.data.type==hVar.UNIT_TYPE.BUILDING then
+--		--py = cy + ty + w/2 + 4
+--		--cy = cy + 30
+--	--else
+--		--py = cy + ty + 4
+--	--end
+--	--如果是世界地图，且不在屏幕里面，自动聚焦过去
+--	if oWorld.data.type=="worldmap" then
+--		if not(oUnit:isInScreen()) then
+--			hApi.setViewNodeFocus(cx,cy)
+--		end
+--	end
+--	if type(plusX)~="number" then
+--		plusX = 0
+--	end
+--	if type(plusY)~="number" then
+--		plusY = 0
+--	end
+--	local tgrData = oUnit:gettriggerdata()
+--	if tgrData and type(tgrData.GuideUIOffset)=="table" and hApi.CheckParamType(__CheckNum2,tgrData.GuideUIOffset[1],tgrData.GuideUIOffset[2]) then
+--		plusX = plusX + tgrData.GuideUIOffset[1]
+--		plusY = plusY + tgrData.GuideUIOffset[2]
+--	end
+--	local oPanel = hUI.panel:new({
+--		userparam = {opr = "SelectUnit",unitID = oUnit.ID},
+--		world = oWorld,
+--		bindTag = "GUIDE_UI",
+--		x = px + plusX,
+--		y = py - plusY,
+--		tick = 9999999,
+--		child = {
+--			{
+--				__UI = "image",
+--				__NAME = "HintIcon",
+--				mode = "image",
+--				model = sIcon,
+--				align = "MB",
+--				motion = {
+--					{0,-5,0.4},
+--					{0,0,0.4},
+--				},
+--			},
+--		},
+--	})
+--	local img = oPanel.childUI["HintIcon"]
+--	local nSize = 22
+--	if g_phone_mode==1 then
+--		--IP4
+--		if oWorld.data.type=="town" then
+--			nSize = 26
+--		else
+--			nSize = 20
+--		end
+--	elseif g_phone_mode==2 then
+--		--IP5
+--		if oWorld.data.type=="town" then
+--			nSize = 26
+--		else
+--			nSize = 22
+--		end
+--	else
+--		--IPad
+--		if oWorld.data.type=="town" then
+--			nSize = 26
+--		else
+--			nSize = 30
+--		end
+--	end
+--	img.childUI["label"] = hUI.label:new({
+--		parent = img.handle.s,
+--		font = hVar.FONTC,
+--		text = sText,
+--		size = nSize,
+--		border = 1,
+--		x = img.data.w/2 + (textX or 0),
+--		y = img.data.h + 2 + (textY or 0),
+--		align = "MB",
+--	})
+--	local texture = img.childUI["label"].handle.s:getTexture()
+--	if texture~=nil then
+--		local tSize = texture:getContentSize()
+--		img.childUI["labelBG"] = hUI.bar:new({
+--			parent = img.handle.s,
+--			model = "UI:IMG_TipBar",
+--			w = tSize.width + 20,
+--			h = tSize.height + 16,
+--			y = img.data.h + 2 + tSize.height/2 + (textY or 0),
+--			x = img.data.w/2 + (textX or 0),
+--			z = -1,
+--		})
+--	end
+--	local _,_,cw,ch = oUnit:getbox()
+--	oPanel.childUI["HintEffect"] = hUI.image:new({
+--		parent = oWorld.handle.worldLayer,
+--		model = "misc/circle.png",
+--		z = cz-1,
+--		x = cx+(oriX or 0) + plusX,
+--		y = -1*cy+(oriY or 0) + plusY,
+--		w = math.min(128,cw+8),
+--	})
+--end
+--
+--hVar.TGR_NOOB_TIP = {}
+--hGlobal.NOOB_TIP_UI = {}
+--
+--hApi.InitNoobTip = function(map_name,IsCreatedFromLoad)
+--	hApi.CloseNoobHelp()
+--	if hVar.TGR_NOOB_TIP[map_name] then
+--		return hVar.TGR_NOOB_TIP[map_name](map_name,IsCreatedFromLoad)
+--	end
+--end
+--
+--local _tgr = hVar.TGR_NOOB_TIP
+-----------------------------------------
+----桃园结义
+-----------------------------------------
+--_tgr["world/level_tyjy"] = function(map_name,IsCreatedFromLoad)
+--	--新手提示5(长按技能按钮显示图标)
+--	local nIndex = 5
+--	if hVar.OPTIONS.TEST_NOOB_TIP==1 or LuaGetPlayerGuideState(g_curPlayerName,map_name,nIndex)~=1 then
+--		--战场中常按按钮显示技能面板的提示
+--		local IsClosed = 0
+--		local CloseHint = function()
+--			if IsClosed~=1 then
+--				IsClosed = 1
+--				hGlobal.event:listen("Event_BattlefieldUnitActived","__BF__HelpHint_ShowSkillFrame",nil)
+--				hGlobal.event:listen("LocalEvent_ShowSkillInfoFram","__BF__CloseHelpHint_ShowSkillFrame",nil)
+--			end
+--		end
+--		g_NoobHelp_CloseFunc[#g_NoobHelp_CloseFunc+1] = CloseHint
+--		hGlobal.event:listen("Event_BattlefieldUnitActived","__BF__HelpHint_ShowSkillFrame",function(oWorld,oRound,oUnit)
+--			if oUnit.data.id==5000 then
+--				local tWorld = hApi.SetObject({},oWorld)
+--				hApi.addTimerOnce("__BF__ShowHelpHint",100,function()
+--					local w = hApi.GetObject(tWorld)
+--					if w then
+--						local x,y = hVar.SCREEN.w-64,200
+--						if g_phone_mode==1 then
+--							--IP4
+--							x = hVar.SCREEN.w-64
+--							y = 140
+--						elseif g_phone_mode==2 then
+--							--IP5
+--							x = hVar.SCREEN.w-110
+--							y = 260
+--						end
+--						hApi.ShowHint("__NOOBHINT__ShowSkillInfoFrm",hVar.tab_string["__HINT__HoldToShowSkillInfo"],x,y,"R")
+--					end
+--				end)
+--			else
+--				local panel = oWorld.worldUI["__NOOBHINT__ShowSkillInfoFrm"]
+--				if panel then
+--					panel:settick(1)
+--				end
+--			end
+--		end)
+--		hGlobal.event:listen("LocalEvent_ShowSkillInfoFram","__BF__CloseHelpHint_ShowSkillFrame",function()
+--			local w = hGlobal.LocalPlayer:getfocusworld()
+--			if w and w.data.type=="battlefield" then
+--				local panel = w.worldUI["__NOOBHINT__ShowSkillInfoFrm"]
+--				if panel then
+--					panel:settick(1)
+--				end
+--				--玩家已经学会这个操作了
+--				LuaSetPlayerGuideState(g_curPlayerName,map_name,nIndex)
+--				--你太聪明了！
+--				CloseHint()
+--			end
+--		end)
+--	end
+--
+--	--新手提示6(向左拖拽可以显示队伍面板)
+--	local nIndex = 6
+--	if hVar.OPTIONS.TEST_NOOB_TIP==1 or LuaGetPlayerGuideState(g_curPlayerName,map_name,nIndex)~=1 then
+--		--单位加入队伍后，提示显示面板
+--		local IsClosed = 0
+--		local CloseHint = function()
+--			if IsClosed~=1 then
+--				IsClosed = 1
+--				hGlobal.event:listen("Event_UnitJoinTeam","__WM__HelpHint_DragHeroIcon",nil)
+--				hGlobal.event:listen("LocalEvent_DragOutHeroPhoto","__WM__CloseHelpHint_DragHeroIcon",nil)
+--				hGlobal.event:listen("LocalEvent_PlayerFocusWorld","__WM__CloseHelpHint_DragHeroIcon",nil)
+--			end
+--		end
+--		g_NoobHelp_CloseFunc[#g_NoobHelp_CloseFunc+1] = CloseHint
+--		hGlobal.event:listen("Event_UnitJoinTeam","__WM__HelpHint_DragHeroIcon",function(oUnit,oJoinUnit,tTeamAdd)
+--			if oUnit.data.id==5000 and oJoinUnit.data.id~=10021 and hGlobal.UI.HeroFrame~=nil and hGlobal.LocalPlayer:getfocusworld()==oUnit:getworld() then
+--				local oHero = oUnit:gethero()
+--				local oWorld = oUnit:getworld()
+--				if oHero and oWorld and oHero.heroUI["btnIcon"] and oWorld==hGlobal.LocalPlayer:getfocusworld() then
+--					local icon = oHero.heroUI["btnIcon"]
+--					hApi.ShowHint("__NOOBHINT__DragHeroIcon",hVar.tab_string["__HINT__DragToShowUnitList"],hVar.SCREEN.w-6,icon.data.y+hGlobal.UI.HeroFrame.data.y-icon.data.w/2-32,"R")
+--				end
+--			end
+--		end)
+--		hGlobal.event:listen("LocalEvent_DragOutHeroPhoto","__WM__CloseHelpHint_DragHeroIcon",function(oUnit,nSlot,posX,posY)
+--			--玩家已经学会这个操作了
+--			LuaSetPlayerGuideState(g_curPlayerName,map_name,nIndex)
+--			--你太聪明了！
+--			CloseHint()
+--			hClass.world:enum(function(w)
+--				local panel = w.worldUI["__NOOBHINT__DragHeroIcon"]
+--				if panel then
+--					panel:settick(300)
+--				end
+--			end)
+--		end)
+--		hGlobal.event:listen("LocalEvent_PlayerFocusWorld","__WM__CloseHelpHint_DragHeroIcon",function(sSceneType,oWorld,oMap)
+--			hClass.world:enum(function(w)
+--				local panel = w.worldUI["__NOOBHINT__DragHeroIcon"]
+--				if panel then
+--					panel:del()
+--				end
+--			end)
+--		end)
+--	end
+--
+--	--新手提示7(当获得青铜剑后，打开英雄查看面板，会提示从道具栏拖动武器至装备栏的提示)
+--	local nIndex = 7
+--	if hVar.OPTIONS.TEST_NOOB_TIP==1 or LuaGetPlayerGuideState(g_curPlayerName,map_name,nIndex)~=1 then
+--		local IsClosed = 0
+--		local CloseHint = function()
+--			if IsClosed~=1 then
+--				IsClosed = 1
+--				hGlobal.event:listen("LocalEvent_showHeroCardFrm","_HelpHint_newHeroCardNewFrm",nil)
+--				hGlobal.event:listen("Event_HeroSortItem","_HelpHint_HeroSetEquipment",nil)
+--			end
+--		end
+--		g_NoobHelp_CloseFunc[#g_NoobHelp_CloseFunc+1] = CloseHint
+--		--tyjy 的 青铜剑拖动提示
+--		local _CODE_ShowPickGuideUI = function(oWorld,oHero,nItemId)
+--			local tabI = hVar.tab_item[nItemId]
+--			--必须是可以装备的道具
+--			if not(tabI and hVar.ITEM_EQUIPMENT_UI_INDEX[tabI.type or -1]) then
+--				return
+--			end
+--			--必须能装备
+--			if hApi.IsAttrMeetEquipRequire(oHero, oHero.attr,nItemId)~=1 then
+--				return
+--			end
+--			local tEquipPos = hVar.NEW_EQUIPAGE_POS[1][hVar.ITEM_EQUIPMENT_UI_INDEX[tabI.type]]
+--			local nFromX,nFromY = hGlobal.UI.HeroCardNewFrm.data.x + hVar.ITEMPAGE_POS[1][1][1],hGlobal.UI.HeroCardNewFrm.data.y + hVar.ITEMPAGE_POS[1][1][2]
+--			local nToX,nToY = hGlobal.UI.HeroCardNewFrm.data.x + tEquipPos[1],hGlobal.UI.HeroCardNewFrm.data.y + tEquipPos[2]
+--			local offY = 20
+--			nToY = nToY + offY
+--			local nNodeX = nFromX
+--			local oNode = hUI.node:new({
+--				x = nFromX,
+--				y = nFromY,
+--				z = 99,
+--				w = 80,
+--				h = 80,
+--			})
+--			local fDur = math.min(0.9,math.max(0.5,math.abs(nToY-nFromY)/350))
+--			hUI.deleteUIObject(hUI.image:new({
+--				parent = oNode.handle._n,
+--				model = "UI:DragHand",
+--				x = nFromX - nNodeX,
+--				y = -32,
+--				w = 48,
+--				--h = 84,
+--				motion = {
+--					{nToX-nFromX,nToY-nFromY-12,fDur},
+--					{nToX-nFromX,nToY-nFromY-12,fDur},
+--					{0,0-12,0.3},
+--				},
+--			}))
+--			hUI.UIBreath(oNode.handle._n,2.2,nFromX - nNodeX,0)
+--			oWorld.worldUI["GUIDE_UI"] = oNode
+--			hApi.AddTipUI(oNode.handle._n,nFromX - nNodeX,nToY - nFromY + 36,0,hApi.ConvertMapString("$_tyjy_guide",5),"C",0)
+--		end
+--
+--		hGlobal.event:listen("LocalEvent_showHeroCardFrm","_HelpHint_newHeroCardNewFrm",function(oHero,nHeroId,mapbag,can_use_grid,isAtcive)
+--			local oWorld = hGlobal.WORLD.LastWorldMap
+--			if oHero and oWorld then
+--				if type(oHero.data.item[1]) == "table" then
+--					_CODE_ShowPickGuideUI(oWorld,oHero,oHero.data.item[1][1])
+--				end
+--			end
+--		end)
+--		
+--		hGlobal.event:listen("Event_HeroSortItem","_HelpHint_HeroSetEquipment",function(oHero,IsUpdateAttr,ByWhatOperate)
+--			if IsUpdateAttr == 1 then
+--				local oWorld = hGlobal.WORLD.LastWorldMap
+--				if oWorld and type(oWorld.worldUI["GUIDE_UI"]) == "table" then
+--					oWorld.worldUI["GUIDE_UI"]:del()
+--					oWorld.worldUI["GUIDE_UI"] = nil
+--					--你太聪明了！
+--					CloseHint()
+--					--玩家已经学会这个操作了(只教一遍，后面不会就不管了)
+--					LuaSetPlayerGuideState(g_curPlayerName,map_name,nIndex)
+--				end
+--			end
+--		end)
+--	end
+--end
+--
+-----------------------------------------
+----小试牛刀
+-----------------------------------------
+--_tgr["world/level_xsnd"] = function(map_name,IsCreatedFromLoad)
+--	--新手提示2(占领城镇后，再次点击可以进入查看)
+--	local nIndex = 2
+--	if hVar.OPTIONS.TEST_NOOB_TIP==1 or LuaGetPlayerGuideState(g_curPlayerName,map_name,nIndex)~=1 then
+--		local IsClosed = 0
+--		local CloseHint = function()
+--			if IsClosed~=1 then
+--				IsClosed = 1
+--				hGlobal.event:listen("Event_HeroOccupy","__WM__HelpHint_LookInTown",nil)
+--				hGlobal.event:listen("LocalEvent_PlayerFocusWorld","__WM__HelpHint_LookInTown",nil)
+--			end
+--		end
+--		g_NoobHelp_CloseFunc[#g_NoobHelp_CloseFunc+1] = CloseHint
+--		hGlobal.event:listen("Event_HeroOccupy","__WM__HelpHint_LookInTown",function(oWorld,oUnit,oTarget)
+--			if oTarget.data.id==40003 then
+--				hApi.ShowGuideUI(oTarget,hApi.ConvertMapString("$_xsnd_guide",2))
+--			end
+--		end)
+--		hGlobal.event:listen("LocalEvent_PlayerFocusWorld","__WM__HelpHint_LookInTown",function(sSceneType,oWorld,oMap)
+--			if oWorld and oWorld.data.type=="town" then
+--				--玩家已经学会这个操作了
+--				LuaSetPlayerGuideState(g_curPlayerName,map_name,nIndex)
+--				--你太聪明了！
+--				CloseHint()
+--				--显示英雄队伍
+--				local oVisitor = oWorld:getlordU("visitor")
+--				if oVisitor then
+--					--hGlobal.event:event("LocalEvent_DragOutHeroPhoto",oVisitor,1,hVar.SCREEN.w - 76,130)
+--				end
+--			end
+--		end)
+--	end
+--
+--	--新手提示3(进入城市后引导玩家建造观星台)
+--	local nIndex = 3
+--	if hVar.OPTIONS.TEST_NOOB_TIP==1 or LuaGetPlayerGuideState(g_curPlayerName,map_name,nIndex)~=1 then
+--		local IsClosed = 0
+--		local CloseHint = function()
+--			if IsClosed~=1 then
+--				IsClosed = 1
+--				hGlobal.event:listen("LocalEvent_PlayerFocusWorld","__WM__HelpHint_BuildGXT",nil)
+--				hGlobal.event:listen("Event_BuildingUpgrade","__WM__HelpHint_BuildGXT",nil)
+--			end
+--		end
+--		g_NoobHelp_CloseFunc[#g_NoobHelp_CloseFunc+1] = CloseHint
+--		hGlobal.event:listen("LocalEvent_PlayerFocusWorld","__WM__HelpHint_BuildGXT",function(sSceneType,oWorld,oMap)
+--			if oWorld and oWorld.data.type=="town" then
+--				--如果观星台处于未建造状态，则提示玩家建造观星台
+--				local oTarget,oTown = hApi.GetTownUnitById(41078,0)
+--				if oTarget~=nil then
+--					if oTown.data.buildingCount==0 then
+--						--IP4需要对齐
+--						if g_phone_mode~=0 then
+--							hApi.FocusGuideUITarget(oWorld,oTarget)
+--						end
+--						hApi.ShowGuideUI(oTarget,hApi.ConvertMapString("$_xsnd_guide",3),0,8,0,0,-42,0)
+--					end
+--				else
+--					CloseHint()
+--				end
+--			end
+--		end)
+--		hGlobal.event:listen("Event_BuildingUpgrade","__WM__HelpHint_BuildGXT",function(oOperatingUnit,oWorld,oTarget,vOrderId)
+--			--玩家已经学会这个操作了
+--			LuaSetPlayerGuideState(g_curPlayerName,map_name,nIndex)
+--			--你太聪明了！
+--			CloseHint()
+--			--提示玩家点击观星台，雇佣术士
+--			hApi.ShowGuideUI(oTarget,hApi.ConvertMapString("$_xsnd_guide",5),0,8,0,0,-42,0)
+--		end)
+--	end
+--
+--	--小试牛刀
+--	--新手提示4(在城镇内招募士兵后，提示玩家将士兵移动到英雄身上)
+--	local nIndex = 4
+--	if hVar.OPTIONS.TEST_NOOB_TIP==1 or LuaGetPlayerGuideState(g_curPlayerName,map_name,nIndex)~=1 then
+--		local IsClosed = 0
+--		local CloseHint = function()
+--			if IsClosed~=1 then
+--				IsClosed = 1
+--				hGlobal.event:listen("LocalEvent_PlayerFocusWorld","__TN__HelpHint_DragUnitList",nil)
+--				hGlobal.event:listen("Event_HireConfirm","__TN__HelpHint_DragUnitList",nil)
+--			end
+--		end
+--		g_NoobHelp_CloseFunc[#g_NoobHelp_CloseFunc+1] = CloseHint
+--		local _CODE_GetPickI = function(tTeam,case)
+--			for i = 1,#tTeam do
+--				if type(tTeam[i])==case then
+--					return i
+--				end
+--			end
+--			return 0
+--		end
+--		local _CODE_ShowPickGuideUI = function(oWorld,oUnit,oTownUnit)
+--			local nFromI = _CODE_GetPickI(oTownUnit.data.team,"table")
+--			local nToI = _CODE_GetPickI(oUnit.data.team,"number")
+--			if nFromI~=0 and nToI~=0 then
+--				--你太聪明了！
+--				CloseHint()
+--				--玩家已经学会这个操作了(只教一遍，后面不会就不管了)
+--				LuaSetPlayerGuideState(g_curPlayerName,map_name,nIndex)
+--				local nFromX,nFromY = hApi.GetTeamUIPos("town",nFromI)
+--				local nToX,nToY = hApi.GetTeamUIPos("town",nToI)
+--				local offY = 86
+--				nToY = nToY + offY
+--				--这段代码反正我也看不懂，好简单的拉！
+--				local nRectWH = 72
+--				local tRect = {}
+--				for i = 1,7 do
+--					local x,y = hApi.GetTeamUIPos("town",i)
+--					tRect[i] = {x-nRectWH/2,y+nRectWH/2+offY,nRectWH,nRectWH}
+--				end
+--				local nNodeX = tRect[1][1]+nRectWH*7/2
+--				local oNode = hUI.node:new({
+--					x = nNodeX,
+--					y = nFromY,
+--					z = 99,
+--					w = nRectWH*7,
+--					h = nRectWH,
+--					mode = "GUIDE:DropTeamUnit",
+--					code = function(screenX,screenY)
+--						local sus = 0
+--						for i = 1,7 do
+--							if hApi.IsInBox(screenX,screenY,tRect[i]) then
+--								sus = 1
+--								break
+--							end
+--						end
+--						if sus==1 then
+--							oWorld.worldUI["GUIDE_UI"]:del()
+--							oWorld.worldUI["GUIDE_UI"] = nil
+--							local nTipX,nTipY = hApi.GetTeamUIPos("town",1)
+--							oWorld.worldUI["OutTownTip"] = hUI.node:new({
+--								x = nTipX - 104,
+--								y = nTipY - 6,
+--							})
+--							hUI.UIBreath(oWorld.worldUI["OutTownTip"].handle._n,2.2)
+--							return hVar.RESULT_SUCESS
+--						end
+--					end,
+--				})
+--				hUI.deleteUIObject(hUI.image:new({
+--					parent = oNode.handle._n,
+--					model = "UI:DragHand",
+--					x = nFromX - nNodeX,
+--					y = -32,
+--					w = 48,
+--					--h = 84,
+--					motion = {
+--						{nToX-nFromX,nToY-nFromY-12,0.9},
+--						{nToX-nFromX,nToY-nFromY-12,0.9},
+--						{0,0-12,0.3},
+--					},
+--				}))
+--				hUI.UIBreath(oNode.handle._n,2.2,nFromX - nNodeX,0)
+--				oWorld.worldUI["GUIDE_UI"] = oNode
+--				hApi.AddTipUI(oNode.handle._n,nFromX - nNodeX,192,0,hApi.ConvertMapString("$_xsnd_guide",4),"C",0)
+--			end
+--		end
+--		hGlobal.event:listen("LocalEvent_PlayerFocusWorld","__TN__HelpHint_DragUnitList",function(sSceneType,oWorld,oMap)
+--			if oWorld and oWorld.data.type=="town" then
+--				local oUnit = oWorld:getlordU("visitor")
+--				local oTownUnit = oWorld:getlordU("building")
+--				if oUnit and oTownUnit then
+--					hGlobal.event:event("LocalEvent_DragOutHeroPhoto",oUnit,1,hVar.SCREEN.w - 76,130)
+--					_CODE_ShowPickGuideUI(oWorld,oUnit,oTownUnit)
+--				end
+--			end
+--		end)
+--		hGlobal.event:listen("Event_HireConfirm","__TN__HelpHint_DragUnitList",function(oUnit,oTarget,tBuyList)
+--			if not(oUnit.data.id==40003 and oTarget.data.id==40003) then
+--				return
+--			end
+--			local oWorld = hGlobal.LocalPlayer:getfocusworld()
+--			if not(oWorld and oWorld.data.type=="town") then
+--				return
+--			end
+--			local oTown = oUnit:gettown()
+--			if oTown==nil then
+--				return
+--			end
+--			local oVisitor = oTown:getunit("visitor")
+--			if oVisitor==nil then
+--				return
+--			end
+--			_CODE_ShowPickGuideUI(oWorld,oVisitor,oUnit)
+--		end)
+--	end
+--end
+--
+-----------------------------------------
+----黄巾之乱
+-----------------------------------------
+--_tgr["world/level_hjzl"] = function(map_name,IsCreatedFromLoad)
+--	--新手提示1(英雄死亡后提示复活)
+--	local nIndex = 1
+--	if hVar.OPTIONS.TEST_NOOB_TIP==1 or LuaGetPlayerGuideState(g_curPlayerName,map_name,nIndex)~=1 then
+--		local IsClosed = 0
+--		local CloseHint = function()
+--			if IsClosed~=1 then
+--				IsClosed = 1
+--				hGlobal.event:listen("LocalEvent_PlayerFocusWorld","__TN__HelpHint_ReviveHero",nil)
+--				hGlobal.event:listen("Event_HeroRevive","__TN__HelpHint_ReviveHero",nil)
+--			end
+--		end
+--		g_NoobHelp_CloseFunc[#g_NoobHelp_CloseFunc+1] = CloseHint
+--		hGlobal.event:listen("LocalEvent_PlayerFocusWorld","__TN__HelpHint_ReviveHero",function(sSceneType,oWorld,oMap)
+--			if oWorld and oWorld.data.type=="town" then
+--				local tHero = hGlobal.LocalPlayer.heros
+--				local IsAnyHeroDead = 0
+--				for i = 1,#tHero do
+--					if tHero[i].data.IsDefeated==1 then
+--						IsAnyHeroDead = 1
+--						break
+--					end
+--				end
+--				if IsAnyHeroDead==1 then
+--					local oTarget = hApi.GetTownUnitById(41070,1)
+--					if oTarget~=nil then
+--						hApi.ShowGuideUI(oTarget,hApi.ConvertMapString("$_hjzl_hint_01_2",3),0,10,5,10)
+--					end
+--				end
+--			end
+--		end)
+--		hGlobal.event:listen("Event_HeroRevive","__TN__HelpHint_ReviveHero",function(oWorld,oHero,oUnit,oBuilding,gridX,gridY)
+--			if oHero:getowner()==hGlobal.LocalPlayer then
+--				--玩家已经学会这个操作了
+--				LuaSetPlayerGuideState(g_curPlayerName,map_name,nIndex)
+--				--你太聪明了！
+--				CloseHint()
+--			end
+--		end)
+--	end
+--end
+--
+-----------------------------------------
+---- 黄巾之乱(前半)
+-----------------------------------------
+--_tgr["world/level_yxcs"] = function(map_name,IsCreatedFromLoad)
+--	local nIndex = 1
+--	if hVar.OPTIONS.TEST_NOOB_TIP==1 or LuaGetPlayerGuideState(g_curPlayerName,map_name,nIndex)~=1 then
+--		local IsClosed = 0
+--		local CloseHint = function()
+--			if IsClosed~=1 then
+--				IsClosed = 1
+--				hGlobal.event:listen("LocalEvent_PlayerFocusWorld","__TN__LookAtTown",nil)
+--				hGlobal.event:listen("Event_TownSetGuard","__TN__SetTownGuard",nil)
+--			end
+--		end
+--		g_NoobHelp_CloseFunc[#g_NoobHelp_CloseFunc+1] = CloseHint
+--		hGlobal.event:listen("LocalEvent_PlayerFocusWorld","__TN__LookAtTown",function(sSceneType,oWorld,oMap)
+--			if oWorld and oWorld.data.type=="town" then
+--				local oUnitB = oWorld:getlordU("building")
+--				if oUnitB~=nil then
+--					local oTown = oUnitB:gettown()
+--					if oTown~=nil then
+--						local oUnitV = oTown:getunit("visitor")
+--						if oUnitV then
+--							--玩家已经学会这个操作了(只显示一次！)
+--							LuaSetPlayerGuideState(g_curPlayerName,map_name,nIndex)
+--							local oNode =  hUI.node:new({
+--								x = hVar.SCREEN.w - 40,
+--								y = 88,
+--								z = 99,
+--								w = 82,
+--								h = 178,
+--							})
+--							hUI.deleteUIObject(hUI.image:new({
+--								parent = oNode.handle._n,
+--								model = "UI:DragHand",
+--								y = 32,
+--								w = 48,
+--								--h = 84,
+--								motion = {
+--									{0,-96,0.9},
+--									{0,-96,0.9},
+--									{0,0,0.3},
+--								},
+--							}))
+--							oWorld.worldUI["GUIDE_UI"] = oNode
+--							hApi.AddTipUI(oNode.handle._n,16,128,0,hVar.tab_stringM["$_yxcs_guide"][1],"R",0)
+--							--显示英雄队伍
+--							hGlobal.event:event("LocalEvent_DragOutHeroPhoto",oUnitV,1,hVar.SCREEN.w - 76,130)
+--						end
+--					end
+--				end
+--			end
+--		end)
+--		hGlobal.event:listen("Event_TownSetGuard","__TN__SetTownGuard",function(oWorld,oTown,oGuard,nOperate)
+--			local oWorldC = hGlobal.LocalPlayer:getfocusworld()
+--			if oWorldC and oWorldC.data.type=="town" and oWorldC.worldUI["GUIDE_UI"]~=nil then
+--				hApi.safeRemoveT(oWorldC.worldUI,"GUIDE_UI")
+--				--你太聪明了！
+--				CloseHint()
+--			end
+--		end)
+--	end
+--
+--	--教玩家造城防
+--	local nIndex = 2
+--	if hVar.OPTIONS.TEST_NOOB_TIP==1 or LuaGetPlayerGuideState(g_curPlayerName,map_name,nIndex)~=1 then
+--		local IsClosed = 0
+--		local CloseHint = function()
+--			if IsClosed~=1 then
+--				IsClosed = 1
+--				hGlobal.event:listen("Event_TownSetGuard","__TN__BuildWall",nil)
+--				hGlobal.event:listen("Event_BuildingUpgrade","__TN__BuildWallSus",nil)
+--			end
+--		end
+--		g_NoobHelp_CloseFunc[#g_NoobHelp_CloseFunc+1] = CloseHint
+--		hGlobal.event:listen("Event_TownSetGuard","__TN__BuildWall",function(oWorldWM,oTown,oGuard,nOperate)
+--			local oWorld = hGlobal.LocalPlayer:getfocusworld()
+--			if oWorld and oWorld.data.type=="town" then
+--				--如果城楼处于未建造状态，则提示玩家建造城楼
+--				local oTarget,oTown = hApi.GetTownUnitById(41073,0)
+--				if oTarget~=nil then
+--					if oTown.data.buildingCount==0 then
+--						--IP4需要对齐
+--						if g_phone_mode~=0 then
+--							hApi.FocusGuideUITarget(oWorld,oTarget)
+--						end
+--						hApi.ShowGuideUI(oTarget,hApi.ConvertMapString("$_yxcs_guide",2),0,0,0,0,0,64)
+--					end
+--				else
+--					CloseHint()
+--				end
+--			end
+--		end)
+--		hGlobal.event:listen("Event_BuildingUpgrade","__TN__BuildWallSus",function(oOperatingUnit,oWorld,oTown,vOrderId)
+--			--玩家已经学会这个操作了
+--			LuaSetPlayerGuideState(g_curPlayerName,map_name,nIndex)
+--			--你太聪明了！
+--			CloseHint()
+--		end)
+--	end
+--	--地图特殊触发器，第一天看世界的时候，生成对话
+--	do
+--		local DisableTick = hApi.gametime()
+--		local IsClosed = 0
+--		local CloseTgr = function()
+--			if IsClosed~=1 then
+--				IsClosed = 1
+--				hGlobal.event:listen("LocalEvent_PlayerFocusWorld","__TGR__LookAtWorldMap",nil)
+--			end
+--		end
+--		g_NoobHelp_CloseFunc[#g_NoobHelp_CloseFunc+1] = CloseTgr
+--		hGlobal.event:listen("LocalEvent_PlayerFocusWorld","__TGR__LookAtWorldMap",function(sSceneType,oWorld,oMap)
+--			if oWorld and oWorld.data.type=="worldmap" and oWorld.data.roundcount==0 and oWorld.data.map==map_name then
+--				if DisableTick==hApi.gametime() then
+--					return
+--				end
+--				if heroGameRule.isAiTurn() then
+--					return
+--				end
+--				local oHero = hGlobal.LocalPlayer.heros[1]
+--				if oHero then
+--					local oUnit = oHero:getunit("worldmap")
+--					if oUnit then
+--						local vTalk = hApi.InitUnitTalk(oUnit,oUnit,nil,"leavetown")
+--						if vTalk then
+--							CloseTgr()
+--							hApi.CreateUnitTalk(vTalk)
+--						end
+--					end
+--				end
+--			end
+--		end)
+--	end
+--
+--	--地图特殊处理：第一天，读档的时候把英雄的行动力设置为0(已经弃用)
+--	--if IsCreatedFromLoad==1 then
+--		--local oWorld = hGlobal.WORLD.LastWorldMap
+--		--local tHero = hGlobal.LocalPlayer.heros
+--		--if oWorld and oWorld.data.roundcount==0 then
+--			--for i = 1,#tHero do
+--				--if type(tHero[i])=="table" then
+--					--local oUnit = tHero[i]:getunit("worldmap")
+--					--if oUnit then
+--						--hApi.chaSetMovePoint(oUnit.handle,0)
+--					--end
+--				--end
+--			--end
+--		--end
+--	--end
+--end

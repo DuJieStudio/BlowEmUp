@@ -1,0 +1,9 @@
+--heroGameInfo = {}
+--heroGameInfo.worldMap = {}
+--
+--
+--function heroGameInfo.Init()
+--	heroGameInfo.worldMap.Init()
+--	heroGameInfo.worldMap.ShowUnitsCombatScore(false)
+--end
+--

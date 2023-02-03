@@ -1,0 +1,649 @@
+--heroGameRule = {}
+--heroGameRule.stateFSM_TypeDef = {CREATE="CREATE",RUN="RUN",IDLE="IDLE",OVER="OVER"}
+--heroGameRule.ai_TypeDef = {PLAYER = "PLAYER",COMPUTER="COMPUTER"}
+--heroGameRule.gameEvent_TypeDef = {START="START",ENDDAY="ENDDAY",CHECK="CHECK",UPDATE="UPDATE"}
+----当前状态
+--heroGameRule.currentPlayer = 1
+--heroGameRule.currentRound = 1
+--heroGameRule.useAI = 0
+--heroGameRule.GameOver = 0
+--heroGameRule.bOnEndDay = false
+--heroGameRule.IsGameOver = false
+--
+--heroGameRule.selfPlayerIndex = 1
+--
+--
+--function heroGameRule.OnStart(gameInfo)
+--
+--print("heroGameRule.OnStart " .. heroGameRule.currentPlayer)
+--
+----势力信息
+--heroGameRule.players = {}
+--heroGameRule.ais = {}
+--local newPlayerIndex = 1
+--for i = 1,#hGlobal.player do
+--	if 1 == hGlobal.player[i].data.IsLocalPlayer then
+--		heroGameRule.players[newPlayerIndex] = hGlobal.player[i]
+--		heroGameRule.ais[newPlayerIndex] = heroGameRule.ai_TypeDef.PLAYER
+--		heroGameRule.selfPlayerIndex = newPlayerIndex
+--		newPlayerIndex = newPlayerIndex + 1
+--		--print("heroGameRule ....            xxxxxxxxx          selfPlayerIndex:" .. i .. "\n")
+--	else
+--		if hGlobal.player[i].data.IsAIPlayer == 1 and #hGlobal.player[i].heros > 0 then
+--			--print("heroGameRule ....            xxxxxxxxx         COMPUTER :" .. i .. "\n")
+--			heroGameRule.players[newPlayerIndex] = hGlobal.player[i]
+--			heroGameRule.ais[newPlayerIndex] = heroGameRule.ai_TypeDef.COMPUTER
+--			newPlayerIndex = newPlayerIndex + 1
+--			
+--			--print("heroGameRule ....            xxxxxxxxx index:" .. i .. " begin\n")
+--			local testHeros = hGlobal.player[i].heros
+--			for j = 1,#testHeros do
+--				if testHeros[j] then
+--					local name = hVar.tab_stringU[testHeros[j].data.id][1]
+--					--print("heroGameRule ....            xxxxxxxxx hero id:" .. testHeros[j].data.id)
+--					if nil == name then
+--						name = "wei"
+--					end
+--					--print("heroGameRule ....            xxxxxxxxx hero name:" .. name .. "\n")
+--				end
+--
+--			end
+--			--print("heroGameRule ....            xxxxxxxxx index:" .. i .. " end\n")
+--		end
+--	end
+--end
+--
+--heroGameRule.IsGameOver = false
+----胜利失败规则
+--end
+--
+--function SaveGameAIData(filepath,str)
+--	hSaveData.Rule = {}
+--	hSaveData.Rule.currentPlayer = heroGameRule.currentPlayer
+--	hSaveData.Rule.currentRound = heroGameRule.currentRound
+--	xlSaveFog(filepath..str..hVar.SAVE_DATA_PATH.FOG)
+--end
+--
+--function LoadGameAIData(filepath,str)
+--	heroGameRule.currentPlayer = hSaveData.Rule.currentPlayer
+--	heroGameRule.currentRound = hSaveData.Rule.currentRound
+--	
+--	heroGameInfo.worldMap.Init()
+--	heroGameRule.OnStart()
+--	if hApi.FileExists(filepath..str..hVar.SAVE_DATA_PATH.FOG) then
+--		xlLoadFog(filepath..str..hVar.SAVE_DATA_PATH.FOG)
+--	end
+--end
+--
+--function GetWeek()
+--	local days = heroGameRule.currentRound
+--	local week = 1
+--	while days > 7 do
+--		week = week + 1
+--		days = days - 7
+--	end
+--	return week
+--end
+--
+--function GetDay()
+--	local days = heroGameRule.currentRound
+--	while days > 7 do
+--		days = days - 7
+--	end
+--	
+--	return days
+--end
+--
+--function heroGameRule.RunGameAI()
+--	if heroGameRule.ais[heroGameRule.currentPlayer] == heroGameRule.ai_TypeDef.COMPUTER then
+--		--print("heroGameRule.RunGameAI COMPUTER 势力:" .. heroGameRule.currentPlayer)
+--		heroGameAI.Run(heroGameRule.players[heroGameRule.currentPlayer])
+--	else
+--		
+--	end
+--end
+--
+--function heroGameRule.isAiTurn()	
+--	if type(heroGameRule.ais) == "table" and heroGameRule.ais[heroGameRule.currentPlayer] == heroGameRule.ai_TypeDef.COMPUTER then
+--		return true
+--	end
+--	
+--	return false
+--end
+--
+--function heroGameRule.DoEndDay()
+--	heroGameRule.OnCheckGameOver()
+--	if heroGameRule.IsGameOver then
+--	
+--	else
+--		heroGameRule.OnEndDay()
+--	end
+--end
+--
+--function heroGameRule.OnUpdateGame()
+--	if true == heroGameRule.bOnEndDay then
+--		heroGameRule.bOnEndDay = false
+--		heroGameRule.DoEndDay()
+--	end
+--end
+--
+--function heroGameRule.StopGameAi()
+--	if heroGameRule.isAiTurn() then
+--		heroGameAI.ShowAiControl(false)
+--		BT.heroBT.callbackinfo.addtimer = true
+--		BT.heroBT.callbackinfo.task = nil
+--		hApi.addTimerOnce("__AI__CommandAck",1,function()
+--			heroGameAI.LogAi("xxxxx stop game ai\n")
+--		end)
+--	end
+--end
+--
+--function heroGameRule.OnGameEvent(gameEvent)
+--	if gameEvent == heroGameRule.gameEvent_TypeDef.ENDDAY then
+--		heroGameRule.bOnEndDay = true
+--	elseif gameEvent == heroGameRule.gameEvent_TypeDef.START then
+--		BT.Init()
+--		heroGameInfo.Init()
+--		heroGameRule.OnStart()
+--	elseif gameEvent == heroGameRule.gameEvent_TypeDef.CHECK then
+--		heroGameRule.OnCheckGameOver()
+--	elseif gameEvent == heroGameRule.gameEvent_TypeDef.UPDATE then
+--		heroGameRule.OnUpdateGame()
+--	end
+--end
+--function heroGameRule.haveCity(playerIndex)
+--	local cities = heroGameInfo.worldMap.cities
+--	local p = heroGameRule.players[playerIndex]
+--	local bNoCity = true
+--	for i=1,#cities do
+--		if cities[i]:getowner().data.playerId == p.data.playerId then
+--			bNoCity = false
+--			--print("pid:" .. p.data.playerId .. " haveCity id:" .. cities[i].data.id .. " name:" .. cities[i].data.name)
+--			return true
+--		end
+--	end
+--	
+--	return false	--return false
+--end
+--
+--function heroGameRule.haveHero(playerIndex)
+--	local heroes = heroGameRule.players[playerIndex].heros
+--	local bNoHero = true
+--	for heroIndex = 1,#heroes do
+--		local hero = heroes[heroIndex]
+--		local u = hero:getunit()
+--		if type(u) == "table" then
+--			local owner = hero:getowner()
+--			local ownerid = nil
+--			if owner then
+--				ownerid = owner.data.playerId
+--			else
+--				ownerid = 0
+--			end
+--			--英雄存活，且并没有在其他英雄的队伍中
+--			if hero and hero.data.IsDefeated == 0 and hero.data.HeroTeamLeader == 0 and ownerid == playerIndex then
+--				bNoHero = false
+--				--print("pid:" .. playerIndex .. " haveHero id:" .. heroes[heroIndex].data.id .. " name:" .. heroes[heroIndex].data.name .. " oid:" .. ownerid)
+--				return true
+--			end
+--		end
+--	end
+--	return false
+--end
+--
+--function heroGameRule.OnCheckGameOver()
+--	--print("heroGameRule.OnCheckOver heroGameRule.OnCheckOver heroGameRule.OnCheckOver")
+--	--我的领地不检测游戏结束
+--	if hApi.Is_WDLD_Map(hGlobal.WORLD.LastWorldMap.data.map) ~= -1 then return end
+--	if heroGameRule.IsGameOver then
+--		return
+--	end
+--
+--	--编辑器模式编辑出来的新地图永远没有胜利条件(没写名字)
+--	--if g_editor==1 and hVar.MAP_INFO[hGlobal.WORLD.LastWorldMap.data.map]==nil then
+--		--return
+--	--end
+--	
+--	if 0 ~= hGlobal.WORLD.LastWorldMap.data.IsNormalVictory then
+--		local oPlayer = heroGameRule.players[heroGameRule.selfPlayerIndex]
+--		if (not heroGameRule.haveCity(heroGameRule.selfPlayerIndex)) and (not heroGameRule.haveHero(heroGameRule.selfPlayerIndex)) then
+--			local info = "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx 竟然输了"
+--			--print(info)
+--			heroGameRule.OnGameOver(false)
+--		else
+--			for i = 1,#heroGameRule.players do
+--				if hVar.PLAYER_ALLIENCE_TYPE.ENEMY == oPlayer:allience(heroGameRule.players[i]) then
+--					if (heroGameRule.haveCity(i) or heroGameRule.haveHero(i)) then
+--						return
+--					end
+--				end
+--			end
+--			local info = "oooooooooooooooooooooooooooooooooooooooooooooooooooooooooooo 终于赢了"
+--			--print(info)
+--			heroGameRule.OnGameOver(true)
+--		end
+--	end
+--end
+--
+--function heroGameRule.OnGameOver(bWin)
+--	--[[
+--	if true == heroGameRule.IsGameOver then
+--		return
+--	end
+--	
+--	heroGameRule.IsGameOver = true
+--
+--	heroGameRule.StopGameAi()
+--
+--	--试炼地图相关信息保存 记录挑战难度 只记录最高值
+--	local mapname = hGlobal.WORLD.LastWorldMap.data.map
+--	local map_level = hVar.MAP_INFO[mapname].level
+--	if map_level then
+--		local cur_MapDifficulty = hGlobal.WORLD.LastWorldMap.data.MapDifficulty
+--		if LuaGetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.Map_Difficult) < cur_MapDifficulty then
+--			LuaSetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.Map_Difficult,cur_MapDifficulty)
+--		end
+--
+--		--如果地图是龙城飞将 则保存敌人进攻波数
+--		if mapname == "world/level_lcfj" or mapname == "world/level_xlslc" then
+--			local Enemy_Num = (hGlobal.WORLD.LastWorldMap.data.specialVal or 0)
+--			if LuaGetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.Enemy_Num) < Enemy_Num then
+--				LuaSetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.Enemy_Num,Enemy_Num)
+--			end
+--		end
+--	end
+--
+--	--上传玩家状态
+--	if xlUpdateCustomTable then
+--		--local m_cur_state = 0
+--		----胜利
+--		--if bWin then
+--			--m_cur_state = 1
+--		----失败
+--		--else
+--			--m_cur_state = 2
+--		--end
+--
+--		--local state = "map_id:"..hVar.MAP_INFO[mapname].uniqueID..";"
+--		--state = state.."cur_state:"..m_cur_state..";"
+--		--state = state.."finish_days:"..hGlobal.WORLD.LastWorldMap.data.roundcount..";"
+--		--SendCmdFunc["send_checkpoint_record"](state)
+--		
+--		--老的111111 上传
+--		--local Level_state_list = {}
+--		--local index = 0
+--		--for k,v in pairs(hVar.MAP_INFO) do
+--			--if v.level and v.level > 0 then
+--				--Level_state_list[v.level] = LuaGetPlayerMapAchi(k,hVar.ACHIEVEMENT_TYPE.LEVEL)
+--			--end
+--		--end
+--
+--		--local Level_state_val = 0
+--		--for i = 1,#Level_state_list do
+--			--Level_state_val = Level_state_val + (Level_state_list[i] or 0) * math.pow(10,i-1)
+--		--end
+--		--xlUpdateCustomTable(0,"customI1",tostring(Level_state_val)) 
+--		--xlUpdateCustomTable(0,"customS1",g_curPlayerName) 
+--
+--	end
+--	
+--	
+--
+--	if true == bWin then
+--		if hApi.Is_RSYZ_Map(hGlobal.WORLD.LastWorldMap.data.map) ~= -1 then
+--			hGlobal.event:event("LocalEvent_ShowRsdyzEndFrm",1,1)
+--			Game_Zone_OnGameEvent(GZone_Event_TypeDef.Lua,{GZone_Event_TypeDef.GetBattleSummary_Fire,luaGetplayerDataID(),1})
+--			return
+--		end
+--
+--		--记录通关次数
+--		local finish_count = 0 
+--		finish_count = (LuaGetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.FINISH_COUNT) or 0)
+--		LuaSetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.FINISH_COUNT,finish_count+1)
+--		
+--		--统计积分以后的通关次数
+--		local Map_ScoreFinishiCount = 0 
+--		Map_ScoreFinishiCount = (LuaGetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.Map_ScoreFinishiCount) or 0)
+--		LuaSetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.Map_ScoreFinishiCount,Map_ScoreFinishiCount+1)
+--
+--		heroGameRule.IsGameOver = true
+--		local tMapScore = hVar.MAP_SCORE[mapname]
+--		if tMapScore~=nil then
+--			--本地图可以获得玩家积分
+--			--统计玩家积分
+--			--for i = 1,hVar.MAX_PLAYER_NUM do
+--			--end
+--			local oWorld = hGlobal.WORLD.LastWorldMap
+--			local nScorePec = tMapScore[1]
+--			local baseMapScore = tMapScore[2]
+--			local dayRequire = tMapScore[3]
+--			local starRequire = tMapScore[4]
+--			local richman = tMapScore[5] or 0
+--			local blitz = tMapScore[6] or 0
+--			local firstLevel = tMapScore[7] or 0
+--			local pLog = oWorld:getplayerlog(hGlobal.LocalPlayer.data.playerId)
+--			if pLog then
+--				pLog.scoreV = baseMapScore
+--				local starV = 6
+--				local extraPlus = 0
+--				local CheatPunish = 0	--非常规通关惩罚
+--				local battleCount = 0
+--				for i = 1,6 do
+--					battleCount = battleCount + (pLog.star[i] or 0)
+--				end
+--				if starRequire then
+--					local star6 = starRequire[1] or 0
+--					local star5 = starRequire[2] or 0
+--					local star4 = starRequire[3] or 0
+--					if star6>0 and pLog.star[6]>=star6 then
+--						extraPlus = extraPlus + 30	--不扣星星，且额外获得30%积分
+--					elseif star5>0 and (pLog.star[6]+pLog.star[5])>=star5 then
+--						extraPlus = extraPlus + 30	--不扣星星，也额外获得30%的积分
+--					elseif star4>0 and (pLog.star[6]+pLog.star[5]+pLog.star[4])>=star4 then
+--						extraPlus = extraPlus + 20	--扣1颗星，也额外获得20%的积分
+--						starV = starV - 1
+--					else
+--						starV = starV - 2		--扣2颗星
+--					end
+--					--玩家至少需要战斗次数等于5星要求才会得到完整的通关积分
+--					if star5>0 then
+--						--判断玩家是否过快通关,太快的话通关积分会递减
+--						if star5>0 and battleCount<star5 then
+--							CheatPunish = 1
+--							extraPlus = extraPlus - hApi.getint(100*(star5-battleCount)/star5)
+--						end
+--					end
+--				end
+--				if dayRequire and dayRequire>0 then
+--					local day_lv1 = dayRequire
+--					local day_lv2 = hApi.floor(dayRequire*1.1)+7
+--					local day_lv3 = hApi.floor(dayRequire*1.3)+14
+--					if oWorld.data.roundcount<=day_lv1 then
+--						--如果没有遭到非常规通关惩罚才会有额外的20%积分
+--						if CheatPunish~=1 then
+--							extraPlus = extraPlus + 20	--不扣星星，且额外获得20%积分
+--						end
+--					elseif oWorld.data.roundcount<=day_lv2 then
+--						starV = starV - 1		--扣1颗星
+--					elseif oWorld.data.roundcount<=day_lv3 then
+--						starV = starV - 2		--扣2颗星
+--					else
+--						starV = starV - 3		--扣3颗星
+--					end
+--				end
+--				pLog.starV = starV
+--				local scoreV = math.max(1,hApi.floor(baseMapScore*(100+extraPlus)/100))
+--				local pec = hVar.MAP_SCORE_BY_DIFFICULTY[oWorld.data.MapDifficulty]
+--				if pec and pec~=100 then
+--					scoreV = math.max(1,hApi.floor(scoreV*pec/100))
+--				end
+--				pLog.scoreV = scoreV
+--				if pLog.scoreV>0 then
+--					LuaAddPlayerScore(pLog.scoreV)
+--					local map_get_score = LuaGetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.Map_GetScore) or 0
+--					map_get_score = map_get_score + pLog.scoreV
+--					LuaSetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.Map_GetScore,map_get_score)
+--				end
+--				--设置玩家通关的评价 只保存最高星星数
+--				local star = (LuaGetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.MAPSTAR) or 0)
+--				if star < pLog.starV then
+--					LuaSetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.MAPSTAR,pLog.starV)
+--				end
+--				--保存玩家通关信息 并保存通关积分
+--				local haveLevel = (LuaGetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.LEVEL) or 0)
+--				if haveLevel == 0 then
+--					LuaSetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.LEVEL,1)
+--					LuaAddPlayerScore(firstLevel) 
+--					hGlobal.WORLD.LastWorldMap.fristScore = 1
+--					local analysisStrStart = string.find(mapname,"level")
+--					local analysisStr = string.sub(mapname,analysisStrStart)
+--					
+--					analysisStr = analysisStr.."_win"
+--					--print(analysisStr)
+--					if xlAppAnalysis then
+--						local osDate = tostring(os.date())
+--						local gTime = tostring(hGlobal.WORLD.LastWorldMap.data.roundcount)
+--						xlAppAnalysis(analysisStr,0,1,"info-","uID:"..tostring(xlPlayer_GetUID()).."-OStime:"..osDate.."-gameTime:"..gTime.."-playerName:"..g_curPlayerName)
+--					end
+--					Checkpoint_Record(Save_PlayerLog,0)
+--					
+--					
+--					local playerDataID = luaGetplayerDataID()
+--					if playerDataID ~= 0 then --插入新数据
+--						SendCmdFunc["send_checkpoint"](playerDataID,Save_PlayerLog)
+--					end
+--					
+--					--如果是桃园结义 则在首次通关时候记录 通关信息
+--					if mapname == "world/level_tyjy" then
+--						LuaAddBehaviorID(100000020)
+--					end
+--				end
+--				--判断是否可以获得富可敌国
+--				if hGlobal.LocalPlayer.data.getgold >= richman and richman~= 0 then
+--					LuaSetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.RICHMAN,1)
+--				end
+--				LuaSetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.GETGOLD,hGlobal.LocalPlayer.data.getgold)
+--				--判断是否可以获得闪电战
+--				if oWorld.data.roundcount <= blitz and blitz~= 0 then
+--					LuaSetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.BLITZ,1)
+--				end
+--				
+--				--设置皇冠成就 如果是 4星及以上难度通关的话
+--				if oWorld.data.MapDifficulty >= 4 then 
+--					LuaSetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.IMPERIAL,1)
+--				end
+--				--记录通关天数 以及 通关战斗次数
+--				LuaSetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.BATTLECOUNT,battleCount)
+--				LuaSetPlayerMapAchi(mapname,hVar.ACHIEVEMENT_TYPE.PLAYDAY,hGlobal.WORLD.LastWorldMap.data.roundcount)
+--				
+--				--这玩意以后都得存档的时候才保存
+--				--保存玩家每天的积分 并把世界中的积分清空掉
+--				local dayscore = hGlobal.WORLD.LastWorldMap.data.dayscore or 0
+--				LuaAddPlayerScore(dayscore)
+--				hGlobal.WORLD.LastWorldMap.data.dayscore = 0
+--				
+--				--给玩家背包 或者 英雄背包中增加 奖励的宝箱
+--				if hGlobal.WORLD.LastWorldMap.data.QuestList and type(hGlobal.WORLD.LastWorldMap.data.QuestList) == "table" then
+--					local tList = {}
+--					--获得道具列表
+--					for i = 1,#hGlobal.WORLD.LastWorldMap.data.QuestList do
+--						local v = hGlobal.WORLD.LastWorldMap.data.QuestList[i]
+--						local itemID = v[6]
+--						if v[1]==2 then
+--							if type(v[4])=="table" and v[4][5]~=0 then
+--								--唯一任务不在这里给奖励
+--							elseif type(itemID)=="number" and hVar.tab_item[itemID] then
+--								tList[#tList+1] = {"item",itemID,1,v[4][4]}
+--							end
+--						end
+--					end
+--					if #tList>0 then
+--						hApi.LocalPlayerGetQuestReward(tList,"quest")
+--					end
+--				end
+--				--记录所有卡片
+--				LuaSaveHeroCard("Victory")
+--				hApi.AddMapUniqueID(g_curPlayerName,g_localfilepath) --地图唯一标识自+1
+--			end
+--		end
+--		
+--		--如果玩家赢了，那么必然取玩家1的第一个存活英雄为对话发起者
+--		local IsTalkWin = 0
+--		local tgrDataP = hGlobal.WORLD.LastWorldMap:getmapdata(1)
+--		if tgrDataP and tgrDataP.talk then
+--			local oUnitH
+--			for i = 1,#hGlobal.LocalPlayer.heros do
+--				if type(hGlobal.LocalPlayer.heros[i])=="table" and hGlobal.LocalPlayer.heros[i].data.IsDefeated==0 then
+--					oUnitH = hGlobal.LocalPlayer.heros[i]:getunit("worldmap")
+--					if oUnitH~=nil then
+--						break
+--					end
+--				end
+--			end
+--			if oUnitH then
+--				local vTalk = hApi.InitUnitTalk(oUnitH,oUnitH,tgrDataP.talk,"win")
+--				if vTalk and #vTalk>0 then
+--					IsTalkWin = 1
+--					hGlobal.WORLD.LastWorldMap:pause(1,"Victory")
+--					hApi.CreateUnitTalk(vTalk,function()
+--						hGlobal.event:event("LocalEvent_GameOver",1)
+--					end)
+--				end
+--			end
+--		end
+--		if IsTalkWin==0 then
+--			hGlobal.event:event("LocalEvent_GameOver",1)
+--		end
+--		--游戏通关后获得英雄卡片 目前是只要通关都记录(该流程已经移交tgrTalk管理)
+--		--local herolist = hVar.MAP_INFO[mapname].heros or {}
+--		--local heros = hGlobal.LocalPlayer.heros
+--		--for i = 1,#herolist do
+--			--for k,v in pairs(heros) do
+--				--if v.data.id == herolist[i][1] and v.data.HeroCard == 0 then
+--					--v.data.HeroCard = 1
+--					----hGlobal.event:event("LocalEvent_GetHeroCard",v)
+--				--end
+--			--end
+--		--end
+--		hGlobal.UI.__RewardPanel:show(0)
+--		LuaSaveHeroCard()
+--		xlDeleteFileWithFullPath(g_localfilepath..g_curPlayerName..hVar.SAVE_DATA_PATH.MAP_SAVE)
+--		xlDeleteFileWithFullPath(g_localfilepath..g_curPlayerName..hVar.SAVE_DATA_PATH.FOG)
+--		--删除最近3天的存档
+--		LuaDeletePlayerAutoSave(g_curPlayerName)
+--		LuaClearLootFromUnit(g_curPlayerName)
+--		--通关
+--		if mapname == "world/level_xpzz" then
+--			checkMadel(8)
+--		end
+--
+--		--保存特殊地图名 
+--		for i = 1,#hVar.MAP_INFO["world/level_scs"].childmap do
+--			if mapname == hVar.MAP_INFO["world/level_scs"].childmap[i] then
+--				LuaSetCurExmMpName(g_curPlayerName,(hVar.MAP_INFO["world/level_scs"].childmap[i+1] or hVar.MAP_INFO["world/level_scs"].childmap[1]))
+--				break
+--			end
+--		end
+--		
+--	else
+--		heroGameRule.IsGameOver = true
+--		local lost_map_name = mapname.."_fail"
+--		local analysisStrStart = string.find(lost_map_name,"level")
+--		local analysisStr = string.sub(lost_map_name,analysisStrStart)
+--		--print(analysisStr)
+--		if xlAppAnalysis then
+--			xlAppAnalysis(analysisStr,0,1,"clientID",tostring(xlPlayer_GetUID()).."-T:"..tostring(os.date("%m%d%H%M%S")))
+--		end
+--		hGlobal.event:event("LocalEvent_GameOver",0)
+--	end
+--	LuaSavePlayerData(g_localfilepath,g_curPlayerName,Save_PlayerData,Save_PlayerLog)
+--	]]
+--end
+--
+--function heroGameRule.IsNextPlayerAi()
+--	if heroGameRule.useAI == 0 then
+--		return false
+--	else
+--		if heroGameRule.currentPlayer < #heroGameRule.players then
+--			return true
+--		else
+--			return false
+--		end
+--	end	
+--end
+--
+--function heroGameRule.OnEndDay()
+--	--print("heroGameRule.OnEndDay " .. heroGameRule.currentPlayer)
+--	local p = heroGameRule.players[heroGameRule.currentPlayer]
+--	--p:addresource(hVar.RESOURCE_TYPE.GOLD, 50)
+--	---[[
+--	if heroGameRule.ais[heroGameRule.currentPlayer] == heroGameRule.ai_TypeDef.COMPUTER then
+--		local heros = p.heros
+--		for i = 1,#heros do
+--			if(heros[i].data.owner == p.data.playerId) then
+--				local u = heros[i]:getunit() --"worldmap"
+--				if u and u.handle._c then
+--					xlChaSetCurrentMovePoints(u.handle._c)
+--				end
+--			end
+--		end
+--	end
+--
+--	if heroGameRule.useAI == 0 then
+--		heroGameRule.currentPlayer = heroGameRule.selfPlayerIndex
+--	else
+--		if heroGameRule.currentPlayer < #heroGameRule.players then
+--			heroGameRule.currentPlayer = heroGameRule.currentPlayer + 1
+--		else
+--			heroGameRule.currentPlayer = 1
+--		end
+--	end
+--
+--	if heroGameRule.currentPlayer == 1 then
+--		heroGameRule.currentRound = heroGameRule.currentRound + 1
+--		xlLuaEvent_EndRound(heroGameRule.currentRound)
+--	end
+--
+--	if heroGameRule.ais[heroGameRule.currentPlayer] == heroGameRule.ai_TypeDef.COMPUTER then
+--		xlSetTouchEnabled(false)
+--		hUI.Disable(99999,"AI")
+--	else
+--		if heroGameRule.useAI == 0 then
+--		else
+--			xlSetTouchEnabled(true)
+--			hUI.Disable(0,"AI")
+--		end 
+--	end
+--
+--	--heroGameRule.RunGameAI()
+--	--]]
+--	--hApi.RefreshWayPoint()
+--	--产生AutoSave 存档
+--	if heroGameRule.IsGameOver == true then
+--		xlScene_SaveMap(g_curPlayerName)
+--	end
+--end
+--
+--function xlLuaEvent_EnableAI(e)
+--	heroGameRule.useAI = e
+--end
+--
+----AI行动开始
+--hApi.AIRoundStart = function(nDayCount)
+--	hGlobal.event:event("LocalEvent_WMAIMoveStart")
+--	heroGameRule.OnGameEvent(heroGameRule.gameEvent_TypeDef.ENDDAY)
+--	return true
+--end
+--
+----hGlobal.event:listen("Event_NewDay","heroGameRule_EndDay",function(nDayCount)
+--	----第0天,游戏刚开始的时候不走AI
+--	--if nDayCount>0 then
+--		--heroGameRule.OnGameEvent(heroGameRule.gameEvent_TypeDef.ENDDAY)
+--	--end
+----end)
+--
+--hGlobal.event:listen("Event_UpdateGame","heroGameRule_UpdateGame",function(frame_count)
+--	heroGameRule.OnGameEvent(heroGameRule.gameEvent_TypeDef.UPDATE)
+--end)
+--
+----[[
+--hGlobal.event:listen("Event_HeroVictory","heroGameRule_CheckOver",function(oWorld,oHero,tLoot)
+--	--heroGameRule.OnGameEvent(heroGameRule.gameEvent_TypeDef.CHECK)
+--end)
+--
+--hGlobal.event:listen("Event_UnitDefeated","heroGameRule_CheckOver",function(oWorld,oHero,oDefeatHero)
+--	--heroGameRule.lastDeadHero
+--	--print("name1:" .. oHero.data.name .. " name2:" .. oDefeatHero.data.name)
+--	hApi.addTimerOnce("__CheckGameOver__",2000,function()
+--		--heroGameRule.OnGameEvent(heroGameRule.gameEvent_TypeDef.CHECK)
+--		heroGameRule.needCheck = true
+--	end)
+--end)
+--
+--hGlobal.event:listen("Event_HeroOccupy","heroGameRule_CheckOver",function(oWorld,oUnit,oTarget)
+--	hApi.addTimerOnce("__CheckGameOver__",2000,function()
+--		--heroGameRule.OnGameEvent(heroGameRule.gameEvent_TypeDef.CHECK)
+--		heroGameRule.needCheck = true
+--	end)
+--end)
+----]]

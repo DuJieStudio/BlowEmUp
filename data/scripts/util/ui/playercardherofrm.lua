@@ -1,0 +1,2020 @@
+------------------
+----重写的玩家卡片-英雄卡片，勋章，成就界面
+------------------
+
+--hGlobal.UI.InitPlayerCardHeroFrm = function()
+	--local kTagClipperNode = 2
+	--local kTagContentNode = 202
+
+	----用来做裁剪效果的clipperNode
+	--local clipper = nil
+	----这是测试代码
+	----local content = CCSprite:create("data/image/misc/gift.png")
+	----content:setTag(kTagContentNode)
+	----content:setAnchorPoint(ccp(0, 0))
+	----content:setPosition(ccp(470,370))
+	----local contentPosX,contentPosY = nil,nil
+
+	----local BtnFrm = nil
+	--local _MaxIndexY = -1
+
+	--local _MaxHeroNum = 12
+
+	--local _touchX,_touchY = 0,0
+	--local _vectorY,_vectorD= 0,0
+	--local _indexY = 0
+	--local _M_State = 0
+	
+	--local _frm = nil
+	--local _parent = nil
+	--local _childUI = nil
+
+	--local _Cardslotlist = {}
+	--local _Achilist = {}		--成就列表UI保存的局部变量
+	--local _HeroCardlist = {}	--英雄卡片UI保存的局部变量
+	--local _AchievementChild = {}	--成就列表中的控件指针保存
+	--local _AchievementChild_star = {}	--成就列表中的控件指针保存
+	--local _AchievementChild_richi = {}	--成就列表中的控件指针保存
+	--local _AchievementChild_blitz = {}	--成就列表中的控件指针保存
+	--local _AchievementChild_slot = {}	--成就列表中的控件指针保存
+
+
+	--local _tempX,_tempY = 0,0
+	--local _w,_h = 652,370
+	
+	--local _m_page_state = 0
+	--local _HeroCardPosX,_HeroCardPosY,_FrmHeroCardPosX,_FrmHeroCardPosY = 450,390,98,-70
+	--local _ShowPosX,_ShowPosY = 0,0
+	
+	----卡片背景槽子的动作回调
+	--local tempIndoexY = 0
+	--local _ActionCardslotCallback = function()
+		--tempIndoexY = _indexY
+		--_tempX = 0
+		--for i = 1,#_Cardslotlist do 
+			--_ShowPosX,_ShowPosY = _FrmHeroCardPosX + _tempX * 145, _FrmHeroCardPosY -20 - tempIndoexY * 185
+			--_childUI[_Cardslotlist[i]].data.x,_childUI[_Cardslotlist[i]].data.y = _ShowPosX,_ShowPosY
+			--_childUI[_Cardslotlist[i]].handle._n:setPosition(_ShowPosX,_ShowPosY)
+			--if tempIndoexY < 0 or tempIndoexY > 1 then 
+				--_childUI[_Cardslotlist[i]].handle._n:setVisible(false)
+			--end
+			--_tempX = _tempX + 1
+			--if _tempX > 3 then
+				--_tempX = 0
+				--tempIndoexY = tempIndoexY + 1
+			--end
+			----重新绑定到frm 上控制显示层级
+			--hApi.ReloadParent(_childUI[_Cardslotlist[i]].handle._n,_frm.handle._n)
+		--end
+		----BtnFrm:active()
+		--_M_State = 0
+	--end
+
+	----卡片的动作回调
+	--local _ActionCardCallback = function()
+		--tempIndoexY = _indexY
+		--_tempX = 0
+		--for i = 1,#_HeroCardlist do
+			--_ShowPosX,_ShowPosY = _FrmHeroCardPosX + _tempX * 145, _FrmHeroCardPosY - tempIndoexY * 185
+			--_childUI[_HeroCardlist[i]].data.x,_childUI[_HeroCardlist[i]].data.y = _ShowPosX,_ShowPosY
+			--_childUI[_HeroCardlist[i]].handle._n:setPosition(_ShowPosX,_ShowPosY)
+
+			--if tempIndoexY < 0 or tempIndoexY > 1 then 
+				--_childUI[_HeroCardlist[i]].handle._n:setVisible(false)
+			--end
+			--_tempX = _tempX + 1
+			--if _tempX > 3 then
+				--_tempX = 0
+				--tempIndoexY = tempIndoexY + 1
+			--end
+			----重新绑定到frm 上控制显示层级
+			--hApi.ReloadParent(_childUI[_HeroCardlist[i]].handle._n,_frm.handle._n)
+		--end
+		----BtnFrm:active()
+		--_M_State = 0
+	--end
+	
+	--local _achiOffBeginX,_achiOffBeginY = 245,-10
+	--local _achiX,_achiY,_offx,_offy,_h = 36,-13,520,35,34
+	--local _ActionAchievementslotCallback = function()
+		--tempIndoexY = _indexY
+		--for i = 1,#_AchievementChild do 
+			--_ShowPosX,_ShowPosY = _achiX, _FrmHeroCardPosY + 55 - tempIndoexY * 35
+			--_childUI[_AchievementChild[i]].data.x,_childUI[_AchievementChild[i]].data.y = _ShowPosX,_ShowPosY
+			--_childUI[_AchievementChild[i]].handle._n:setPosition(_ShowPosX,_ShowPosY)
+			--if tempIndoexY < 0 or tempIndoexY > 9 then 
+				--_childUI[_AchievementChild[i]].handle._n:setVisible(false)
+			--end
+			----tempIndoexY = tempIndoexY + 1
+			----重新绑定到frm 上控制显示层级 _AchievementChild_richi
+			--hApi.ReloadParent(_childUI[_AchievementChild[i]].handle._n,_frm.handle._n)
+
+			--local _star_ShowPosX,_star_ShowPosY = _achiOffBeginX + 60, _FrmHeroCardPosY + 45 - tempIndoexY * 35
+			--_childUI[_AchievementChild_star[i]]:setXY(_star_ShowPosX,_star_ShowPosY)
+			--if tempIndoexY < 0 or tempIndoexY > 9 then 
+				--_childUI[_AchievementChild_star[i]].handle._n:setVisible(false)
+			--end
+			----重新绑定到frm 上控制显示层级_AchievementChild_blitz
+			--hApi.ReloadParent(_childUI[_AchievementChild_star[i]].handle._n,_frm.handle._n)
+
+			--local _rich_ShowPosX,_rich_ShowPosY = _achiOffBeginX + 175, _FrmHeroCardPosY + 45 - tempIndoexY * 35
+			--_childUI[_AchievementChild_richi[i]]:setXY(_rich_ShowPosX,_rich_ShowPosY)
+			--if tempIndoexY < 0 or tempIndoexY > 9 then 
+				--_childUI[_AchievementChild_richi[i]].handle._n:setVisible(false)
+			--end
+			----重新绑定到frm 上控制显示层级_AchievementChild_star
+			--hApi.ReloadParent(_childUI[_AchievementChild_richi[i]].handle._n,_frm.handle._n)
+
+			--local _blitz_ShowPosX,_blitz_ShowPosY = _achiOffBeginX + 235, _FrmHeroCardPosY + 45 - tempIndoexY * 35
+			--_childUI[_AchievementChild_blitz[i]]:setXY(_blitz_ShowPosX,_blitz_ShowPosY)
+			--if tempIndoexY < 0 or tempIndoexY > 9 then 
+				--_childUI[_AchievementChild_blitz[i]].handle._n:setVisible(false)
+			--end
+			----重新绑定到frm 上控制显示层级 _AchievementChild_slot
+			--hApi.ReloadParent(_childUI[_AchievementChild_blitz[i]].handle._n,_frm.handle._n)
+
+			--local _slot_ShowPosX,_slot_ShowPosY = _achiOffBeginX + 295, _FrmHeroCardPosY + 45 - tempIndoexY * 35
+			--_childUI[_AchievementChild_slot[i]]:setXY(_slot_ShowPosX,_slot_ShowPosY)
+			--if tempIndoexY < 0 or tempIndoexY > 9 then 
+				--_childUI[_AchievementChild_slot[i]].handle._n:setVisible(false)
+			--end
+			----重新绑定到frm 上控制显示层级 _AchievementChild_slot
+			--hApi.ReloadParent(_childUI[_AchievementChild_slot[i]].handle._n,_frm.handle._n)
+
+			--tempIndoexY = tempIndoexY + 1
+		--end
+		----BtnFrm:active()
+		--_M_State = 0
+	--end
+
+	----设置卡片动画的坐标的函数
+	--local _ResetCardPos = function(indexY)
+		--if _M_State ~= 2 then return end
+		--_tempX = 0
+		--tempIndoexY = indexY
+		--for i = 1,#_Cardslotlist do 
+			--_childUI[_Cardslotlist[i]].handle._n:setVisible(true)
+			--_ShowPosX,_ShowPosY = _HeroCardPosX + _tempX * 145, _HeroCardPosY -20 - tempIndoexY * 185
+			--_childUI[_Cardslotlist[i]].handle._n:runAction(CCSequence:createWithTwoActions(CCMoveTo:create(0.3,ccp(_ShowPosX,_ShowPosY)),CCCallFunc:create(_ActionCardslotCallback)))
+			--_tempX = _tempX + 1
+			--if _tempX > 3 then
+				--_tempX = 0
+				--tempIndoexY = tempIndoexY + 1
+			--end
+		--end
+		--_tempX = 0
+		--tempIndoexY = indexY
+		--for i = 1,#_HeroCardlist do
+			--_childUI[_HeroCardlist[i]].handle._n:setVisible(true)
+			--_ShowPosX,_ShowPosY = _HeroCardPosX + _tempX * 145, _HeroCardPosY - tempIndoexY * 185
+
+			--_childUI[_HeroCardlist[i]].handle._n:runAction(CCSequence:createWithTwoActions(CCMoveTo:create(0.3,ccp(_ShowPosX,_ShowPosY)),CCCallFunc:create(_ActionCardCallback)))
+			--_tempX = _tempX + 1
+			--if _tempX > 3 then
+				--_tempX = 0
+				--tempIndoexY = tempIndoexY + 1
+			--end
+		--end
+	--end
+
+	----设置卡片动画的坐标的函数
+	--local _Reset_AchievementPos = function(indexY)
+		--if _M_State ~= 2 then return end
+		--tempIndoexY = indexY
+		--for i = 1,#_AchievementChild do 
+			--_childUI[_AchievementChild[i]].handle._n:setVisible(true)
+			--_ShowPosX,_ShowPosY = 388, _HeroCardPosY + 55 - tempIndoexY * 35
+			--_childUI[_AchievementChild[i]].handle._n:runAction(CCSequence:createWithTwoActions(CCMoveTo:create(0.3,ccp(_ShowPosX,_ShowPosY)),CCCallFunc:create(_ActionAchievementslotCallback)))
+			--tempIndoexY = tempIndoexY + 1
+		--end
+	--end
+
+	----用于裁剪显示的窗口面板
+	--hGlobal.UI.PlayerCardHeroFrm = hUI.frame:new({
+		--x = 352,
+		--y = 460,
+		--z = -1,
+		--dragable = 0,
+		--w = 648,
+		--h = 366,
+		--show = 0,
+		--bgAlpha = 255,
+		--bgMode = "tile",
+		--background = "UI:tip_item",
+		--codeOnDragEx = function(touchX,touchY,touchMode)
+			
+			--if g_vs_number > 4 then
+				----按下
+				--if _M_State == 2 then return end
+				--if touchMode == 0 then
+					--_touchX,_touchY = touchX,touchY
+					--_vectorD = touchY
+				----滑动
+				--elseif touchMode == 1 then
+					--if _M_State == 0 then
+						----只有当前页面是英雄卡片时
+						--if _m_page_state == 1 then
+							--for i = 1,#_Cardslotlist do 
+								--_childUI[_Cardslotlist[i]].handle._n:setVisible(true)
+								--hApi.ReloadParent(_childUI[_Cardslotlist[i]].handle._n,clipper)
+								--hApi.SetItemBeginPos(_childUI[_Cardslotlist[i]],_HeroCardPosX-_FrmHeroCardPosX,_HeroCardPosY-_FrmHeroCardPosY)
+							--end
+							--for i = 1,#_HeroCardlist do
+								--_childUI[_HeroCardlist[i]].handle._n:setVisible(true)
+								--hApi.ReloadParent(_childUI[_HeroCardlist[i]].handle._n,clipper)
+								--hApi.SetItemBeginPos(_childUI[_HeroCardlist[i]],_HeroCardPosX-_FrmHeroCardPosX,_HeroCardPosY-_FrmHeroCardPosY)
+							--end
+						--end
+
+						----当位成就页面时 _AchievementChild_slot
+						--if _m_page_state == 2 then
+							--for i = 1,#_AchievementChild do 
+								--_childUI[_AchievementChild[i]].handle._n:setVisible(true)
+								--hApi.ReloadParent(_childUI[_AchievementChild[i]].handle._n,clipper)
+								--hApi.SetItemBeginPos(_childUI[_AchievementChild[i]],352,_HeroCardPosY-_FrmHeroCardPosY)
+							--end
+
+							--for i = 1,#_AchievementChild_star do 
+								--_childUI[_AchievementChild_star[i]].handle._n:setVisible(true)
+								--hApi.ReloadParent(_childUI[_AchievementChild_star[i]].handle._n,clipper)
+								--hApi.SetItemBeginPos(_childUI[_AchievementChild_star[i]],352,_HeroCardPosY-_FrmHeroCardPosY)
+
+								--_childUI[_AchievementChild_richi[i]].handle._n:setVisible(true)
+								--hApi.ReloadParent(_childUI[_AchievementChild_richi[i]].handle._n,clipper)
+								--hApi.SetItemBeginPos(_childUI[_AchievementChild_richi[i]],352,_HeroCardPosY-_FrmHeroCardPosY)
+
+								--_childUI[_AchievementChild_blitz[i]].handle._n:setVisible(true)
+								--hApi.ReloadParent(_childUI[_AchievementChild_blitz[i]].handle._n,clipper)
+								--hApi.SetItemBeginPos(_childUI[_AchievementChild_blitz[i]],352,_HeroCardPosY-_FrmHeroCardPosY)
+
+								--_childUI[_AchievementChild_slot[i]].handle._n:setVisible(true)
+								--hApi.ReloadParent(_childUI[_AchievementChild_slot[i]].handle._n,clipper)
+								--hApi.SetItemBeginPos(_childUI[_AchievementChild_slot[i]],352,_HeroCardPosY-_FrmHeroCardPosY)
+							--end
+						--end
+
+						--_M_State = 1
+					--end
+
+					--if _m_page_state == 1 then
+						--if math.abs(touchX-_touchX) > 50 and (touchX-_touchX) > 0 and math.abs(touchY-_touchY) < 80 then
+							--_touchX,_touchY = touchX,touchY
+							----print("右")
+						--elseif math.abs(touchX-_touchX) > 50 and (touchX-_touchX) < 0 and math.abs(touchY-_touchY) < 80 then
+							--_touchX,_touchY = touchX,touchY
+							----print("左")
+						--elseif (touchY-_touchY) > 0 and math.abs(touchX-_touchX) < 80 then
+							----print("上")
+							----只有当前页面是英雄卡片时
+							--if _m_page_state == 1 then
+								--hApi.MoveItemList(nil,touchY-_touchY,_childUI,_Cardslotlist)
+								--hApi.MoveItemList(nil,touchY-_touchY,_childUI,_HeroCardlist)
+								
+							--end
+							
+							--_touchX,_touchY = touchX,touchY
+							--_vectorY = touchY - _vectorD
+						--elseif (touchY-_touchY) < 0 and math.abs(touchX-_touchX) < 80 and math.abs(_indexY) <= math.ceil(_MaxHeroNum/4) then
+							----print("下")
+							----只有当前页面是英雄卡片时
+							--if _m_page_state == 1 then
+								--hApi.MoveItemList(nil,touchY-_touchY,_childUI,_Cardslotlist)
+								--hApi.MoveItemList(nil,touchY-_touchY,_childUI,_HeroCardlist)
+								
+							--end
+							
+							--_touchX,_touchY = touchX,touchY
+							--_vectorY = touchY - _vectorD
+						----end
+						--end
+					--elseif _m_page_state == 2 then
+						--if math.abs(touchX-_touchX) > 50 and (touchX-_touchX) > 0 and math.abs(touchY-_touchY) < 80 then
+							--_touchX,_touchY = touchX,touchY
+							----print("右")
+						--elseif math.abs(touchX-_touchX) > 50 and (touchX-_touchX) < 0 and math.abs(touchY-_touchY) < 80 then
+							--_touchX,_touchY = touchX,touchY
+							----print("左")
+						--elseif (touchY-_touchY) > 0 and math.abs(touchX-_touchX) < 80 then
+							----print("上")
+							----当位成就页面时
+						
+							--hApi.MoveItemList(nil,touchY-_touchY,_childUI,_AchievementChild)
+							--hApi.MoveItemList(nil,touchY-_touchY,_childUI,_AchievementChild_star)
+							--hApi.MoveItemList(nil,touchY-_touchY,_childUI,_AchievementChild_richi)
+							--hApi.MoveItemList(nil,touchY-_touchY,_childUI,_AchievementChild_blitz)
+							--hApi.MoveItemList(nil,touchY-_touchY,_childUI,_AchievementChild_slot)
+						
+							--_touchX,_touchY = touchX,touchY
+							--_vectorY = touchY - _vectorD
+						--elseif (touchY-_touchY) < 0 and math.abs(touchX-_touchX) < 80 then
+							----print("下")
+							----只有当前页面是英雄卡片时
+							----if _m_page_state == 1 then
+								----hApi.MoveItemList(nil,touchY-_touchY,_childUI,_Cardslotlist)
+								----hApi.MoveItemList(nil,touchY-_touchY,_childUI,_HeroCardlist)
+								
+							----end
+							----当位成就页面时 _AchievementChild_slot
+							--if _m_page_state == 2 then
+								--hApi.MoveItemList(nil,touchY-_touchY,_childUI,_AchievementChild)
+								--hApi.MoveItemList(nil,touchY-_touchY,_childUI,_AchievementChild_star)
+								--hApi.MoveItemList(nil,touchY-_touchY,_childUI,_AchievementChild_richi)
+								--hApi.MoveItemList(nil,touchY-_touchY,_childUI,_AchievementChild_blitz)
+								--hApi.MoveItemList(nil,touchY-_touchY,_childUI,_AchievementChild_slot)
+							--end
+							--_touchX,_touchY = touchX,touchY
+							--_vectorY = touchY - _vectorD
+						--end
+					--end
+				----抬起
+				--elseif touchMode == 2 then
+					----if _vectorY > 0  and math.abs(_vectorY) > 100 then
+						----_indexY = _indexY - 1
+					----elseif _vectorY < 0 and math.abs(_vectorY) > 100 then
+						----_indexY = _indexY + 1
+					----end
+					----_vectorY = 0
+					--if _M_State == 1 then
+						--_M_State = 2
+						----只有当前页面是英雄卡片时
+						--if _m_page_state == 1 then
+							--if _vectorY > 0  and math.abs(_vectorY) > 100 then
+								--_indexY = _indexY - 1
+							--elseif _vectorY < 0 and math.abs(_vectorY) > 100 then
+								--_indexY = _indexY + 1
+							--end
+							--_vectorY = 0
+							----超行限制
+							--if _indexY > 0 then 
+								--_indexY = 0 
+							--elseif _indexY < _MaxIndexY then 
+								--_indexY = _MaxIndexY
+							--end
+							----根据当前行数进行重置卡片位置动画
+							--_ResetCardPos(_indexY)
+						--end
+
+						----当位成就页面时
+						--if _m_page_state == 2 then
+							--if _vectorY > 0  and math.abs(_vectorY) > 30 then
+								--_indexY = _indexY - math.floor(math.abs(_vectorY)/30)
+							--elseif _vectorY < 0 and math.abs(_vectorY) > 30 then
+								--_indexY = _indexY + math.floor(math.abs(_vectorY)/30)
+							--end
+							--_vectorY = 0
+							----超行限制
+							--if _indexY > 0 then 
+								--_indexY = 0 
+							--elseif _indexY < _MaxIndexY then 
+								--_indexY = _MaxIndexY
+							--end
+
+							----根据当前行数进行重置卡片位置动画
+							--_Reset_AchievementPos(_indexY)
+						--end
+						
+					--end
+				--end
+
+				--if touchMode == 2 then
+					----if _m_page_state == 1 then
+						----BtnFrm:active()
+					----end
+				--end
+			--end
+		--end,
+	--})
+
+	--_frm = hGlobal.UI.PlayerCardHeroFrm
+	--_parent = _frm.handle._n
+	--_childUI = _frm.childUI
+
+	----CCClippingNode 的创建
+	--clipper = CCClippingNode:create(_parent)
+	----clipper:setTag(kTagClipperNode)
+	--clipper:setAnchorPoint(ccp(0, 0))
+	--clipper:setPosition(ccp(0,0))
+	----绑定到裁剪Layer
+	--hUI.__static.uiClippingLayer:addChild(clipper,1)
+	
+------------------------------------------------------英雄卡片相关--------------------------------------------------
+	--local _removeHeroCard = function()
+		----删掉此玩家的英雄卡片
+		--for i = 1,#_HeroCardlist do
+			--hApi.safeRemoveT(_childUI,_HeroCardlist[i])
+		--end
+		--_HeroCardlist = {}
+		
+		--for i = 1,#_Cardslotlist do
+			--hApi.safeRemoveT(_childUI,_Cardslotlist[i])
+		--end
+		--_Cardslotlist = {}
+		
+	--end
+	----根据英雄卡登记获得背景颜色
+	--local _getCardBGmodel = function(mode)
+		--return "UI:PANEL_CARD_0"..mode
+	--end
+
+	----8个点开英雄卡片的btn 位置恒定
+	--local _HeroListId = {}
+	--local _hero_style = 1
+	--for i = 1,8 do
+		--_childUI["HeroCardbtn_"..i] = hUI.button:new({
+			--parent = _parent,
+			--dragbox = _childUI["dragBox"],
+			--model = -1,
+			--x = 100 + (i-1)% 4* 145,
+			--y = -72 - math.ceil((i-4)/4) * 185,
+			--w = 128,
+			--h = 128,
+			----failcall = 1,
+			--code = function(self)
+				----英雄ID的启示索引
+				--if _M_State ~= 0 or _hero_style ~= 1 then return end
+				--local tempN = 4*math.abs(_indexY)	
+				--if _HeroListId[i+tempN] then
+					----_frm:show(0)
+					--hApi.PlaySound("button")
+					----BtnFrm:show(0)
+					----hGlobal.event:event("LocalEvent_HeroInfoFram",0,_HeroListId[i+tempN].id)
+					
+					--hGlobal.event:event("LocalEvent_show_phone_herocard",5,_HeroListId[i+tempN].id,0)
+					
+					----hGlobal.event:event("LocalEvent_HeroCardFram",_HeroListId[i+tempN])
+				--end
+			--end,
+		--})
+	--end
+	
+	----隐藏所有的英雄卡片背景槽子
+	--local _hideheroCardslot = function(state)
+		--local bool = nil
+		--local btnstate = 0
+		--if state == 0 then
+			--bool = flase
+			--btnstate = -1
+			--_removeHeroCard()
+		--else
+			--bool = true
+			--btnstate = 1
+		--end
+		--for i = 1,#_Cardslotlist do
+			--_childUI[_Cardslotlist[i]].handle._n:setVisible(bool)
+		--end
+		--for i = 1,8 do
+			--_childUI["HeroCardbtn_"..i]:setstate(btnstate)
+		--end
+	--end
+
+	----显示英雄卡片
+	--local _showherocard = function(herolist,mode)
+		--_hero_style = mode
+		--local listN = #herolist
+		--if g_vs_number <= 4 then
+			--if listN > 8 then
+				--_childUI["BtnScenLast"]:setstate(-1)
+				--_childUI["BtnScenNext"]:setstate(1)
+			--else
+				--_childUI["BtnScenLast"]:setstate(-1)
+				--_childUI["BtnScenNext"]:setstate(-1)
+			--end
+		--end
+		--_M_State = 0 
+		--_indexY = 0
+		
+		----删除上一次创建的英雄卡片
+		--_removeHeroCard()
+		----BtnFrm.childUI["SelectBorder"].handle._n:setVisible(false)
+		--_MaxIndexY = -math.ceil(listN/4) +2
+		--if _MaxIndexY > 0 then _MaxIndexY = 0 end
+		--_MaxHeroNum = math.ceil(listN/4) * 4
+		--if _MaxHeroNum < 8 then _MaxHeroNum = 8 end
+		----画出背景空的卡片槽子
+		--for i = 1,_MaxHeroNum do
+			--_childUI["HeroCardBtnslot"..i]= hUI.image:new({
+				--parent = _parent,
+				--model = "UI:Card_slot",
+				--x = _FrmHeroCardPosX + (i-1)% 4 * 145,
+				--y = _FrmHeroCardPosY -20 - math.ceil((i-4)/4) * 185,
+				--z = -1,
+			--})
+			--_Cardslotlist[#_Cardslotlist+1] = "HeroCardBtnslot"..i
+			
+			--if math.ceil((i-4)/4) > 1 then
+				--_childUI[_Cardslotlist[i]].handle._n:setVisible(false)
+			--end
+		--end
+
+		----重置所有英雄卡片的背景槽子
+		----for i = 1,#_Cardslotlist do 
+			----_ShowPosX,_ShowPosY = _FrmHeroCardPosX + (i-1)% 4 * 145, _FrmHeroCardPosY -20 - math.ceil((i-4)/4) * 185
+			----_childUI[_Cardslotlist[i]].data.x,_childUI[_Cardslotlist[i]].data.y = _ShowPosX,_ShowPosY
+			----_childUI[_Cardslotlist[i]].handle._n:setPosition(_ShowPosX,_ShowPosY)
+			------初始化时 超过2行的不显示
+		----end
+
+		----英雄卡片列表
+		--if #herolist > 0 then
+			--for i = 1,listN do
+				--if herolist[i].id ~= nil then
+					--_childUI["HeroCard_"..i] = hUI.button:new({
+						--parent = _parent,
+						--model = hVar.tab_unit[herolist[i].id].portrait,
+						--x = _FrmHeroCardPosX + (i-1)% 4 * 145,
+						--y = _FrmHeroCardPosY - math.ceil((i-4)/4) * 185,
+						--w = 128,
+						--h = 128,
+						--failcall = 1,
+					--})
+					--_HeroCardlist[#_HeroCardlist+1] = "HeroCard_"..i
+					
+					----初始化时 超过2行的不显示
+					--if math.ceil((i-4)/4) > 1 then 
+						--_childUI["HeroCard_"..i].handle._n:setVisible(false)
+					--end
+
+					--_childUI["HeroCard_"..i].childUI["bg"] = hUI.image:new({
+						--parent = _childUI["HeroCard_"..i].handle._n,
+						--model = _getCardBGmodel(mode),
+						--x = 0,
+						--y = -20,
+						--z = -1,
+					--})
+					
+					--_childUI["HeroCard_"..i].childUI["heroLv"] = hUI.label:new({
+						--parent = _childUI["HeroCard_"..i].handle._n,
+						--x = -43,
+						--y = -96,
+						--text = herolist[i].attr.level or 1,--"lv "..herolist[i].attr.level,
+						--size = 16,
+						--font = "num",
+						--align = "MC",
+						--width = 200,
+					--})
+
+					--_childUI["HeroCard_"..i].childUI["heroName"] = hUI.label:new({
+						--parent = _childUI["HeroCard_"..i].handle._n,
+						--x = 15,
+						--y = -96,
+						--text = hVar.tab_stringU[herolist[i].id][1],
+						--size = 24,
+						--font = hVar.FONTC,
+						--align = "MC",
+						--border = 1,
+					--})
+
+					--for j = 1,5 do
+						--_childUI["HeroCard_"..i].childUI["HERO_STAR"..j] = hUI.image:new({
+							--parent = _childUI["HeroCard_"..i].handle._n,
+							--model = "UI:HERO_STAR",
+							--x = -49 + (j-1)*16,
+							--y = -73,
+						--})
+					--end
+					
+					----将星 标记 每周拥有这个标记的武将 游戏时积分会 翻倍 
+					--for j = 1,#g_HeroWeekStar do
+						--if herolist[i].id == g_HeroWeekStar[j][1] then
+							--_childUI["HeroCard_"..i].childUI["double_score"] = hUI.image:new({
+								--parent = _childUI["HeroCard_"..i].handle._n,
+								--model = "ICON:ATTR_exp",
+								--scale = 0.7,
+								--x = 46,
+								--y = 50,
+							--})
+						--end
+					--end
+				--end
+			--end
+		--end
+	--end
+
+	--if g_vs_number <= 4 then
+		----临时的翻页按钮
+		--_childUI["BtnScenNext"] = hUI.button:new({
+			--parent = _parent,
+			--model = "Action:button_up_down",
+			--animation = "Action_Up",
+			--dragbox = _childUI["dragBox"],
+			--x = 620,
+			--y = -180,
+			--scaleT = 0.9,
+			--code = function(self)
+				--self:setstate(-1)
+				---- 临时做法
+				--local  tempIndoexY = -1
+				--_indexY = -1
+				--_tempX = 0
+				--for i = 1,#_Cardslotlist do 
+					--_childUI[_Cardslotlist[i]].handle._n:setVisible(true)
+					--_ShowPosX,_ShowPosY = _FrmHeroCardPosX + _tempX * 145, _FrmHeroCardPosY -20 - tempIndoexY * 185
+					--_childUI[_Cardslotlist[i]].data.x,_childUI[_Cardslotlist[i]].data.y = _ShowPosX,_ShowPosY
+					--_childUI[_Cardslotlist[i]].handle._n:setPosition(_ShowPosX,_ShowPosY)
+					--if tempIndoexY < 0 or tempIndoexY > 1 then 
+						--_childUI[_Cardslotlist[i]].handle._n:setVisible(false)
+					--end
+					--_tempX = _tempX + 1
+					--if _tempX > 3 then
+						--_tempX = 0
+						--tempIndoexY = tempIndoexY + 1
+					--end
+				--end
+
+				--tempIndoexY = -1
+				--_tempX = 0
+				--for i = 1,#_HeroCardlist do
+					--_childUI[_HeroCardlist[i]].handle._n:setVisible(true)
+					--_ShowPosX,_ShowPosY = _FrmHeroCardPosX + _tempX * 145, _FrmHeroCardPosY - tempIndoexY * 185
+					--_childUI[_HeroCardlist[i]].data.x,_childUI[_HeroCardlist[i]].data.y = _ShowPosX,_ShowPosY
+					--_childUI[_HeroCardlist[i]].handle._n:setPosition(_ShowPosX,_ShowPosY)
+					--if tempIndoexY < 0 or tempIndoexY > 1 then 
+						--_childUI[_HeroCardlist[i]].handle._n:setVisible(false)
+					--end
+					--_tempX = _tempX + 1
+					--if _tempX > 3 then
+						--_tempX = 0
+						--tempIndoexY = tempIndoexY + 1
+					--end
+				--end
+				--_childUI["BtnScenLast"]:setstate(1)
+			--end,
+		--})
+		--_childUI["BtnScenNext"].handle.s:setRotation(-90)
+
+		----翻上一页按钮
+		--_childUI["BtnScenLast"] = hUI.button:new({
+			--parent = _parent,
+			--model = "Action:button_up_down",
+			--animation = "Action_Down",
+			--dragbox = _childUI["dragBox"],
+			--x = 620,
+			--y = -180,
+			--scaleT = 0.9,
+			--code = function(self)
+				--self:setstate(-1)
+				--local  tempIndoexY = 0
+				--_indexY = 0
+				--_tempX = 0
+				--for i = 1,#_Cardslotlist do 
+					--_childUI[_Cardslotlist[i]].handle._n:setVisible(true)
+					--_ShowPosX,_ShowPosY = _FrmHeroCardPosX + _tempX * 145, _FrmHeroCardPosY -20 - tempIndoexY * 185
+					--_childUI[_Cardslotlist[i]].data.x,_childUI[_Cardslotlist[i]].data.y = _ShowPosX,_ShowPosY
+					--_childUI[_Cardslotlist[i]].handle._n:setPosition(_ShowPosX,_ShowPosY)
+					--if tempIndoexY < 0 or tempIndoexY > 1 then 
+						--_childUI[_Cardslotlist[i]].handle._n:setVisible(false)
+					--end
+					--_tempX = _tempX + 1
+					--if _tempX > 3 then
+						--_tempX = 0
+						--tempIndoexY = tempIndoexY + 1
+					--end
+				--end
+
+				--tempIndoexY = 0
+				--_tempX = 0
+				--for i = 1,#_HeroCardlist do
+					--_childUI[_HeroCardlist[i]].handle._n:setVisible(true)
+					--_ShowPosX,_ShowPosY = _FrmHeroCardPosX + _tempX * 145, _FrmHeroCardPosY - tempIndoexY * 185
+					--_childUI[_HeroCardlist[i]].data.x,_childUI[_HeroCardlist[i]].data.y = _ShowPosX,_ShowPosY
+					--_childUI[_HeroCardlist[i]].handle._n:setPosition(_ShowPosX,_ShowPosY)
+					--if tempIndoexY < 0 or tempIndoexY > 1 then 
+						--_childUI[_HeroCardlist[i]].handle._n:setVisible(false)
+					--end
+					--_tempX = _tempX + 1
+					--if _tempX > 3 then
+						--_tempX = 0
+						--tempIndoexY = tempIndoexY + 1
+					--end
+				--end
+				--_childUI["BtnScenNext"]:setstate(1)
+			--end,
+		--})
+		--_childUI["BtnScenLast"].handle.s:setRotation(-90)
+		--_childUI["BtnScenLast"]:setstate(-1)
+	--end
+
+	---- 为了可以在 clipper 层之上 添加分类界面 故需要 在这之前 再做一个 frm 用来添加一些 最前面的 btn显示
+	----增加 英雄卡类型分类选项，之所以放在这里是因为 英雄卡片面板需要 clipper
+	----BtnFrm = hUI.frame:new({
+		----x = 945,
+		----y = 478,
+		----dragable = 0,
+		----w = 50,
+		----h = 366,
+		----titlebar = 0,
+		----show = 0,
+		----bgAlpha = 0,
+		----background = 0,
+	----})
+
+	----BtnFrm.childUI["SelectBorder"] = hUI.image:new({
+		----parent = BtnFrm.handle._n,
+		----mode = "image",
+		----model = "UI:Button_SelectBorder",
+		----align = "MC",
+		----w = 54,
+		----h = 44,
+	----})
+	----BtnFrm.childUI["SelectBorder"].handle._n:setVisible(false)
+
+	----if g_lua_src ==1 then
+		------主将
+		----BtnFrm.childUI["card_style_1"] = hUI.button:new({
+			----parent = BtnFrm.handle._n,
+			----model = "UI:PANEL_CARD_01",
+			----w = 50,
+			----h = 40,
+			----dragbox = BtnFrm.childUI["dragBox"],
+			----x = 25,
+			----y = -20,
+			----code = function(self)
+				----BtnFrm.childUI["SelectBorder"].handle._n:setPosition(self.data.x,self.data.y)
+				----_showherocard(_HeroListId,1)
+				----BtnFrm.childUI["SelectBorder"].handle._n:setVisible(true)
+			----end,
+		----})
+		------副将
+		----BtnFrm.childUI["card_style_2"] = hUI.button:new({
+			----parent = BtnFrm.handle._n,
+			----model = "UI:PANEL_CARD_03",
+			----w = 50,
+			----h = 40,
+			----dragbox = BtnFrm.childUI["dragBox"],
+			----x = 25,
+			----y = -64,
+			----code = function(self)
+				----BtnFrm.childUI["SelectBorder"].handle._n:setPosition(self.data.x,self.data.y)
+				----_showherocard(luaGetAssistantHero(),3)
+				----BtnFrm.childUI["SelectBorder"].handle._n:setVisible(true)
+			----end,
+		----})
+
+	----end
+
+	----hGlobal.event:listen("LocalEvent_ActiveBtnFrm","__ActiveBtnFrm",function()
+		----BtnFrm:show(1)
+		----BtnFrm:active()
+	----end)
+	----hGlobal.event:listen("LocalEvent_ActiveBtnFrm_Close","__ActiveBtnFrm_Close",function()
+		----BtnFrm:show(0)
+	----end)
+------------------------------------------------------成就相关------------------------------------------------------
+	----当前成就表长度
+	--local MaxLen = {}
+	--for k,v in pairs(hVar.MAP_INFO) do
+		--if v.mapType and v.mapType == 1 and v.level and v.level > 0 then
+			--MaxLen[v.level] = k
+		--end
+	--end
+	
+	----成就说明面板
+	--local achiinfofram = nil 
+	--achiinfofram = hUI.frame:new({
+			--x = 450,
+			--y = 450,
+			--background = "UI:PANEL_INFO_MINI",
+			--dragable = 2,
+			--show = 0,
+			--titlebar = 0,
+			--closebtn = "BTN:PANEL_CLOSE",
+			--closebtnX = 365,
+			--closebtnY = -35,
+	--})
+	--local _achichildUI = achiinfofram.childUI
+
+	----成就名称
+	--_achichildUI["achiName"] = hUI.label:new({
+		--size = 28,
+		--parent = achiinfofram.handle._n,
+		--align = "MC",
+		--font = hVar.FONTC,
+		--x = 220,
+		--y = -50,
+		--width = 270,
+		--RGB = {255,215,0},
+		--border = 1,
+		--text = "",
+	--})
+
+	----成就图片背景
+	--_achichildUI["achi_slot"] = hUI.image:new({
+		--parent = achiinfofram.handle._n,
+		--model = "UI_frm:slot",
+		--animation = "lightSlim",
+		--x = 70,
+		--y = -65,
+		--w = 60,
+	--})
+
+	----成就信息
+	--_achichildUI["achiInfoLab"] = hUI.label:new({
+		--size = 26,
+		--parent = achiinfofram.handle._n,
+		--align = "LC",
+		--font = hVar.FONTC,
+		--x = 55,
+		--y = -140,
+		--width = 300,
+		----RGB = {255,215,0},
+		--border = 1,
+		--text = hVar.tab_string["__TEXT_ThankForPlayer"],
+	--})
+
+	----显示 动画的回调
+	--local _showAchiFrmCallBack = function()
+		--achiinfofram:active()
+	--end
+
+	----根据地图level 获得 地图名字key
+	--local getmapnamefromlevel = function(level)
+		--for k,v in pairs(hVar.MAP_INFO) do
+			--if v.level and v.level == level then
+				--return k
+			--end
+		--end
+	--end
+
+	--local getmapscore = function(level)
+		--local mapkey = getmapnamefromlevel(level)
+		--for k,v in pairs(hVar.MAP_SCORE) do
+			--if k == mapkey then
+				--return v
+			--end
+		--end
+	--end
+	----显示 成就信息面板动画
+	--local _showAchiFrm = function(mode,level)
+		--_achichildUI["achiName"]:setText("")
+		--_achichildUI["achiInfoLab"]:setText("")
+		--hApi.safeRemoveT(_achichildUI,"achi_image")
+		--if _m_page_state ~= 2 then return end
+		--local model = nil
+		--local mapScore = getmapscore(level)
+		
+		--if mapScore ~= nil then
+			----评价信息
+			--if mode == "star" then
+				--local star = mapScore[4][1]
+				--_achichildUI["achiName"]:setText(hVar.tab_string["__TEXT_LevelStar"])
+				--_achichildUI["achiInfoLab"]:setText(hVar.tab_string["__TEXT_LevelStarInfo1"]..star..hVar.tab_string["__TEXT_LevelStarInfo2"])
+				--model = "UI:STAR_YELLOW"
+			----富可敌国
+			--elseif mode == "rich" then
+				--local gold = mapScore[5] or 0
+				--_achichildUI["achiName"]:setText(hVar.tab_string["__TEXT_Achievement"].." : "..hVar.tab_string["__TEXT_LevelRich"])
+				--_achichildUI["achiInfoLab"]:setText(hVar.tab_string["__TEXT_LevelRichInfo"]..gold.." "..hVar.tab_stringU[42000][1])
+				--model = "UI:ach_weathy"
+			----闪电战
+			--elseif mode == "blitz" then
+				--local day = (mapScore[6] or 0) + 1 
+				--_achichildUI["achiName"]:setText(hVar.tab_string["__TEXT_Achievement"].." : "..hVar.tab_string["__TEXT_LevelBlitz"])
+				--_achichildUI["achiInfoLab"]:setText(day..hVar.tab_string["__TEXT_LevelBlitzInfo"])
+				--model = "UI:ach_lightning"
+			----皇冠
+			--elseif mode == "imperial" then
+				--_achichildUI["achiName"]:setText(hVar.tab_string["__TEXT_Achievement"].." : "..hVar.tab_string["__TEXT_LevelImperial"])
+				--_achichildUI["achiInfoLab"]:setText(hVar.tab_string["__TEXT_LevelImperialInfo"])
+				--model = "UI:ach_king"
+			--else
+				--print("that's fuck")
+			--end
+			
+			--_achichildUI["achi_image"] = hUI.image:new({
+				--parent = achiinfofram.handle._n,
+				--model = model,
+				--x = 70,
+				--y = -65,
+				--w = 55,
+			--})
+
+			--achiinfofram:show(1)
+			--achiinfofram.handle._n:runAction(CCSequence:createWithTwoActions(CCJumpTo:create(0.1,ccp(achiinfofram.data.x,achiinfofram.data.y),5,1),CCCallFunc:create(_showAchiFrmCallBack)))
+
+		--end
+	--end
+
+	----成就列表 clipper 400,470
+	--for i = 1,#MaxLen do
+		--_childUI["achilist_"..i] = hUI.label:new({
+			--parent =  _parent,
+			--size = 24,
+			--align = "LT",
+			--font = hVar.FONTC,
+			--x = _achiX,
+			--y = _achiY - (i-1)*_offy,
+			--width = 540,
+			--text = "fuck fuck",
+		--})
+		--_childUI["achilist_"..i].handle._n:setVisible(false)
+		--_Achilist[#_Achilist+1] = _childUI["achilist_"..i]
+		--_AchievementChild[#_AchievementChild+1] = "achilist_"..i
+
+		--_childUI["achilist_finish_"..i] =hUI.image:new({
+			--parent = _childUI["achilist_"..i].handle._n,
+			--model = "UI:finish",
+			--x = _achiOffBeginX + 315,
+			--y = _achiOffBeginY,
+			--w = _h,
+		--})
+		--_childUI["achilist_finish_"..i].handle._n:setVisible(false)
+		----_AchievementChild[#_AchievementChild+1] = "achilist_finish_"..i
+		
+		----用于显示成就星星的槽子
+		--for j = 1,3 do
+			--_childUI["star_slot_"..i..j] =hUI.image:new({
+				--parent = _childUI["achilist_"..i].handle._n,
+				--model = "UI:star_slot",
+				--x = _achiOffBeginX + (j-1)*40,
+				--y = _achiOffBeginY,
+				--w = 36,
+				--h = 36,
+			--})
+			--_childUI["star_slot_"..i..j].handle._n:setVisible(false)
+			----_AchievementChild[#_AchievementChild+1] = "star_slot_"..i..j
+		--end
+		
+		----评价说明 按钮
+		--_childUI["star_button_"..i] = hUI.button:new({
+			--parent = _parent,
+			--model = -1,
+			--dragbox = _childUI["dragBox"],
+			--w = 140,
+			--h = _h,
+			--x = _achiOffBeginX + 60,
+			--y = -_achiOffBeginY - 13 -(i-1)*35,
+			--code = function()
+				----print(_M_State,"aaaaaaaaaaaaaaaaaaaaa")
+				--if _M_State == 0 then
+					--_showAchiFrm("star",i)
+				--end
+			--end,
+		--})
+		--_AchievementChild_star[#_AchievementChild_star+1] = "star_button_"..i
+
+		----富可敌国槽子
+		--_childUI["achilist_rich_slot_"..i] =hUI.image:new({
+			--parent = _childUI["achilist_"..i].handle._n,
+			--model = "UI:ach_weathy_slot",
+			--x = _achiOffBeginX + 150,
+			--y = _achiOffBeginY,
+			--w = _h,
+			--h = _h,
+		--})
+		----_AchievementChild[#_AchievementChild+1] = "achilist_rich_slot_"..i
+
+		--_childUI["achilist_rich_"..i] =hUI.image:new({
+			--parent = _childUI["achilist_"..i].handle._n,
+			--model = "UI:ach_weathy",
+			--x = _achiOffBeginX + 150,
+			--y = _achiOffBeginY,
+			--w = _h,
+			--h = _h,
+
+		--})
+		--_childUI["achilist_rich_"..i].handle._n:setVisible(false)
+		----_AchievementChild[#_AchievementChild+1] = "achilist_rich_"..i
+		
+		--_childUI["achilist_rich_button_"..i] = hUI.button:new({
+			--parent = _parent,
+			--model = -1,
+			--dragbox = _childUI["dragBox"],
+			--w = _h,
+			--h = _h,
+			--x = _achiOffBeginX + 175,
+			--y = -_achiOffBeginY - 13 -(i-1)*35,
+			--code = function()
+				--if _M_State == 0 then
+					--_showAchiFrm("rich",i)
+				--end
+			--end,
+		--})
+		--_AchievementChild_richi[#_AchievementChild_richi+1] = "achilist_rich_button_"..i
+
+		----闪电战槽子
+		--_childUI["achilist_blitz_slot_"..i] =hUI.image:new({
+			--parent = _childUI["achilist_"..i].handle._n,
+			--model = "UI:ach_lightning_slot",
+			--x = _achiOffBeginX + 210,
+			--y = _achiOffBeginY,
+			--w = _h,
+			--h = _h,
+		--})
+		----_AchievementChild[#_AchievementChild+1] = "achilist_blitz_slot_"..i
+		
+		--_childUI["achilist_blitz_"..i] =hUI.image:new({
+			--parent = _childUI["achilist_"..i].handle._n,
+			--model = "UI:ach_lightning",
+			--x = _achiOffBeginX + 210,
+			--y = _achiOffBeginY,
+			--w = _h,
+			--h = _h,
+		--})
+		--_childUI["achilist_blitz_"..i].handle._n:setVisible(false)
+		
+
+		--_childUI["achilist_blitz_button_"..i] = hUI.button:new({
+			--parent = _parent,
+			--model = -1,
+			--dragbox = _childUI["dragBox"],
+			--w = _h,
+			--h = _h,
+			--x = _achiOffBeginX + 235,
+			--y = -_achiOffBeginY - 13 -(i-1)*35,
+			--code = function()
+				--if _M_State == 0 then
+					--_showAchiFrm("blitz",i)
+				--end
+			--end,
+		--})
+		--_AchievementChild_blitz[#_AchievementChild_blitz+1] = "achilist_blitz_button_"..i
+
+		----皇冠
+		--_childUI["achilist_imperial_slot_"..i] =hUI.image:new({
+			--parent = _childUI["achilist_"..i].handle._n,
+			--model = "UI:ach_king_slot",
+			--x = _achiOffBeginX + 270,
+			--y = _achiOffBeginY,
+			--w = _h,
+			--h = _h,
+		--})
+		--_childUI["achilist_imperial_slot_"..i].handle._n:setVisible(false)
+		----_AchievementChild[#_AchievementChild+1] = "achilist_imperial_slot_"..i
+
+		--_childUI["achilist_imperial_"..i] =hUI.image:new({
+			--parent = _childUI["achilist_"..i].handle._n,
+			--model = "UI:ach_king",
+			--x = _achiOffBeginX + 270,
+			--y = _achiOffBeginY,
+			--w = _h,
+			--h = _h,
+		--})
+		--_childUI["achilist_imperial_"..i].handle._n:setVisible(false)
+		----_AchievementChild[#_AchievementChild+1] = "achilist_imperial_"..i
+
+		--_childUI["achilist_imperial_button_"..i] = hUI.button:new({
+			--parent = _parent,
+			--model = -1,
+			--dragbox = _childUI["dragBox"],
+			--w = _h,
+			--h = _h,
+			--x = _achiOffBeginX + 295,
+			--y = -_achiOffBeginY - 13 -(i-1)*35,
+			--code = function()
+				--if _M_State == 0 then
+					--_showAchiFrm("imperial",i)
+				--end
+			--end,
+		--})
+		--_AchievementChild_slot[#_AchievementChild_slot+1] = "achilist_imperial_button_"..i
+
+	--end
+
+	--local StarList = {}
+	----显示并创建成就界面
+	--local _createAchievementfram = function(curPlayerName)
+		--_m_page_state= 2
+		--_M_State = 0 
+		----根据当前玩家名字获取成就列表
+		----删除掉星星表
+		--for i = 1,#StarList do
+			--hApi.safeRemoveT(_childUI,StarList[i])
+		--end
+		--StarList = {}
+
+		--local achilist = nil
+		--local playerinfo = nil
+
+		--playerinfo = LuaGetPlayerData()
+		--if playerinfo then
+			--achilist = playerinfo.achievement
+		--end
+		--local listN = #MaxLen
+
+		--_MaxIndexY = -(listN - 10)
+
+		--for i = 1, listN do
+			--_Achilist[i]:setText(hVar.MAP_INFO[MaxLen[i]].name)
+			--_Achilist[i].handle._n:setVisible(true)
+
+			--_Achilist[i].handle._n:setPosition(_achiX,-13 - (i-1)*35)
+			--_Achilist[i].data.y = -13 - (i-1)*35
+			--_Achilist[i].data.x = _achiX
+			
+			--_childUI["star_button_"..i]:setstate(1)
+			--_childUI["achilist_rich_button_"..i]:setstate(1)
+			--_childUI["achilist_blitz_button_"..i]:setstate(1)
+			--_childUI["achilist_imperial_button_"..i]:setstate(1)
+
+			----通关信息
+			--if LuaGetPlayerMapAchi(MaxLen[i],hVar.ACHIEVEMENT_TYPE.LEVEL) == 1 then
+				--_childUI["achilist_finish_"..i].handle._n:setVisible(true)
+			--end
+			
+			--_childUI["achilist_rich_slot_"..i].handle._n:setVisible(true)
+			----富可敌国
+			--if LuaGetPlayerMapAchi(MaxLen[i],hVar.ACHIEVEMENT_TYPE.RICHMAN) == 1 then
+				--_childUI["achilist_rich_"..i].handle._n:setVisible(true)
+			--end
+
+			--_childUI["achilist_blitz_slot_"..i].handle._n:setVisible(true)
+			----闪电战
+			--if LuaGetPlayerMapAchi(MaxLen[i],hVar.ACHIEVEMENT_TYPE.BLITZ) == 1 then
+				--_childUI["achilist_blitz_"..i].handle._n:setVisible(true)
+			--end
+			
+			----皇冠
+			--_childUI["achilist_imperial_slot_"..i].handle._n:setVisible(true)
+			--if LuaGetPlayerMapAchi(MaxLen[i],hVar.ACHIEVEMENT_TYPE.IMPERIAL) == 1 then
+				--_childUI["achilist_imperial_"..i].handle._n:setVisible(true)
+			--end
+
+			----打开全部的星星槽子
+			--for j = 1,3 do
+				--_childUI["star_slot_"..i..j].handle._n:setVisible(true)
+			--end
+			--local nScore = LuaGetPlayerMapAchi(MaxLen[i],hVar.ACHIEVEMENT_TYPE.MAPSTAR)
+			--if nScore ~= nil then 
+				--local miniSta,maxStar ,starmini,starmax = nScore%2,math.ceil(nScore/2),"UI:star_half","UI:STAR_YELLOW"
+				--for j = 1,maxStar do
+					----奇数
+					--local model = starmax
+					--if miniSta == 1 and j == maxStar then
+						--model = starmini
+					--end
+
+					--_childUI["star_"..i..j] = hUI.image:new({
+						--parent = _childUI["achilist_"..i].handle._n,
+						--model = model,
+						--w = 36,
+						--h = 36,
+						--x = _achiOffBeginX + (j-1)*40,
+						--y = _achiOffBeginY,
+						--scale = 0.9,
+					--})
+					--StarList[#StarList+1] = "star_"..i..j
+					----_AchievementChild[#_AchievementChild+1] = "star_"..i..j
+				--end
+			--end
+		--end
+		--for i = 11,#MaxLen do
+			--_Achilist[i].handle._n:setVisible(false)
+		--end
+	--end
+
+	----隐藏成就列表界面
+	--local _hideAchievenmentfram = function()
+		--for i = 1,#MaxLen do
+			--_childUI["achilist_"..i].handle._n:setVisible(false)
+			--_childUI["achilist_finish_"..i].handle._n:setVisible(false)	--通关信息
+			--_childUI["achilist_rich_slot_"..i].handle._n:setVisible(false)	--富可敌国
+			--_childUI["achilist_rich_"..i].handle._n:setVisible(false)
+			--_childUI["achilist_blitz_slot_"..i].handle._n:setVisible(false)	--闪电战
+			--_childUI["achilist_blitz_"..i].handle._n:setVisible(false)
+			--_childUI["achilist_imperial_slot_"..i].handle._n:setVisible(false)
+			--_childUI["achilist_imperial_"..i].handle._n:setVisible(false)
+			--_childUI["star_button_"..i]:setstate(-1)
+			--_childUI["achilist_rich_button_"..i]:setstate(-1)
+			--_childUI["achilist_blitz_button_"..i]:setstate(-1)
+			--_childUI["achilist_imperial_button_"..i]:setstate(-1)
+
+			--for j = 1,3 do
+				--_childUI["star_slot_"..i..j].handle._n:setVisible(false)
+			--end
+		--end
+
+		----删除掉星星表
+		--for i = 1,#StarList do
+			--hApi.safeRemoveT(_childUI,StarList[i])
+		--end
+		--StarList = {}
+	--end
+	--_hideAchievenmentfram()
+------------------------------------------------------勋章相关------------------------------------------------------
+	--local getMadelName = function(index,i)--勋章 文字
+		--if hVar.tab_stringME[index] ~= nil then
+			--if hVar.tab_stringME[index][i] ~= nil then
+				--return hVar.tab_stringME[index][i]
+			--else
+				--return ""
+			--end
+		--else
+			--return ""
+		--end
+	--end
+	
+	--local madelFrame = nil--具体的勋章面板
+	----创建一个具体的勋章面板
+	--madelFrame = hUI.frame:new({
+		--x = 300,
+		--y = 500,
+		--w = 450, 
+		--h = 400,
+		--dragable = 2,
+		--show = 0,
+		--closebtn = "BTN:PANEL_CLOSE",
+		--closebtnX = 440,
+		--closebtnY = -14,
+		----background = "UI:PANEL_INFO_M",
+		--bgMode = "tile",
+		--background = "UI:tip_item",
+		--border = 1,
+		--codeOnClose = function(self)
+			--hApi.safeRemoveT(self.childUI,"madelIcon")
+		--end
+	--})
+	--madelFrame.childUI["madelOff"] = hUI.image:new({
+			--parent = madelFrame.handle._n,
+			--model = "UI:talent_slot",
+			--x = 415,
+			--y = -360,
+			--w = 40,
+			--h = 40,
+	--})
+	--madelFrame.childUI["madelOn"] = hUI.image:new({
+			--parent = madelFrame.handle._n,
+			--model = "UI:talent",
+			--x = 415,
+			--y = -360,
+			--w = 40,
+			--h = 40,
+	--})
+	--madelFrame.childUI["madelName"]= hUI.label:new({
+			--size = 32,
+			--parent = madelFrame.handle._n,
+			--align = "MC",
+			--font = hVar.FONTC,
+			--x = 240,
+			--y = -30,
+			--width = 270,
+			--RGB = {255,215,0},
+			--border = 1,
+			--text = "",
+	--})
+	--madelFrame.childUI["madelInfo"]= hUI.label:new({
+			--size = 28,
+			--parent = madelFrame.handle._n,
+			--align = "LT",
+			--font = hVar.FONTC,
+			--x = 55,
+			--y = -65,
+			--width = 400,
+			--border = 1,
+			--text = "",
+	--})
+	--madelFrame.childUI["madelDetal"]= hUI.label:new({
+			--size = 28,
+			--parent = madelFrame.handle._n,
+			--align = "LT",
+			--font = hVar.FONTC,
+			--x = 55,
+			--y = -95,
+			--width = 370,
+			--border = 1,
+			--text = "",
+	--})
+	--madelFrame.childUI["madelProgressName"]= hUI.label:new({
+			--size = 28,
+			--parent = madelFrame.handle._n,
+			--align = "LT",
+			--font = hVar.FONTC,
+			--x = 55,
+			--y = -145,
+			--width = 350,
+			--border = 1,
+			--text = "",
+	--})
+	--madelFrame.childUI["madelProgressDetalBar"] = hUI.valbar:new({
+		--parent = madelFrame.handle._n,
+		--model = "UI:ValueBar",
+		--back = {model = "UI:ValueBar_Back",x=0,y=0,w=170,h=36},
+		--w = 170,
+		--h = 36,
+		--x = 210,
+		--y = -140,
+		--align = "LT",
+	--})
+	--madelFrame.childUI["madelProgressDetalBar"]:setV(0,100)
+
+	--madelFrame.childUI["madelProgressDetal"]= hUI.label:new({
+			--size = 28,
+			--parent = madelFrame.handle._n,
+			--align = "LT",
+			--font = hVar.FONTC,
+			--x = 255,
+			--y = -145,
+			--width = 350,
+			--border = 1,
+			--text = "",
+			--z = 1,
+	--})
+	--madelFrame.childUI["madelGift"]= hUI.label:new({
+		--size = 28,
+		--parent = madelFrame.handle._n,
+		--align = "LT",
+		--font = hVar.FONTC,
+		--x = 55,
+		--y = -255,
+		--width = 350,
+		--border = 1,
+		--text = hVar.tab_string["MadelGift"],
+	--})
+	--madelFrame.childUI["madelGiftGot"] = hUI.image:new({
+		--parent = madelFrame.handle._n,
+		--model = "UI:finish",
+		--x = 230,
+		--y = -370,
+	--})
+	--madelFrame.childUI["madelGiftGot"].handle._n:setVisible(false)
+	--local MedalID = 0
+	--local skillID = 0
+	--local skillLV = 0
+	--local tempMaxLevel = 0
+	--madelFrame.childUI["madelGiftGet"] = hUI.button:new({
+		--parent = madelFrame.handle._n,
+		--dragbox = madelFrame.childUI["dragBox"],
+		----w = 90,
+		----h = 45,
+		--x = 230,
+		--y = -370,
+		--scaleT = 0.9,
+		--label = hVar.tab_string["MadelGiftGet"],
+		--code = function(self,x,y,sus)
+			--if MedalID > 0 then
+				--madelFrame.childUI["madelGiftGet"]:setstate(-1)
+				--madelFrame.childUI["madelGiftGot"].handle._n:setVisible(true)
+				--LuaSetPlayerMedal(hVar.MEDAL_TYPE[MedalID],2)
+				
+				
+					--hGlobal.event:event("localEvent_ShowBattlefieldSkillFrm",{{skillID,skillLV}},nil,nil,1)
+				
+			--end
+		--end,
+	--})
+	--madelFrame.childUI["madelGiftGet"]:setstate(-1)
+	--madelFrame.childUI["madelIcon"] = nil
+	--local _MedalFrameActionCallback = function()
+		--madelFrame:active()
+	--end
+	----显示勋章具体信息与否 点亮其上的勋章与否
+	--local showBigMedalFrame = function(i,bShow,bOn)
+		--madelFrame.childUI["madelGift"].handle._n:setVisible(true)
+		--MedalID = i
+		--madelFrame.childUI["madelGiftGet"]:setstate(-1)
+		--madelFrame.childUI["madelGiftGot"].handle._n:setVisible(false)
+		--if LuaGetPlayerMedal(hVar.MEDAL_TYPE[i]) == 1 then
+			--madelFrame.childUI["madelGiftGet"]:setstate(1)
+		--elseif LuaGetPlayerMedal(hVar.MEDAL_TYPE[i]) == 2 then
+			--madelFrame.childUI["madelGiftGot"].handle._n:setVisible(true)
+		--end
+		--if madelFrame.childUI["tBG"] ~= nil then
+			--hApi.safeRemoveT(madelFrame.childUI,"tBG")
+		--end
+		--if madelFrame.childUI["typeicon"] ~= nil then
+			--hApi.safeRemoveT(madelFrame.childUI,"typeicon")
+		--end
+		--if madelFrame.childUI["tIcon"] ~= nil then
+			--hApi.safeRemoveT(madelFrame.childUI,"tIcon")
+		--end
+		--if madelFrame.childUI["info"] ~= nil then
+			--hApi.safeRemoveT(madelFrame.childUI,"info")
+		--end
+		--for j = 1,skillLV do
+			--if madelFrame.childUI["Level_star"..j] ~= nil then
+				--hApi.safeRemoveT(madelFrame.childUI,"Level_star"..j)
+			--end
+		--end
+		--for j = 1,tempMaxLevel do
+			--if madelFrame.childUI["Level_star_slot"..j] ~= nil then
+				--hApi.safeRemoveT(madelFrame.childUI,"Level_star_slot"..j)
+			--end
+		--end
+
+		----if i == 5 or i == 6 then
+			----skillID = tonumber(hVar.tab_stringME[i][5])
+			----skillLV = tonumber(hVar.tab_stringME[i][6])
+		----else
+			----skillID = tonumber(hVar.tab_stringME[i][4])
+			----skillLV = tonumber(hVar.tab_stringME[i][5])
+		----end
+		--skillID = hVar.MadelGift[i][1]
+		--skillLV = hVar.MadelGift[i][2]
+		--if skillID > 0 then
+			--tempMaxLevel = hVar.tab_tactics[skillID].level
+		--else
+			--madelFrame.childUI["madelGift"].handle._n:setVisible(false)
+			--madelFrame.childUI["madelGiftGet"]:setstate(-1)
+		--end
+		----madelFrame.childUI["madelSkillButton"] = hUI.button:new({
+			----parent = madelFrame.handle._n,
+			----dragbox = madelFrame.childUI["dragBox"],
+			----model = hVar.tab_tactics[tacticsId].icon,
+			----w = 45,
+			----h = 45,
+			----x = 195,
+			----y = -270,
+			----scaleT = 0.9,
+			----code = function(self,x,y,sus)
+				----hGlobal.event:event("localEvent_ShowBattlefieldSkillInfoFrm",tacticsId,tacticsLv,300,600,1,0)
+			----end,
+		----})
+		--if skillID > 0 then
+			--madelFrame.childUI["tBG"] = hUI.button:new({--战术技能的底板
+				--parent = madelFrame.handle._n,
+				--model = hApi.GetTacticsCardGB(tempMaxLevel,skillLV),
+				--dragbox = madelFrame.childUI["dragBox"],
+				--x = 230,
+				--y = -270,
+				--scaleT = 1.0,
+				--code = function(self)
+					--if g_phone_mode ~= 0 then
+						--hGlobal.event:event("localEvent_ShowPhoneBattlefieldSkillGameInfoFrm",skillID,skillLV,300,600,1,0)
+					--else
+						--hGlobal.event:event("localEvent_ShowBattlefieldSkillInfoFrm",skillID,skillLV,300,600,1,0)
+					--end
+				--end,
+			--})
+
+			--madelFrame.childUI["typeicon"]= hUI.image:new({
+				--parent = madelFrame.handle._n,
+				--model = hApi.GetTacticsCardTypeIcon(skillID,"model"),
+				--dragbox = madelFrame.childUI["dragBox"],
+				--x = 227,
+				--y = -213,
+				--scale = 0.4,
+			--})
+			--madelFrame.childUI["tIcon"]= hUI.image:new({
+				--parent = madelFrame.handle._n,
+				--model = hVar.tab_tactics[skillID].icon,
+				--x = 230,
+				--y = -280,
+				--w = 50,
+				--h = 50,
+			--})
+			--madelFrame.childUI["info"] = hUI.label:new({
+				--parent =madelFrame.handle._n,
+				--x = 230,
+				--y = -241,
+				--size = 18,
+				--align = "MC",
+				--border = 1,
+				--font = hVar.FONTC,
+				--width = 400,
+				--text = hVar.tab_stringT[skillID][1],
+			--})
+
+			--if tempMaxLevel >= 5 then
+				---- 常规 排列，技能Lv 大于等于5
+				--for j = 1,tempMaxLevel do
+					--madelFrame.childUI["Level_star_slot"..j] = hUI.image:new({
+						--parent = madelFrame.handle._n,
+						--model = "UI:HERO_STAR",
+						--x = 198 + (j-1)% 5 * 16,
+						--y = -317 - math.ceil((j-5)/5)*16,
+					--})
+					--madelFrame.childUI["Level_star_slot"..j].handle.s:setOpacity(100)
+				--end
+				
+				--for j = 1,skillLV do
+					--madelFrame.childUI["Level_star"..j] = hUI.image:new({
+						--parent = madelFrame.handle._n,
+						--model = "UI:HERO_STAR",
+						--x = 198 + (j-1)% 5 * 16,
+						--y = -317 - math.ceil((j-5)/5)*16,
+					--})
+				--end
+			--else
+				--local tempStartX = -1* (tempMaxLevel-1)*8
+				----居中显示
+				--for j = 1,tempMaxLevel do
+					--madelFrame.childUI["Level_star_slot"..j] = hUI.image:new({
+						--parent = madelFrame.handle._n,
+						--model = "UI:HERO_STAR",
+						--x = 230 + tempStartX+(j-1)*16,
+						--y = -317,
+					--})
+					--madelFrame.childUI["Level_star_slot"..j].handle.s:setOpacity(100)
+				--end
+				
+				--for j = 1,skillLV do
+					--madelFrame.childUI["Level_star"..j] = hUI.image:new({
+						--parent = madelFrame.handle._n,
+						--model = "UI:HERO_STAR",
+						--x = 230 + tempStartX+(j-1)*16,
+						--y = -317,
+					--})
+				--end
+			--end
+		--end
+		--madelFrame.childUI["madelProgressName"]:setText("")
+		--madelFrame.childUI["madelProgressDetal"]:setText("")
+		--madelFrame.childUI["madelProgressDetalBar"].handle._n:setVisible(false)
+		--if bShow >= 1 then
+			--hApi.safeRemoveT(madelFrame.childUI,"madelIcon")
+			--local temomodel = nil
+			--temomodel = hVar.tab_medal[i].icon
+			--if temomodel == nil then
+				--temomodel = "ICON:Imperial_Academy"
+			--end
+			--madelFrame.childUI["madelIcon"]= hUI.image:new({
+				--parent = madelFrame.handle._n,
+				--model = temomodel,
+				--x = 80,
+				--y = -25,
+				--w = 50,
+				--h = 50,
+			--})
+			--madelFrame.childUI["madelName"]:setText(getMadelName(i,1))
+			--madelFrame.childUI["madelInfo"]:setText(getMadelName(i,2))
+			--madelFrame.childUI["madelDetal"]:setText(getMadelName(i,3))
+			--if bOn >= 1 then
+				--madelFrame.childUI["madelOn"].handle._n:setVisible(true)
+			--else--没点亮的时候有进度显示进度
+				--madelFrame.childUI["madelOn"].handle._n:setVisible(false)
+				--if hVar.tab_medal[i].accumulate == 1 then
+					--madelFrame.childUI["madelProgressDetalBar"].handle._n:setVisible(true)
+					--madelFrame.childUI["madelProgressName"]:setText(getMadelName(i,4))
+					--local tNum = 0
+					--local nNum = 0
+					--local tTable = {}
+					--local bTable = {}
+					--if hVar.tab_medal[i].conditions[1][1] == "killunit" then
+						--dealNumberRelT(hVar.tab_medal[i].conditions[1][3],bTable,tTable)
+						--tNum = tTable[1]
+						--nNum = LuaGetPlayerCountVal("killunit",hVar.tab_medal[i].conditions[1][2])
+						--if hGlobal.WORLD.LastWorldMap ~= nil then
+							--if type(hGlobal.WORLD.LastWorldMap.data.daykillcount) == "table" then
+								--for k,v in pairs(hGlobal.WORLD.LastWorldMap.data.daykillcount) do
+									--if v[1] == hVar.tab_medal[i].conditions[1][2] then
+										--nNum = nNum + v[2]
+									--end
+								--end
+							--end
+						--end
+					--elseif hVar.tab_medal[i].conditions[1][1] == "forged" then
+						--tNum = hVar.tab_medal[i].conditions[1][2]
+						--nNum = LuaGetForgeCount()
+					--end
+					--madelFrame.childUI["madelProgressDetalBar"]:setV(nNum,tNum)
+					--madelFrame.childUI["madelProgressDetal"]:setText(nNum.."/ "..tNum)
+				--end
+			--end
+			--madelFrame:show(bShow)
+			--madelFrame.handle._n:runAction(CCSequence:createWithTwoActions(CCJumpTo:create(0.1,ccp(madelFrame.data.x,madelFrame.data.y),5,1),CCCallFunc:create(_MedalFrameActionCallback)))
+			
+		--end
+	--end
+
+	--hGlobal.event:listen("LocalEvent_showBigMedalFrame","showBigMedalFrame",function(i,bShow,bOn)
+		--showBigMedalFrame(i,bShow,bOn)
+	--end)
+
+	--local madelX = 290
+	--local madelY = -30
+	--local panelW = 315
+	--local panwlH = 60
+	--local madelW = 40
+	--local madelH = 40
+	--local madelNum = #hVar.tab_medal
+	----("勋章总数:"..madelNum)
+	--for i = 1,madelNum do--生成底纹框
+		--_childUI["madelPanel"..i]= hUI.button:new({
+			--parent = _parent,
+			--dragbox = _childUI["dragBox"],
+			--model = "UI:MADEL_BANNER",
+			--x = 165 + (i-1)%2*panelW,
+			--y = -35 - math.ceil((i-2)/2)*panwlH,
+			--w = panelW,
+			--h = panwlH,
+			--z = -1,
+			--code = function(self)--点击打开具体勋章说明 和 游戏里弹出的是同一个东西
+				----showBigMedalFrame(i,1,LuaGetPlayerMedal(hVar.MEDAL_TYPE[i]))
+				--hGlobal.event:event("LocalEvent_showBigMedalFrame",i,1,LuaGetPlayerMedal(hVar.MEDAL_TYPE[i]))
+			--end,
+		--})
+		--_childUI["madelPanel"..i].handle._n:setVisible(false)
+	--end
+
+	--for i = 1,madelNum do--生成描述图标 左边的 和 未点亮的勋章 右边的 和点亮的勋章 右边的
+		--_childUI["madelOff"..i]= hUI.image:new({
+			--parent = _parent,
+			--model = "UI:talent_slot",
+			--x = madelX + (i-1)%2*panelW,
+			--y = madelY - math.ceil((i-2)/2)*panwlH,
+			--w = madelW,
+			--h = madelH,
+		--})
+		--_childUI["madelOff"..i].handle._n:setVisible(false)
+	--end
+
+	--for i = 1,madelNum do--生成描述图标 左边的 和 未点亮的勋章 右边的 和点亮的勋章 右边的
+		--_childUI["madelOn"..i]= hUI.image:new({
+			--parent = _parent,
+			--model = "UI:talent",
+			--x = madelX + (i-1)%2*panelW,
+			--y = madelY - math.ceil((i-2)/2)*panwlH,
+			--w = madelW,
+			--h = madelH,
+		--})
+		--_childUI["madelOn"..i].handle._n:setVisible(false)
+	--end
+
+	--for i = 1,madelNum do--生成勋章名字 中间的
+		--_childUI["madelName"..i]= hUI.label:new({
+			--size = 28,
+			--parent = _parent,
+			--align = "MC",
+			--font = hVar.FONTC,
+			--x = madelX  -120 + (i-1)%2*panelW,
+			--y = madelY - 3  - math.ceil((i-2)/2)*panwlH,
+			--RGB = {255,215,0},
+			--border = 1,
+			--width = 200,
+			--text = getMadelName(i,1),
+		--})
+		--_childUI["madelName"..i].handle._n:setVisible(false)
+	--end
+	
+	--local temomodel = nil
+	--for i = 1,madelNum do--生成勋章icon 前面的
+		--temomodel = hVar.tab_medal[i].icon
+		--if temomodel == nil then
+			--temomodel = "ICON:Imperial_Academy"
+		--end
+		--_childUI["madelIcon"..i]= hUI.image:new({
+			--parent = _parent,
+			--model = temomodel,
+			--x = madelX  - 245 + (i-1)%2*panelW,
+			--y = madelY  - math.ceil((i-2)/2)*panwlH,
+			--w = 50,
+			--h = 50,
+		--})
+		--_childUI["madelIcon"..i].handle._n:setVisible(false)
+	--end
+
+	--local turnOnMedal = function(medalIndex,bOn)--点亮或熄灭勋章
+		--_childUI["madelOn"..medalIndex].handle._n:setVisible(bOn)
+	--end
+
+	----是否显示勋章
+	--local showMedalFrame = function(bShow)--显示或隐藏勋章面板
+		--for i = 1,madelNum do
+			--if bShow == true then
+				--_childUI["madelPanel"..i]:setstate(1)
+				--_m_page_state = 3
+			--else
+				--_childUI["madelPanel"..i]:setstate(-1)
+			--end
+			--_childUI["madelOff"..i].handle._n:setVisible(bShow)
+			--_childUI["madelOn"..i].handle._n:setVisible(bShow)
+			--_childUI["madelName"..i].handle._n:setVisible(bShow)
+			--_childUI["madelIcon"..i].handle._n:setVisible(bShow)
+
+			--if bShow == true then
+				--if LuaGetPlayerMedal(hVar.MEDAL_TYPE[i]) >= 1 then
+					--turnOnMedal(i,true)
+				--else
+					--turnOnMedal(i,false)
+				--end
+			--end
+		--end
+	--end
+
+	--local showVipFrame = function(bShow)--显示或隐藏vip
+		--if bShow==1 then
+			--local vip = LuaGetPlayerVipLv()
+			--if vip == 0 then
+				--hGlobal.event:event("LocalEvent_showVipFrmC",1,1)
+			--else
+				--hGlobal.event:event("LocalEvent_showVipFrmC",1,vip)
+			--end
+			--SendCmdFunc["get_VIP_REC_State"]()
+		--elseif hGlobal.UI.VipFrm~=nil then
+			--hGlobal.event:event("LocalEvent_showVipFrmC",0,1)
+			--hGlobal.event:event("LocalEvent_showVipGetFrm",0)
+		--end
+	--end
+	
+------------------------------------------------------战术技能书界面-------------------------------------------------
+	--local _skillbooklist = {}
+	--local _Btnlist = {}
+	
+	--local _removeSkillBookList = function()
+		--for i = 1,#_skillbooklist do
+			--hApi.safeRemoveT(_childUI,_skillbooklist[i])
+		--end
+		--_skillbooklist = {}
+	--end
+	----按钮选中框
+	--_childUI["Selectedbox"] = hUI.bar:new({
+		--parent = _parent,
+		--model = "UI:PHOTO_FRAME_BAR",
+		--align = "MC",
+		--w = 76,
+		--h = 46,
+		--z = 1,
+	--})
+	--_childUI["Selectedbox"].handle._n:setVisible(false)
+
+	----标签翻页效果逻辑 
+	--local _btnX,_btnY = 610,-110
+	--local _skillX,_skillY = 60,-65
+	--local _setBtnState = function(btn)
+		--for i = 1,#_Btnlist do
+			--if btn ~= _childUI[_Btnlist[i]] then
+				--_childUI[_Btnlist[i]]:setstate(1)
+				--_childUI[_Btnlist[i]].handle._n:runAction(CCScaleTo:create(0.01,1,1))
+				--_childUI[_Btnlist[i]]:setXY(_btnX,_childUI[_Btnlist[i]].data.y)
+			--else
+				--btn:setstate(0)
+				--btn.handle._n:runAction(CCScaleTo:create(0.01,1.1,1.1))
+				--btn:setXY(_btnX,btn.data.y)
+				--btn.handle.s:setColor(ccc3(255,255,255))
+				--btn.childUI["label"].handle.s:setColor(ccc3(255,255,255))
+				--_childUI["Selectedbox"].handle._n:setPosition(_btnX,btn.data.y)
+				--_childUI["Selectedbox"].handle._n:setVisible(true)
+			--end
+		--end
+	--end
+
+	----本地需要显示战术技能书的玩家的变量
+	--local _playerName = ""
+	--local _getIndexSkillList = function(skill_type)
+		--local tab = {}
+		--local playerSkillBook = LuaGetPlayerSkillBook(_playerName)
+		--for i = 1,#playerSkillBook do
+			--if hVar.tab_tactics[playerSkillBook[i][1]].type == skill_type then
+				--tab[#tab+1] = {playerSkillBook[i][1],playerSkillBook[i][2],playerSkillBook[i][3]}
+			--end
+		--end
+		--return tab
+	--end
+
+	--local _showindexskill = function(index)
+		--_removeSkillBookList()
+		--local skillList = _getIndexSkillList(index)
+		--for i = 1,#skillList do
+			--_childUI["node_item_"..i] = hUI.node:new({
+				--parent = _parent,
+				--x = _skillX + (i-1)%5*115,
+				--y = _skillY - math.ceil((i-5)/5)*120,
+			--})
+			--_skillbooklist[#_skillbooklist+1] = "node_item_"..i
+
+			----底板
+			--_childUI["node_item_"..i].childUI["bg"]= hUI.image:new({
+				--parent = _childUI["node_item_"..i].handle._n,
+				--model = "UI:PANEL_CARD_01",
+				--w = 110,
+				--h = 115.
+			--})
+			
+			----icon
+			--_childUI["node_item_"..i].childUI["icon"]= hUI.image:new({
+				--parent = _childUI["node_item_"..i].handle._n,
+				--model = hVar.tab_tactics[skillList[i][1]].icon,
+				--y = 20,
+				--w = 50,
+				--h = 50,
+			--})
+			
+			----名字
+			--_childUI["node_item_"..i].childUI["info"] = hUI.label:new({
+				--parent =_childUI["node_item_"..i].handle._n,
+				--y = -45,
+				--size = 20,
+				--align = "MC",
+				--border = 1,
+				--font = hVar.FONTC,
+				--width = 400,
+				--text = hVar.tab_tactics[skillList[i][1]].name,
+			--})
+			
+			----等级
+			--for j = 1,skillList[i][2] do
+				--_childUI["node_item_"..i].childUI["Level_star"..j] = hUI.image:new({
+					--parent = _childUI["node_item_"..i].handle._n,
+					--model = "UI:HERO_STAR",
+					--x = -32+ (j-1)*16,
+					--y = -25,
+				--})
+			--end
+
+		--end
+	--end
+
+	----技能种类标签页
+	----一共#hVar.SOLDIERLABTXT个分类
+	--for i = 1,#hVar.SOLDIERLABTXT do
+		--_childUI["soldier_style_"..i] = hUI.button:new({
+			--parent = _parent,
+			--model = "UI:ButtonBack2",
+			--w = 70,
+			--h = 40,
+			--dragbox = _childUI["dragBox"],
+			--label = hVar.tab_string[hVar.SOLDIERLABTXT[i]],
+			--font = hVar.FONTC,
+			--border = 1,
+			--x = _btnX,
+			--y = _btnY - (i-1) * 40,
+			--code = function(self)
+				--_setBtnState(self)
+				--_showindexskill(i)
+			--end,
+		--})
+		--_Btnlist[#_Btnlist+1] = "soldier_style_"..i
+	--end
+
+	----从玩家数据表中获取战术技能书数据并且创建
+	--local _showBattlefieldSkillBook = function(bool)
+		----战术技能框架显示与否
+		--for i = 1,#_skillbooklist do
+			--_childUI[_skillbooklist[i]].handle._n:setVisible(bool)
+		--end
+		----标签页显示与否
+		--local btnSate = -1
+		--if bool then
+			--_setBtnState(_childUI["soldier_style_1"])
+			--_showindexskill(1)
+			--btnSate = 1
+		--else
+			--_removeSkillBookList()
+		--end
+		--for i = 1,#_Btnlist do
+			--_childUI[_Btnlist[i]]:setstate(btnSate)
+		--end
+		--_childUI["Selectedbox"].handle._n:setVisible(bool)
+	--end
+------------------------------------------------------各界面的监听事件-------------------------------------------------
+	----显示勋章
+	--hGlobal.event:listen("LocalEvent_showMedalFrame","__UI__showMedalFrame",function(isshow)
+		----BtnFrm:show(0)
+		--if g_vs_number <= 4 then
+			--_childUI["BtnScenLast"]:setstate(-1)
+			--_childUI["BtnScenNext"]:setstate(-1)
+		--end
+		--_showBattlefieldSkillBook(false)
+		--_hideAchievenmentfram()
+		--_hideheroCardslot(0)
+		--showMedalFrame(isshow)
+		--_frm:show(1)
+		--_frm:active()
+		--hGlobal.event:event("LocalEvent_showGriffinGiftFrm",0)
+		--hGlobal.event:event("localEvent_ShowBattlefieldSkillBook",0)
+		--showVipFrame(0)
+	--end)
+	
+	----显示礼品界面
+	--hGlobal.event:listen("LocalEvent_showGiftFrame","__UI__showGiftFrame",function(x,y,nStyle)
+		----BtnFrm:show(0)
+		--_m_page_state = 4
+		--_showBattlefieldSkillBook(false)
+		--if g_vs_number <= 4 then
+			--_childUI["BtnScenLast"]:setstate(-1)
+			--_childUI["BtnScenNext"]:setstate(-1)
+		--end
+		--_hideAchievenmentfram()
+		--_hideheroCardslot(0)
+		--showMedalFrame(false)
+		--_frm:show(0)
+		--hGlobal.event:event("LocalEvent_showGriffinGiftFrm",1,x,y,nStyle)
+		--hGlobal.event:event("localEvent_ShowBattlefieldSkillBook",0)
+		--showVipFrame(0)
+	--end)
+
+	----显示vip
+	--hGlobal.event:listen("LocalEvent_showVipFrame","__UI__showVipFrame",function(isshow)
+		----BtnFrm:show(0)
+		--if g_vs_number <= 4 then
+			--_childUI["BtnScenLast"]:setstate(-1)
+			--_childUI["BtnScenNext"]:setstate(-1)
+		--end
+		--_showBattlefieldSkillBook(false)
+		--_hideAchievenmentfram()
+		--_hideheroCardslot(0)
+		--showMedalFrame(false)
+		--_frm:show(0)
+		--hGlobal.event:event("LocalEvent_showGriffinGiftFrm",0)
+		--hGlobal.event:event("localEvent_ShowBattlefieldSkillBook",0)
+		--showVipFrame(isshow)
+	--end)
+	
+	----显示成就
+	--hGlobal.event:listen("LocalEvent_showPlayerAchievementfram","__UI__ShowAchievementfram",function(palyername)
+		----BtnFrm:show(0)
+		--showVipFrame(0)
+		--_hideheroCardslot(0)
+		--showMedalFrame(false)
+		--_showBattlefieldSkillBook(false)
+
+		--hGlobal.event:event("LocalEvent_showGriffinGiftFrm",0)
+		--hGlobal.event:event("localEvent_ShowBattlefieldSkillBook",0)
+
+		--if g_vs_number <= 4 then
+			--_childUI["BtnScenLast"]:setstate(-1)
+			--_childUI["BtnScenNext"]:setstate(-1)
+		--end
+
+		--_createAchievementfram(palyername)
+		
+		--_frm:show(1)
+		--_frm:active()
+	--end)
+	
+	--hGlobal.event:listen("LocalEvent_showweekstarherofrm","__UI__ShowAchievementfram",function(HeroWeekStar)
+		--if _frm.data.show == 1 and _M_State == 0 and _m_page_state == 1 then
+			--if type(HeroWeekStar) == "table" then
+				--for i = 1, #HeroWeekStar do
+					--hGlobal.event:event("LocalEvent_ShowWeekStarHeroFrm",HeroWeekStar[i][1],HeroWeekStar[i][2])
+					--_showherocard(_HeroListId,1)
+				--end
+			--end
+		--end
+	--end)
+
+	----显示玩家卡片 默认打开英雄卡片
+	--hGlobal.event:listen("LocalEvent_showPlayerCardHeroFrm","__UI__setthisfrmisshow",function(herolist)
+		--_hideAchievenmentfram()
+		--_showBattlefieldSkillBook(false)
+		--hGlobal.event:event("LocalEvent_showGriffinGiftFrm",0)
+		--hGlobal.event:event("localEvent_ShowBattlefieldSkillBook",0)
+		--showVipFrame(0)
+		--if herolist and type(herolist) == "table" then
+			--showMedalFrame(false)
+			--_hideheroCardslot(1)
+			--_m_page_state = 1
+			--_HeroListId = {}
+			--for i = 1,#herolist do
+				--_HeroListId[#_HeroListId+1] = herolist[i]
+			--end
+			--_showherocard(herolist,1)
+			--_frm:show(1)
+			----BtnFrm:show(1)
+
+			--hGlobal.event:event("LocalEvent_showweekstarherofrm",g_HeroWeekStar)
+		--else
+			----BtnFrm:show(0)
+			--_frm:show(0)
+		--end
+	--end)
+
+	----显示战术技能书 显示某玩家的战术技能书
+	--hGlobal.event:listen("LocalEvent_showPlayerSkillBookfram","__UI__ShowSkillBookfram",function(playerName)
+		----BtnFrm:show(0)
+		--showVipFrame(0)
+		--_m_page_state = 5
+		--if g_vs_number <= 4 then
+			--_childUI["BtnScenLast"]:setstate(-1)
+			--_childUI["BtnScenNext"]:setstate(-1)
+		--end
+		--_hideheroCardslot(0)
+		--showMedalFrame(false)
+		--hGlobal.event:event("LocalEvent_showGriffinGiftFrm",0)
+		--_playerName = playerName
+		--_frm:show(0)
+
+		--hGlobal.event:event("localEvent_ShowBattlefieldSkillBook",1,"playerCard")
+		
+	--end)
+
+	--hGlobal.event:listen("LocalEvent_PlayerFocusWorld","__playercardfrm",function(sSceneType,oWorld,oMap)
+		--_hideheroCardslot(0)
+		--_frm:show(0)
+		----BtnFrm:show(0)
+	--end)
+
+	----hGlobal.event:listen("LocalEvent_VIP_REC_State","reflashVipGift",function(iErrorCode)
+		
+		----if iErrorCode == 0 then--开始根据vip等级刷keyChange
+			----SendCmdFunc["send_VIP_REC_State"]()
+			----local viplv = LuaGetPlayerVipLv()
+			----if viplv == 0 then
+				----CCUserDefault:sharedUserDefault():setIntegerForKey("yanVip",0)
+				----CCUserDefault:sharedUserDefault():setIntegerForKey("cardVip",hVar.VipCard.NOCARD)
+			----elseif viplv == 1 then
+				----CCUserDefault:sharedUserDefault():setIntegerForKey("yanVip",1)
+				----CCUserDefault:sharedUserDefault():setIntegerForKey("cardVip",hVar.VipCard.NOCARD)
+			----elseif viplv == 2 then
+				----CCUserDefault:sharedUserDefault():setIntegerForKey("yanVip",2)
+				----CCUserDefault:sharedUserDefault():setIntegerForKey("cardVip",hVar.VipCard.CHANGE1)
+			----elseif viplv == 3 then
+				----CCUserDefault:sharedUserDefault():setIntegerForKey("yanVip",3)
+				----CCUserDefault:sharedUserDefault():setIntegerForKey("cardVip",hVar.VipCard.CHANGE1)
+			----elseif viplv == 4 then
+				----CCUserDefault:sharedUserDefault():setIntegerForKey("yanVip",4)
+				----CCUserDefault:sharedUserDefault():setIntegerForKey("cardVip",hVar.VipCard.CHANGE1)
+			----elseif viplv == 5 then
+				----CCUserDefault:sharedUserDefault():setIntegerForKey("yanVip",6)
+				----CCUserDefault:sharedUserDefault():setIntegerForKey("cardVip",hVar.VipCard.TWO)
+			----elseif viplv == 6 then
+				----CCUserDefault:sharedUserDefault():setIntegerForKey("yanVip",8)
+				----CCUserDefault:sharedUserDefault():setIntegerForKey("cardVip",hVar.VipCard.THREE)
+			----elseif viplv == 7 then
+				----CCUserDefault:sharedUserDefault():setIntegerForKey("yanVip",10)
+				----CCUserDefault:sharedUserDefault():setIntegerForKey("cardVip",hVar.VipCard.FOUR)
+			----end
+			----CCUserDefault:sharedUserDefault():flush()
+		----end
+	----end)
+
+--end

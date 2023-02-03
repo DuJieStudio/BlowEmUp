@@ -1,0 +1,380 @@
+--heroGameAI.cityAI = {}
+--
+--
+---- 当所有所有ai都为守城ai时将战力最强的转为normal ai
+--local function hero_gogogo(p)
+--	local townlist = p.data.ownTown
+--	local herolist = {}
+--	local maxscore = 0
+--	local hero_go = nil
+--	local def_hero_count = 0
+--	local all_hero_count = 0
+--	for i = 1,#p.heros do
+--		if p.heros[i].data.IsDefeated == 1 then
+--		else
+--			--herolist[#herolist] = p.heros[i]
+--			all_hero_count = all_hero_count + 1
+--			local h = p.heros[i]
+--			local u = h:getunit()
+--			local ai_task = h.data.AIModeBasic
+--			if hVar.AI_MODE.GUARD_CITY == ai_task then
+--				def_hero_count = def_hero_count + 1
+--				local score = heroGameAI.CalculateSystem.Calculate(u,nil,heroGameAI.CalculateSystem.CALC_TYPE_DEF.COMBATSCORE)
+--				if score > maxscore then
+--					maxscore = score
+--					hero_go = u
+--				end
+--			end
+--		end
+--	end
+--
+--	heroGameAI.LogAi(string.format("hero_gogogo pid:%d def_hero num:%d all alive hero num:%d \n",p.data.playerId,def_hero_count,all_hero_count))
+--
+--	if def_hero_count == all_hero_count and def_hero_count > 1 then
+--		local u = hero_go
+--		local h = u:gethero()
+--		local oTown = hClass.town:find(u.data.curTown)
+--		if type(oTown) == "table" then
+--			local g = oTown:getunit("guard")
+--			local v = oTown:getunit("visitor")
+--			if type(g) == "table" and type(v) == "table" then
+--				if g.data.id == u.data.id then
+--					oTown:shiftVG()
+--				end
+--			else
+--				if type(v) == "table" then
+--				else
+--					oTown:setguard(nil)
+--					oTown:setvisitor(u)
+--				end
+--			end
+--		end
+--		h.data.AIModeBasic = hVar.AI_MODE.NORMAL
+--		h.data.AIMode = hVar.AI_MODE.NORMAL
+--		heroGameAI.LogAi(string.format("hero_gogogo uid:%d uname:%s \n",u.data.id,tostring(u.data.name)))
+--	end
+--end
+--
+--local maxTriggerID = 0
+--local _maxAIHeroNum = 5 --每个势力最多只能召唤5个英雄
+----AI电脑的主城建造流程
+--function heroGameAI.cityAI.Run(p)
+--	--_DEBUG_MSG("heroGameAI.cityAI.Run() pid:" .. p.data.playerId .. " pname:" .. p.data.name)
+--	local TownList = p.data.ownTown
+--	--遍历所有的城镇 并且进行城镇建设
+--	for i = 1,#TownList do
+--		local u = hApi.GetObjectUnit(TownList[i])
+--		if u then
+--			local oTown = u:gettown()
+--			if oTown then
+--				heroGameAI.cityAI.building(oTown)
+--			end
+--		end
+--	end
+--	
+--	--获取当前玩家的死亡英雄，并生成一张临时表
+--	local deadherolist = {}
+--	for i = 1,#p.heros do
+--		if p.heros[i].data.IsDefeated == 1 and p.heros[i].data.nDayDefeated +3 == g_game_days then
+--			deadherolist[#deadherolist+1] = p.heros[i]	
+--		end
+--	end
+--
+--	--for i = 1,#deadherolist do
+--	--	xlLG("herorreviv",i.." = "..deadherolist[i].data.id.." \n")
+--	--end
+--	
+--	--获取每个英雄在编辑器中设定的复活城镇，并且对其复活
+--	for i = 1,#deadherolist do
+--		local oHero = deadherolist[i]
+--		local world = hGlobal.WORLD.LastWorldMap
+--		local tID = oHero.data.triggerID
+--		local ReviveTown = nil
+--		local worldX,worldY = nil,nil
+--		if world.data.triggerIndex[tID] then
+--			local tgrData = world.data.triggerIndex[tID][3]
+--			ReviveTown = tgrData.reliveTownID
+--			worldX = tgrData.reliveX
+--			worldY = tgrData.reliveY
+--			if (tgrData.reliveMount or 0)~=0 then
+--				oHero:setGameVar("_MOUNT",tgrData.reliveMount)
+--			end
+--			--xlLG("herorreviv",i.." = "..deadherolist[i].data.id.." ReviveTown = "..ReviveTown.."\n")
+--		end
+--		if type(ReviveTown) == "number" then
+--			local TownUnit,_ = world:tgrid2unit(ReviveTown)
+--			if TownUnit then
+--				local oTown = TownUnit:gettown()
+--				if oTown and oTown.data.owningPlayer == p.data.playerId then
+--					p:order(world,hVar.OPERATE_TYPE.HERO_REVIVE,TownUnit,hVar.ZERO,oHero,nil,nil,worldX,worldY)
+--				end
+--			end
+--		elseif type(ReviveTown) == "table" then
+--			for i = 1,#ReviveTown do
+--				local TownUnit,_ = world:tgrid2unit(ReviveTown[i])
+--				if TownUnit then
+--					local oTown = TownUnit:gettown()
+--					if oTown and oTown.data.owningPlayer == p.data.playerId then
+--						p:order(world,hVar.OPERATE_TYPE.HERO_REVIVE,TownUnit,hVar.ZERO,oHero,nil,nil,worldX,worldY)
+--						break
+--					end
+--				end
+--			end
+--		end
+--	end
+--	
+--	--英雄无敌 城防调度
+--	local mapname = hGlobal.WORLD.LastWorldMap.data.map
+--	local world = hGlobal.WORLD.LastWorldMap
+--	if hApi.Is_YXWD_Map(mapname) ~= -1 then
+--		local Hid = 0
+--		local gTime = hGlobal.WORLD.LastWorldMap.data.roundcount
+--		local heroList = p.heros
+--		local weaponPool = {1002,1004,1005,1010,1011,1012,8002,8005,8012,8013,8003,8015,8001,8202}--随机武器
+--		local armorPool = {1402,1400,1401,3001,8006,8008,8200}--随机防具
+--		local horsePool = {1601,1600,8000}--随机坐骑
+--		local helmetPool = {1304,1301,1302,3000,8009}--随机头盔
+--		local jewelryPool = {1702,1703,1704,1705,1706,8000,8007,8201,8203}--随机饰品
+--		local shoesPool = {1500,1501,3002}--随机鞋子
+--		if gTime == 0 then--第一天穿装备
+--			for i = 1,#heroList do
+--				local eqT = {}
+--				eqT[#eqT+1] = weaponPool[hApi.random(1,#weaponPool)]
+--				eqT[#eqT+1] = armorPool[hApi.random(1,#armorPool)]
+--				eqT[#eqT+1] = horsePool[hApi.random(1,#horsePool)]
+--				eqT[#eqT+1] = helmetPool[hApi.random(1,#helmetPool)]
+--				eqT[#eqT+1] = shoesPool[hApi.random(1,#shoesPool)]
+--				eqT[#eqT+1] = jewelryPool[hApi.random(1,#jewelryPool)]
+--				eqT[#eqT+1] = 1706
+--				eqT[#eqT+1] = 3007
+--				eqT[#eqT+1] = 9000
+--				heroList[i]:addattrbyitem(eqT)
+--			end
+--		end
+--		local templ = {5000,5001,5002,5003,5006,5007,5008,5011,5012,5014,5017,5019,5023,5024,5025,5026,5029,5030,5032,5033,5024,5034,5004,5005,5021,6085}
+--		local heroID = {}
+--		--local townprotector = p.data.townprotector
+--		local _townprotector = {}
+--		for i = 1,#TownList do
+--			--local oTown = hApi.GetObjectUnit(TownList[i]):gettown()
+--			--local hireList = oTown:gethirelistEx()
+--			
+--			local townUnit = hApi.GetObjectUnit(TownList[i])
+--			if townUnit then
+--				_townprotector[#_townprotector+1] = {0,0}
+--				_townprotector[#_townprotector][1] = townUnit.ID
+--			end
+--		end
+--		
+--		for i = 1,#heroList do
+--			--if heroList[i].data.IsDefeated ~= 1 then
+--				if heroList[i].data.AIModeBasic == 4 then
+--					local ptu = hApi.GetObjectUnit(heroList[i].data.AIExtData)
+--					local ptTID = 0
+--					if ptu then
+--						ptTID = ptu.ID
+--					end
+--					local hu = heroList[i]:getunit()
+--					for j = 1,#_townprotector do
+--						local _tID = _townprotector[j][1]
+--						if _tID == ptTID then
+--							_townprotector[j][2] = heroList[i].ID
+--							--if _townprotector[i][2] == 0 then
+--								--_townprotector[i][2] = 1
+--							--end
+--						end
+--					end
+--				end
+--			--end
+--		end
+--		if maxTriggerID == 0 then
+--			world:enumunit(function(oUnit)
+--				if oUnit.data.triggerID > maxTriggerID then
+--					maxTriggerID = oUnit.data.triggerID
+--				end
+--			end)
+--		end
+--		
+--		if #heroList < _maxAIHeroNum then 
+--			for i = 1,#_townprotector do
+--				heroID = {}
+--				if _townprotector[i][2] == 0 then
+--					local empTownUnit = hClass.unit:find(_townprotector[i][1])
+--					--local gU = empTownUnit:gettown():getunit("guard")
+--					if empTownUnit:getowner().data.playerId ~= 1 then
+--						local ux,uy = empTownUnit:getstopXY()
+--						ux,uy = hApi.Scene_GetSpace(ux, uy, 60)
+--						
+--						local b = {}
+--						for j = 1,#templ do
+--							b[j] = 0
+--						end
+--						
+--						hClass.hero:enum(function(oHero)
+--							for j = 1,#templ do
+--								if oHero.data.id == templ[j] then
+--									b[j] = 1
+--								end
+--							end
+--						end)
+--						for j = 1,#templ do
+--							if b[j] == 0 then
+--								heroID[#heroID+1] = templ[j]
+--							end
+--						end
+--						if #heroID >= 1 then
+--							if #empTownUnit:getowner().heros < _maxAIHeroNum then
+--								local r = hApi.random(1,#heroID)
+--								Hid = heroID[r]
+--								
+--								
+--								local c,u
+--								c = hApi.addChaByID(world,empTownUnit:getowner().data.playerId,Hid,ux,uy,0,nil)
+--								u = hApi.findUnitByCha(c)
+--								if u then
+--									u.data.team = hApi.InitUnitTeam()
+--									u.data.team[1] = {Hid}
+--									local teamAdd = {}
+--									local r_army = {}
+--									for ri = 1,5 do
+--										r_army[ri] = {}
+--									end
+--									r_army[1] = {{10001,3,5},{10004,2,3},{10036,1,2},{10027,4,4},{10142,1,1},{10014,1,2}}
+--									r_army[2] = {{10029,3,5},{10002,2,3},{10000,3,5}}
+--									r_army[3] = {{10003,2,3},{10005,1,2}}
+--									r_army[4] = {{10006,2,3},{10100,1,2},{10101,2,3},{10102,1,2},{10020,1,1},{10166,1,1}}
+--									r_army[5] = {{10008,1,2},{10105,1,1},{10007,1,2},{10103,1,1}}
+--									for j = 1,5 do
+--										local vt = {}
+--										local at = r_army[j][hApi.random(1,#r_army[j])]
+--										vt[1] = at[1]
+--										vt[2] = hApi.random(at[2],at[3])
+--										teamAdd[#teamAdd+1] = vt
+--									end
+--									u:teamaddunit(teamAdd) 
+--								end
+--	
+--								--local oHero = hClass.hero:new({
+--								--	name = "",
+--								--	id = Hid,
+--								--	owner = empTownUnit:getowner().data.playerId,
+--								--	unit = u,
+--								--	CreatedOnMapInit = 1,
+--								--	playmode = world.data.playmode,
+--								--})
+--								----xlLG("AiHeroCreat","1 empTownUnit:getowner().heros = "..tostring(#empTownUnit:getowner().heros).."-_maxAIHeroNum = "..tostring(_maxAIHeroNum).." \n")
+--
+--								--oHero.data.AIExtData = hApi.SetObjectUnit({},empTownUnit)
+--								--oHero.data.AIModeBasic = 4
+--								--oHero.data.AIMode = 0
+--								--oHero:addexp(hVar.HERO_EXP_TURBO[3])
+--								
+--								maxTriggerID = maxTriggerID + 1
+--								local tt = nil 
+--								tt = {unqiueID = maxTriggerID,reliveTownID = empTownUnit.data.triggerID}
+--								u:settriggerdata(tt,maxTriggerID)
+--
+--								--_townprotector[i][2] = oHero.ID
+--								local eqT = {}
+--								eqT[#eqT+1] = weaponPool[hApi.random(1,#weaponPool)]
+--								eqT[#eqT+1] = armorPool[hApi.random(1,#armorPool)]
+--								eqT[#eqT+1] = horsePool[hApi.random(1,#horsePool)]
+--								eqT[#eqT+1] = helmetPool[hApi.random(1,#helmetPool)]
+--								eqT[#eqT+1] = shoesPool[hApi.random(1,#shoesPool)]
+--								eqT[#eqT+1] = jewelryPool[hApi.random(1,#jewelryPool)]
+--								eqT[#eqT+1] = jewelryPool[hApi.random(1,#jewelryPool)]
+--								eqT[#eqT+1] = jewelryPool[hApi.random(1,#jewelryPool)]
+--								eqT[#eqT+1] = 1706
+--								eqT[#eqT+1] = 3007
+--								eqT[#eqT+1] = 9000
+--								--oHero:addattrbyitem(eqT)
+--							
+--							else
+--								--xlLG("AiHeroCreat","2 empTownUnit:getowner().heros = "..tostring(#empTownUnit:getowner().heros).."-_maxAIHeroNum = "..tostring(_maxAIHeroNum).." \n")
+--							end
+--							--if _townprotector[i][2] == 0 then
+--								--_townprotector[i][2] = 1
+--							--end
+--						end
+--					end
+--				end
+--			end
+--		end
+--		--for i = 1,#_townprotector do
+--			--print("城:",_townprotector[i][1],"防御者:",_townprotector[i][2])
+--			--print("城:",_townprotector[i][1],"防御者:",_townprotector[i][2])
+--			--print("城:",_townprotector[i][1],"防御者:",_townprotector[i][2])
+--			--print("城:",_townprotector[i][1],"防御者:",_townprotector[i][2])
+--		--end
+--	end
+--
+--	hero_gogogo(p)
+--end
+--
+----检测参数2表中是否有 参数1 ID 有则返回1
+--local checktempID = function(unitID,IDlist)
+--	if IDlist == nil then return 0 end
+--	for i = 1,#IDlist do
+--		for j = 1,#IDlist[i] do
+--			if IDlist[i][j] == unitID then
+--				return 1
+--			end
+--		end
+--	end
+--	return 0
+--end
+--
+----test code 记录每天需要建造的建筑ID 建筑顺序根据表 索引顺序
+--local tempIDlist = {
+--	[1] = {
+--		41060,
+--		41061,
+--		41062,
+--		41063,
+--		41064,
+--	},
+--	[2] = {
+--		41055
+--	},
+--	[3] = {
+--		41073,
+--		41074,
+--		41075,
+--	},
+--}
+--
+----建造建筑物的函数...
+--function heroGameAI.cityAI.building(oTown)
+--	local buildingCount = oTown.data.buildingCount
+--
+--	--只有此城镇建造次数为0 时 才能建继续建造
+--	if buildingCount == 0 then
+--		local unitList = oTown.data.unitList
+--		local upgradeState =  oTown.data.upgradeState
+--		for i =1,#unitList do
+--			--遍历主城中的单位，找到需要建造的建筑
+--			local _,id,_,_,_,_,_ = unpack(unitList[i])
+--			if upgradeState[i] == 0 and checktempID(id,tempIDlist) == 1 then
+--				--获取该建筑的建造状态等
+--				local buildlist = oTown.data.upgrade
+--				for k,v in pairs(buildlist) do
+--					if i == v.indexOfCreate then
+--						local upgradelist = v.upgradelist
+--						upgradelist[1] = 1
+--						if upgradelist[2] == nil then
+--							upgradelist[2] = 0
+--						end
+--						upgradeState[i] = 1
+--						oTown.data.buildingCount = 1
+--						return 1
+--					end
+--				end
+--			else
+--
+--			end
+--		end
+--	else
+--		print("今天已经建造过了...")
+--	end
+--	return 0
+--end

@@ -1,0 +1,26 @@
+--BT.heroBT.ActionNode = {}
+--
+----移动
+--BT.heroBT.ActionNode["Move"] = function(hero)
+--hero:movetoworldG(hero.data.gridX + 3,hero.data.gridY + 3)
+--end
+--
+----占资源
+--BT.heroBT.ActionNode["Grab"] = function()
+--_DEBUG_MSG("heroBT.ActionNode.Grab");
+--end
+--
+----攻击
+--BT.heroBT.ActionNode["Attack"] = function()
+--_DEBUG_MSG("heroBT.ActionNode.Attack");
+--end
+--
+----逃跑
+--BT.heroBT.ActionNode["Escape"] = function()
+--_DEBUG_MSG("heroBT.ActionNode.Escape");
+--end
+--
+----搜索
+--BT.heroBT.ActionNode["Search"] = function()
+--_DEBUG_MSG("heroBT.ActionNode.Search");
+--end

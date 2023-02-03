@@ -1,0 +1,395 @@
+----------------------------------
+---- 世界排行榜界面
+----------------------------------
+--hGlobal.UI.InitWorldRankFram = function(mode)
+	--local tInitEventName = {"LocalEvent_ShowWorldRank","__showRank"}
+	--if mode~="include" then
+		--return tInitEventName
+	--end
+	--hGlobal.UI.WorldRankFram = hUI.frame:new({
+		--x = 10,
+		--y = 760,
+		--dragable = 0,
+		--w = 1024,
+		--h = 800,
+		----closebtn = "BTN:PANEL_CLOSE",
+		--show = 0,
+		----background = "UI:PANEL_INFO",
+		--background = -1,
+	--})
+	
+	--local _fram = hGlobal.UI.WorldRankFram
+	--local _parent = _fram.handle._n
+	--local _childUI = _fram.childUI
+	
+	--local _x,_y,_w,_h= 10,-60,800,720
+	
+	----关闭按钮
+	--_childUI["closeBtn"] = hUI.button:new({
+		--parent = _parent,
+		--dragbox = _fram.childUI["dragBox"],
+		--model = "BTN:PANEL_CLOSE",
+		--x = _w+110,
+		--y = _y - 30,
+		--scaleT = 0.9,
+		--code = function()
+			--_fram:show(0)
+		--end,
+	--})
+
+	--local groupList = {}
+	--local offY=160
+	--local _createRankName = function(rankName)
+		--for i = 1,#groupList do
+			--hApi.safeRemoveT(_childUI,groupList[i])
+		--end
+		--groupList = {}
+		--for i = 1,#rankName do
+			----名次及势力名
+			--_childUI["group_name_"..i] = hUI.label:new({
+				--parent = _parent,
+				--size = 26,
+				--align = "LT",
+				--font = hVar.FONTC,
+				--x = _x+10,
+				--y = _y-20 - (i-1) * offY,
+				--width = 400,
+				--text = "No "..i..": "..rankName[i].name,
+			--})
+			--groupList[#groupList+1] = "group_name_"..i
+			
+			----势力旗帜
+			--_childUI["group_flag_iamge"..i] = hUI.image:new({
+				--parent = _parent,
+				--model = "ICON:player_legion_"..rankName[i].ID,
+				--w = 28,
+				--x = _x+205,
+				--y = _y-35 - (i-1) * offY,
+			--})
+			--groupList[#groupList+1] = "group_flag_iamge"..i
+
+			----军力
+			--_childUI["group_war_text"..i] = hUI.label:new({
+				--parent = _parent,
+				--size = 26,
+				--align = "LT",
+				--font = hVar.FONTC,
+				--x = _x+280,
+				--y = _y-20 - (i-1) * offY,
+				--width = 400,
+				--text = rankName[i].combat,
+			--})
+			--groupList[#groupList+1] = "group_war_text"..i
+
+			--_childUI["group_war_iamge"..i] = hUI.image:new({
+				--parent = _parent,
+				--model = "ICON:HeroAttr_defense",
+				--w = 28,
+				--x = _x+260,
+				--y = _y-35 - (i-1) * offY,
+			--})
+			--groupList[#groupList+1] = "group_war_iamge"..i
+		--end
+	--end
+	
+	--local tempresList = {}
+	--local ix,iy,lx,ly,offX = 70,-124,95,-124,110
+	--local _createRankRes = function(rankRes)
+		--for i = 1,#tempresList do
+			--hApi.safeRemoveT(_childUI,tempresList[i])
+		--end
+		--tempresList = {}
+		--local tempx = nil
+		--for i = 1,#rankRes do
+			--tempx = 0
+			----金 图片 
+			--_childUI["ImageRes_gold_"..i] = hUI.image:new({
+				--parent = _parent,
+				----mode = "batchImage",
+				--model = "UI:ICON_main_frm_ResourceGold",
+				--animation = "lightSlim",
+				--w = 40,
+				--x = ix + tempx*offX,
+				--y = iy - (i-1)*offY,
+			--})
+			--tempresList[#tempresList+1] = "ImageRes_gold_"..i
+			--tempx = tempx+1
+			----食物 图片 
+			--_childUI["ImageRes_food_"..i] = hUI.image:new({
+				--parent = _parent,
+				----mode = "batchImage",
+				--model = "UI:ICON_main_frm_ResourceFood",
+				--animation = "lightSlim",
+				--w = 40,
+				--x = ix + offX*tempx,
+				--y = iy - (i-1)*offY,
+			--})
+			--tempresList[#tempresList+1] = "ImageRes_food_"..i
+			--tempx = tempx+1
+			----石头 图片 
+			--_childUI["ImageRes_rook_"..i] = hUI.image:new({
+				--parent = _parent,
+				----mode = "batchImage",
+				--model = "UI:ICON_main_frm_ResourceStone",
+				--animation = "lightSlim",
+				--w = 40,
+				--x = ix+ offX*tempx,
+				--y =  iy - (i-1)*offY,
+			--})
+			--tempresList[#tempresList+1] = "ImageRes_rook_"..i
+			--tempx = tempx+1
+			----木材 图片 
+			--_childUI["ImageRes_wood_"..i] = hUI.image:new({
+				--parent = _parent,
+				----mode = "batchImage",
+				--model = "UI:ICON_main_frm_ResourceWood",
+				--animation = "lightSlim",
+				--w = 40,
+				--x = ix + offX*tempx,
+				--y = iy - (i-1)*offY,
+			--})
+			--tempresList[#tempresList+1] = "ImageRes_wood_"..i
+			--tempx = tempx+1
+			----镔铁 图片 
+			--_childUI["ImageRes_iron_"..i] = hUI.image:new({
+				--parent = _parent,
+				----mode = "batchImage",
+				--model = "UI:ICON_main_frm_ResourceIron",
+				--animation = "lightSlim",
+				--w = 40,
+				--x = ix+offX*tempx,
+				--y = iy - (i-1)*offY,
+			--})
+			--tempresList[#tempresList+1] = "ImageRes_iron_"..i
+			--tempx = tempx+1
+			----宝石 图片
+			--_childUI["ImageRes_jewel_"..i] = hUI.image:new({
+				--parent = _parent,
+				----mode = "batchImage",
+				--model = "UI:ICON_main_frm_ResourceJewel",
+				--animation = "lightSlim",
+				--w = 40,
+				--x = ix+offX*tempx,
+				--y =  iy - (i-1)*offY,
+			--})
+			--tempresList[#tempresList+1] = "ImageRes_jewel_"..i
+			--tempx = 0
+			----所消耗的金币lab 
+			--_childUI["labRes_gold_"..i] = hUI.label:new({
+				--parent = _parent,
+				--font = "numWhite",
+				--size = 14,
+				--text = rankRes[i].gold,
+				--align = "LC",
+				--x = lx + tempx*offX,
+				--y =  ly - (i-1)*offY,
+			--})
+			--tempresList[#tempresList+1] = "labRes_gold_"..i
+			--tempx = tempx+1
+			----所消耗的食物lab
+			--_childUI["labRes_food_"..i] = hUI.label:new({
+				--parent = _parent,
+				--font = "numWhite",
+				--size = 14,
+				--text = rankRes[i].food,
+				--align = "LC",
+				--x = lx + tempx*offX,
+				--y =  ly - (i-1)*offY,
+			--})
+			--tempresList[#tempresList+1] = "labRes_food_"..i
+			--tempx = tempx+1
+			----所消耗的石头lab 
+			--_childUI["labRes_stone_"..i] = hUI.label:new({
+				--parent = _parent,
+				--font = "numWhite",
+				--size = 14,
+				--text = rankRes[i].stone,
+				--align = "LC",
+				--x = lx + tempx*offX,
+				--y =  ly - (i-1)*offY,
+			--})
+			--tempresList[#tempresList+1] = "labRes_stone_"..i
+			--tempx = tempx+1
+			----所消耗的木材lab 
+			--_childUI["labRes_wood_"..i] = hUI.label:new({
+				--parent = _parent,
+				--font = "numWhite",
+				--size = 14,
+				--text = rankRes[i].wood,
+				--align = "LC",
+				--x = lx + tempx*offX,
+				--y =  ly - (i-1)*offY,
+			--})
+			--tempresList[#tempresList+1] = "labRes_wood_"..i
+			--tempx = tempx+1
+			----所消耗的镔铁lab 
+			--_childUI["labRes_iron_"..i] = hUI.label:new({
+				--parent = _parent,
+				--font = "numWhite",
+				--size = 14,
+				--text = rankRes[i].iron,
+				--align = "LC",
+				--x = lx + tempx*offX,
+				--y =  ly - (i-1)*offY,
+			--})
+			--tempresList[#tempresList+1] = "labRes_iron_"..i
+			--tempx = tempx+1
+			----所消耗的宝石lab 
+			--_childUI["labRes_jewel_"..i] = hUI.label:new({
+				--parent = _parent,
+				--font = "numWhite",
+				--size = 14,
+				--text = rankRes[i].jewel,
+				--align = "LC",
+				--x = lx + tempx*offX,
+				--y =  ly - (i-1)*offY,
+			--})
+			--tempresList[#tempresList+1] = "labRes_jewel_"..i
+			--tempx = tempx+1
+		--end
+	--end
+	
+	--local heroImageList = {}
+	--local hx,hy,hlx,hly,hoffX = 0,-165,0,-200,70
+	--local _createHeroImage  = function(heroList)
+		--for i = 1,#heroImageList do
+			--hApi.safeRemoveT(_childUI,heroImageList[i])
+			
+		--end
+		--heroImageList = {}
+
+		--for i = 1,#heroList do
+			--local heros = heroList[i][1]
+			--for k,v in pairs(heros) do
+				----只绘制没死的英雄信息
+				--_childUI["heroname"..i..k] = hUI.label:new({
+					--parent = _parent,
+					----font = hVar.FONTC,
+					--size = 16,
+					--text = hVar.tab_stringU[v.data.id][1],
+					--align = "MC",
+					--x = hlx + hoffX*k,
+					--y = hly - (i-1)*offY,
+				--})
+				--heroImageList[#heroImageList+1] = "heroname"..i..k
+				--_childUI["heroImage"..i..k] = hUI.image:new({
+					--parent = _parent,
+					----mode = "batchImage",
+					--model = v.data.icon,--"ICON:hero_liubei_s",
+					--w = 50,
+					--x = hx+hoffX*k,
+					--y = hy -(i-1)*offY,
+				--})
+				--heroImageList[#heroImageList+1] = "heroImage"..i..k
+
+				--if v.data.IsDefeated == 1 then
+					--_childUI["heroImage"..i..k].handle.s:setColor(ccc3(127,127,127))
+				--else
+					--_childUI["heroImage"..i..k].handle.s:setColor(ccc3(255,255,255))
+				--end
+			--end
+		--end
+	--end
+	
+	--local swapTableItem = function(tab,n,m)
+		--local temp = tab[n]
+		--tab[n] = tab[m]
+		--tab[m] = temp
+	--end
+
+	--local _rankLen = nil
+	--hGlobal.event:listen(tInitEventName[1],tInitEventName[2],function()
+		
+		----设置地图名字
+		--local w = hGlobal.WORLD.LastWorldMap
+		--local shiList = {}
+		--if w then
+			----这里要加一段十分邪恶的代码，将来一定要删除掉，如果看到此处的你发现这段代码还没删除，请务必联系 陶晶...
+			--for k,v in pairs(hVar.MAP_LEGION) do
+				--if k == w.data.map then
+					--for i = 1,#v do
+						--shiList[v[i][1]] = hVar.tab_string[v[i][2]]
+					--end
+				--end
+			--end
+		--end
+
+		--_rankLen = 0
+		--local rankName = {}
+		--local rankRes = {}
+		--local herolist = {}
+
+		--for i = 1,8 do --hVar.MAX_PLAYER_NUM do
+			--local player = hGlobal.player[i]
+			----当玩家拥有英雄 且 拥有城池时
+			--if (#player.heros ~= 0 or #player.data.ownTown ~= 0) then
+				--_rankLen = _rankLen+1
+				--rankName[#rankName+1] = {name = shiList[i] or hVar.tab_stringU[player.data.id][1],ID = i }
+				--rankRes[#rankRes+1] = {
+					--gold = player:getresource(hVar.RESOURCE_TYPE.GOLD),
+					--food = player:getresource(hVar.RESOURCE_TYPE.FOOD),
+					--stone = player:getresource(hVar.RESOURCE_TYPE.STONE),
+					--wood = player:getresource(hVar.RESOURCE_TYPE.WOOD),
+					--iron = player:getresource(hVar.RESOURCE_TYPE.LIFE),
+					--jewel = player:getresource(hVar.RESOURCE_TYPE.CRYSTAL)
+				--}
+				--herolist[#herolist+1] = {player.heros}
+			--end
+		--end
+		
+		--if _rankLen > 4 then
+			--_rankLen = 4
+		--end
+		
+		----绘制背景
+		--hApi.safeRemoveT(_childUI,"SelectedPlayerFram")
+		--_childUI["SelectedPlayerFram"] = hUI.bar:new({
+			--parent = _parent,
+			--model = "UI:tip_item",
+			--align = "LT",
+			--x = _x,
+			--y = _y,
+			--w = _w+140,
+			--h = 80 + _rankLen*150,
+			--z = -1,
+		--})
+		
+		--local playerCombat = {}
+		--local tempnum = nil
+		----显示战斗力
+		--for i = 1,#herolist do
+			--tempnum = 0
+			--local heros = herolist[i][1]
+			--local oUnit = nil
+			--for k,v in pairs(heros) do
+				--oUnit = v:getunit()
+				--if oUnit then
+					--tempnum = tempnum + heroGameAI.CalculateSystem.Calculate(oUnit,nil,heroGameAI.CalculateSystem.CALC_TYPE_DEF.COMBATSCORE)
+				--end
+			--end
+			--playerCombat[i] = tempnum
+		--end
+		
+		--for i = 1,#rankName do
+			--rankName[i].combat = playerCombat[i]
+		--end
+		
+		--for i = 1,#playerCombat do
+			--for j = i+1,#playerCombat do
+				--if playerCombat[i]<playerCombat[j] then
+					--swapTableItem(playerCombat,i,j)
+					--swapTableItem(rankName,i,j)
+					--swapTableItem(herolist,i,j)
+					--swapTableItem(rankRes,i,j)
+				--end
+			--end
+		--end
+
+		--_createRankName(rankName)
+		--_createRankRes(rankRes)
+		--_createHeroImage(herolist)
+
+		--_fram:show(1)
+	--end)
+
+--end

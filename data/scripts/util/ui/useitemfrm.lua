@@ -1,0 +1,258 @@
+-------------------------
+----使用道具界面
+-------------------------
+--local _can_useDepletion = 0		--是否可以使用宝箱
+--local _net_useDepletion_count = 0	--网络上使用宝箱的count
+----通过网络协议设置是否可以使用锻造
+----hGlobal.event:listen("LocalEvent_Cheat_Get_NetMSG","_getCheatValuseDepletion",function(data,tag,tradeid,isFix)
+----	for k,v in pairs(data) do
+----		--查询 是否同步过keyChain 的值如果没有同步过则上传
+----		if k == "cheat_depletion"  then
+----			_net_useDepletion_count = v
+----			
+----			--数据过度
+----			if LuaGetUseDepletion() == 0 then
+----				LuaSetUseDepletion(_net_useDepletion_count)
+----			end
+----
+----			if isFix == 1 then
+----				LuaSetUseDepletion(_net_useDepletion_count)
+----			end
+----			hGlobal.event:event("LocalEvent_setUseBtnState",v)
+----		end
+----	end
+----end)
+--
+--hGlobal.UI.InitUseItemFrm = function(mode)
+--	local tInitEventName = {"LocalEvent_ShowUseItemFrm","_showthisfrm",}
+--	if mode~="include" then
+--		return tInitEventName
+--	end
+--	--主界面
+--	local _x,_y,_w,_h = 360,550,420,300
+--	hGlobal.UI.UseItemFrm = hUI.frame:new({
+--		x = _x,
+--		y = _y,
+--		dragable = 2,
+--		show = 0,
+--		w = _w,
+--		h = _h,
+--	})
+--
+--	local _frm = hGlobal.UI.UseItemFrm
+--	local _parent = _frm.handle._n
+--	local _childUI = _frm.childUI
+--
+--	local _oUnit = {}
+--	local _oHero = {}
+--	local _itemID = 0
+--	local _sBagName = 0
+--	local _nBagIndex = 0
+--	--道具图片背景框
+--	_childUI["itemInfoFrmBG"] = hUI.image:new({
+--		parent = _parent,
+--		model = "UI_frm:slot",
+--		animation = "lightSlim",
+--		w = 58,
+--		h = 58,
+--		x = 75,
+--		y = -60,
+--	})
+--
+--	--道具名字
+--	_childUI["itemInfoFrm_Name"] = hUI.label:new({
+--		parent = _parent,
+--		size = 34,
+--		align = "MC",
+--		font = hVar.FONTC,
+--		x = _frm.data.w/2,
+--		y = -45,
+--		width = 260,
+--		text = "",
+--		border = 1,
+--	})
+--	
+--	--道具的简单信息
+--	_childUI["itemInfoFrm_info"] = hUI.label:new({
+--		parent = _parent,
+--		size = 24,
+--		align = "LT",
+--		font = hVar.FONTC,
+--		x = 30,
+--		y = -110,
+--		width = 360,
+--		text = "",
+--		border = 1,
+--	})
+--
+--	_childUI["item_info_ex"] = hUI.label:new({
+--		parent = _parent,
+--		size = 24,
+--		align = "LT",
+--		font = hVar.FONTC,
+--		x = 60,
+--		y = -160,
+--		width = 300,
+--		RGB = {255,255,0},
+--		text = hVar.tab_string["__TEXT_ITEMLISTISFULL"],
+--		border = 1,
+--	})
+--	_childUI["item_info_ex"].handle._n:setVisible(false)
+--
+--	--面板的关闭方法
+--	local _exitFunc = function()
+--		_nBagIndex = 0
+--		_itemID = 0
+--		hApi.SetObjectEx(_oUnit,nil)
+--		_frm:show(0)
+--		hApi.safeRemoveT(_childUI,"itemInfoFrmImage")
+--	end
+--	
+--	_childUI["can_use_labe"] = hUI.label:new({
+--		parent = _parent,
+--		size = 24,
+--		align = "MC",
+--		font = hVar.FONTC,
+--		x = _w/2,
+--		y = -320,
+--		width = 500,
+--		z = 10,
+--		text = hVar.tab_string["__TEXT_Cant'UseDepletion"],
+--	})
+--	_childUI["can_use_labe"].handle._n:setVisible(false)
+--
+--	--设置使用按钮是否可以用
+--	hGlobal.event:listen("LocalEvent_setUseBtnState","setBtnUse",function(net_num)
+--		local local_num = LuaGetUseDepletion()
+--		if net_num ~= local_num then 
+--			_frm:setWH(_w,_h+60)
+--			_childUI["BtnUse"]:setstate(0)
+--			_childUI["can_use_labe"]:setText(hVar.tab_string["__TEXT_Cant'UseDepletion"].."\nS: "..local_num.." - N:"..net_num)
+--			_childUI["can_use_labe"].handle._n:setVisible(true)
+--			--SendCmdFunc["set_cheat_count"](0,luaGetplayerDataID(),0,"cheat_depletion_flag",1,0)
+--		elseif net_num == local_num then
+--			_frm:setWH(_w,_h)
+--			_childUI["BtnUse"]:setstate(1)
+--			_childUI["can_use_labe"].handle._n:setVisible(false)
+--		end
+--	end)
+--
+--	--使用道具命令的返回值
+--	--hGlobal.event:listen("LocalEvent_Cheat_Set_NetMSG","_setCheatVal_Depletion",function(data,tag,tradeid)
+--	--	if tag ~= 2 then return end
+--	--	LuaAddUseDepletion(1)
+--	--	SendCmdFunc["send_forged_finish"](luaGetplayerDataID(),tag,tradeid,"",3,tostring("S:"..LuaGetUseDepletion().."-N:"..data.cheat_depletion))
+--	--	local oUnit = hApi.GetObjectEx(hClass.unit,_oUnit)
+--	--	if oUnit~=nil then
+--	--		hGlobal.LocalPlayer:order(oUnit:getworld(),hVar.OPERATE_TYPE.HERO_USEITEM,oUnit,{_itemID,_sBagName,_nBagIndex,tradeid})
+--	--	elseif _oHero ~= nil then
+--	--		_oHero:useitem(_sBagName,_nBagIndex,tradeid)
+--	--	end
+--	--	_exitFunc()
+--	--end)
+--	
+--	hGlobal.event:listen("LocalEvent_Set_activity_refresh","setUseBtnState",function(connect_state)
+--		if connect_state == -1 then
+--			_childUI["BtnUse"]:setstate(0)
+--			_frm:setWH(_w,_h+60)
+--			_childUI["can_use_labe"]:setText(hVar.tab_string["__TEXT_Cant'UseDepletion_Net"])
+--			_childUI["can_use_labe"].handle._n:setVisible(true)
+--		end
+--	end)
+--	_childUI["BtnUse"] = hUI.button:new({
+--		parent = _parent,
+--		model = "UI:ButtonBack2",
+--		dragbox = _frm.childUI["dragBox"],
+--		label = hVar.tab_string["__TEXT_Use"],
+--		font = hVar.FONTC,
+--		border = 1,
+--		x = _w/2 + 80,
+--		y = -_h+30,
+--		scale = 0.8,
+--		scaleT = 0.9,
+--		code = function(self)
+--			self:setstate(0)
+--			if g_cur_net_state == -1 then
+--				_frm:setWH(_w,_h+60)
+--				_childUI["can_use_labe"]:setText(hVar.tab_string["__TEXT_Cant'UseDepletion_Net"])
+--				_childUI["can_use_labe"].handle._n:setVisible(true)
+--				return
+--			end
+--
+--			local num = LuaGetUseDepletion()
+--			--if _net_useDepletion_count ~= num then 
+--				--return
+--			--else
+--				--SendCmdFunc["send_net_keyC_log"](luaGetplayerDataID(),2,_itemID,hVar.tab_stringI[_itemID][1],"cheat_depletion",LuaGetUseDepletion())
+--				SendCmdFunc["order_begin"](2,_itemID,0,1,hVar.tab_stringI[_itemID][1],0,LuaGetUseDepletion(),"cheat_depletion")
+--				--SendCmdFunc["set_cheat_count"](0,luaGetplayerDataID(),2,"cheat_depletion",1,1)
+--			--end
+--		end,
+--	})
+--	
+--	_childUI["BtnCancel"] = hUI.button:new({
+--		parent = _parent,
+--		model = "UI:ButtonBack2",
+--		label = hVar.tab_string["__TEXT_Cancel"],
+--		font = hVar.FONTC,
+--		border = 1,
+--		dragbox = _frm.childUI["dragBox"],
+--		x = _w/2 - 80,
+--		y = -_h+30,
+--		scale = 0.8,
+--		scaleT = 0.9,
+--		code = function(self)
+--			_exitFunc()
+--		end,
+--	})
+--
+--	hGlobal.event:listen(tInitEventName[1],tInitEventName[2],function(oUnit,itemID,sBagName,nIndex,oHero)
+--		if type(itemID)=="number" and hVar.tab_item[itemID] then
+--			_frm:setWH(_w,_h)
+--			_can_useDepletion = 0
+--			_childUI["BtnUse"]:setstate(0)
+--			--SendCmdFunc["get_cheat_val"](luaGetplayerDataID(),2,"cheat_depletion",LuaGetUseDepletion())
+--			
+--			hApi.SetObjectEx(_oUnit,oUnit)
+--			_oHero = oHero
+--			
+--			_nBagIndex = nIndex
+--			_sBagName = sBagName
+--			if itemID~=_itemID then
+--				_itemID = itemID
+--				hApi.safeRemoveT(_childUI,"itemInfoFrmImage")
+--				_childUI["itemInfoFrmImage"] = hUI.image:new({
+--					parent = _parent,
+--					model = hVar.tab_item[itemID].icon,
+--					w = 58,
+--					h = 58,
+--					x = 75,
+--					y = -60,
+--				})
+--				local itemName = hVar.tab_stringI[itemID][1] or "itemName"..itemID
+--				local itemInfo = hVar.tab_stringI[itemID][3] or "itemInfo"..itemID
+--				
+--				--针对仙人秘宝这种道具 
+--				if hVar.tab_stringI[itemID][4] then
+--					itemInfo = hVar.tab_stringI[itemID][4]
+--				end
+--				_childUI["itemInfoFrm_Name"]:setText(tostring(itemName))
+--				_childUI["itemInfoFrm_info"]:setText(tostring(itemInfo))
+--			end
+--			if g_cur_net_state == -1 then
+--				_frm:setWH(_w,_h+60)
+--				_childUI["can_use_labe"]:setText(hVar.tab_string["__TEXT_Cant'UseDepletion_Net"])
+--				_childUI["can_use_labe"].handle._n:setVisible(true)
+--			end
+--
+--			_frm:show(1)
+--			_frm:active()
+--		else
+--			hApi.SetObjectEx(_oUnit,nil)
+--			_nBagIndex = 0
+--			_sBagName = 0
+--			_itemID = 0
+--			_frm:show(0)
+--		end
+--	end)
+--end

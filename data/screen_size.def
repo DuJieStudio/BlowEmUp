@@ -1,0 +1,55 @@
+xlLuaEvent_SetScreenSize = function(width, height)
+
+  local ratio = width / height
+  local game_width  = 1280
+  local game_height = 720   --给出一个默认值
+
+  xlLG("init", "devcie screen size = [%d %d], ratio = %d\n", width, height, ratio * 10)
+
+  if (ratio >= 2.05) then --适用于全面屏
+
+    xlLG("init", "检测到超宽屏幕\n")
+
+    game_width  = 1560
+    game_height = 720
+
+  elseif (ratio >= 1.87) then  -- 1.87 适用于异形屏
+       
+       game_width  = 1360
+       game_height = 720
+
+  elseif (ratio >= 1.7) then  -- 1.7 适用于 iphone 6,7,8 plus iphone 5
+
+       game_width  = 1280
+       game_height = 720
+   
+   elseif (ratio >= 1.43) then  -- 1.43 新的ipad
+       
+       game_width  = 1152
+       game_height = 768
+   
+   elseif (ratio >= 1.3) then  -- 1.3 适用于老ipad
+       
+       game_width  = 1024
+       game_height = 768
+  
+  elseif (ratio <= 0.5) then
+  	game_width = 720
+  	game_height = 1560
+  elseif (ratio <= 0.53) then
+  	game_width  = 720
+        game_height = 1360
+  elseif (ratio <= 1) then
+  	game_width  = 720
+        game_height = 1280
+   end
+
+   xlSetScreenSize(game_width, game_height)
+
+   xlLG("init", "set screen size [%d %d] %d\n", game_width, game_height, game_width/game_height*10)
+
+   if type(xlLuaEvent_SpinScreen) == "function" then
+	xlLuaEvent_SpinScreen(game_width,game_height)
+   end
+
+end

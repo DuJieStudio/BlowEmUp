@@ -1,0 +1,1098 @@
+----------------------------------
+---- 加载雇佣面板
+----------------------------------
+--hGlobal.UI.InitHireFrame = function()
+--	local _frm,_childUI
+--	local _w,_h =  554,462
+--	local _x,_y = hVar.SCREEN.w/2 - 554/2,hVar.SCREEN.h/2 + 462/2
+--
+--	hGlobal.UI.HireFrame = hUI.frame:new({
+--		x = _x,
+--		y = _y,
+--		w = _w,
+--		h = _h,
+--		show = 0,
+--		dragable = 2,
+--		closebtn = "BTN:PANEL_CLOSE",
+--		closebtnX = _w,
+--		closebtnY = -10,
+--
+--		--background = "UI:PANEL_INFO_S",
+--	})
+--	
+--	_frm = hGlobal.UI.HireFrame
+--	_childUI = _frm.childUI
+--	
+--	_childUI["apartline_back"] = hUI.image:new({
+--		parent = _frm.handle._n,
+--		model = "UI:panel_part_09",
+--		x = 270,
+--		y = -150,
+--		w = _w,
+--		h = 8,
+--	})
+-- 
+--	--关闭按钮
+--	--_childUI["Btnclose"] = hUI.button:new({
+--		--parent = _frm.handle._n,
+--		--model = "BTN:PANEL_CLOSE",
+--		--dragbox = _frm.childUI["dragBox"],
+--		--x = _w,
+--		--y = -10,
+--		--scaleT = 0.9,
+--		--code = function(self)
+--			--_frm:show(0,"normal")
+--			--hGlobal.UI.UnitInfoFram:show(0)
+--		--end,
+--	--})
+--
+--	--显示总价的lab条
+--	--lab控件对象
+--	local labRes_gold,labRes_food,labRes_stone,labRes_wood,labRes_iron,labRes_jewel = 1,2,3,4,5,6
+--	local _labResList = {0,0,0,0,0,0}
+--	--图标
+--	local Image_gold,Image_food,Image_stone,Image_wood,Image_iron,Image_jewel = 1,2,3,4,5,6
+--	local _ImageList = {0,0,0,0,0,0}
+--	
+--	--购买所需要的资源
+--	local gold,food,stone,wood,iron,jewel= 1,2,3,4,5,6
+--	local _varList = {0,0,0,0,0,0}
+--	
+--	--单价图标
+--	local minImage_gold,minImage_food,minImage_stone,minImage_wood,minImage_iron,minImage_jewel = 1,2,3,4,5,6
+--	local _minImageList = {0,0,0,0,0,0}
+--	
+--	--单价lab
+--	local minlabRes_gold,minlabRes_food,minlabRes_stone,minlabRes_wood,minlabRes_iron,minlabRes_jewel = 1,2,3,4,5,6
+--	local _minlabResList = {0,0,0,0,0,0}
+--
+--					
+--	local _ID,_NNUM,_NMAX,_CODE = 1,2,3,4
+--	local _Hirelist = {}
+--	local _CreateShopSlot = function(name,x,y)
+--		local _uNum = {0,1,1,hApi.DoNothing}
+--		local _bar,_num
+--
+--		--拖拽条
+--		_childUI["bar_"..name] = hUI.valbar:new({
+--			parent = _frm.handle._n,
+--			model = "UI:ValueBar",
+--			back = {model = "UI:ValueBar_Back",x=0,y=0,w=360,h=36},
+--			w = 360,
+--			h = 36,
+--			x = 90,
+--			y = -250,
+--			align = "LT",
+--		})
+--		_bar = _childUI["bar_"..name]
+--
+--		_childUI["scrollBtn"] = hUI.image:new({
+--			parent = _frm.handle._n,
+--			model = "UI:scrollBtn",
+--			x = 95,
+--			y = -261,
+--		})
+--
+--		--拖拽条上显示的数字
+--		_childUI["labNum_"..name] = hUI.label:new({
+--			parent = _frm.handle._n,
+--			font = "numWhite",
+--			size = 18,
+--			text = "100",
+--			align = "MC",
+--			x = _bar.data.x+_bar.data.w/2,
+--			y = _bar.data.y-_bar.data.h/2,
+--		})
+--		_num = _childUI["labNum_"..name]
+--		
+--		_childUI["btnScorll_"..name] = hUI.button:new({
+--			parent = _frm.handle._n,
+--			mode = "imageButton",
+--			dragbox = _frm.childUI["dragBox"],
+--			model = "MODEL:Default",
+--			w = _bar.data.w,
+--			h = 32,
+--			x = _bar.data.x,
+--			y = _bar.data.y,
+--			align = "LT",
+--			failcall = 1,
+--			codeOnTouch = function(self,x,y,sus)
+--				x = math.min(360,math.max(0,x-self.data.x))
+--				_bar:setV(x,360)
+--				local tempX = x
+--				if tempX > 350 then tempX = 350 end
+--				_childUI["scrollBtn"].handle._n:setPosition(tempX+95,-261)
+--				_uNum[_NNUM] = math.ceil(_uNum[_NMAX]*x/_bar.data.w)
+--				_num:setText(tostring(_uNum[_NNUM].."/".._uNum[_NMAX]))
+--				--根据编辑器顺序进行资源保存
+--				local tempPlayRes = {
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.GOLD),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.FOOD),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.STONE),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.WOOD),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.LIFE),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.CRYSTAL)
+--				}
+--	
+--				--根据当前的购买数量进行 lab控件内容设置 陶晶2013-4-8
+--				for i = 1,6,1 do
+--					if tempPlayRes[i]< (_varList[i]*_uNum[_NNUM]) then
+--						_labResList[i].handle.s:setColor(ccc3(255,0,0))
+--					else
+--						_labResList[i].handle.s:setColor(ccc3(255,255,255))
+--					end
+--					_labResList[i]:setText(tostring(_varList[i]*_uNum[_NNUM]))
+--				end
+--
+--			end,
+--			codeOnDrag = function(self,x,y,sus)
+--				x = math.min(360,math.max(0,x-self.data.x))
+--				_bar:setV(x,360)
+--				local tempX = x
+--				if tempX > 350 then tempX = 350 end
+--				_childUI["scrollBtn"].handle._n:setPosition(tempX+95,-261)
+--				_uNum[_NNUM] = math.ceil(_uNum[_NMAX]*x/_bar.data.w)
+--				_num:setText(tostring(_uNum[_NNUM].."/".._uNum[_NMAX]))
+--				--根据编辑器顺序进行资源保存
+--				local tempPlayRes = {
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.GOLD),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.FOOD),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.STONE),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.WOOD),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.LIFE),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.CRYSTAL)
+--				}
+--				--根据当前的购买数量进行 lab控件内容设置 陶晶2013-4-8
+--				for i = 1,6,1 do
+--					if tempPlayRes[i]< (_varList[i]*_uNum[_NNUM]) then
+--						_labResList[i].handle.s:setColor(ccc3(255,0,0))
+--					else
+--						_labResList[i].handle.s:setColor(ccc3(255,255,255))
+--					end
+--					_labResList[i]:setText(tostring(_varList[i]*_uNum[_NNUM]))
+--				end
+--
+--			end,
+--		})
+--		_childUI["btnScorll_"..name].handle.s:setVisible(false)
+--		--拖拽条左箭头
+--		_childUI["btnMinus_"..name] = hUI.button:new({
+--			parent = _frm.handle._n,
+--			mode = "imageButton",
+--			dragbox = _frm.childUI["dragBox"],
+--			model = "UI:subone",
+--			animation = "L",
+--			w = 32,
+--			h = 32,
+--			x = _bar.data.x-30,
+--			y = _bar.data.y-18,
+--			scaleT = 0.75,
+--			codeOnTouch = function(self,x,y,sus)
+--				if _uNum[_NNUM]>0 then
+--					_uNum[_NNUM] = _uNum[_NNUM] - 1							--数量减一
+--					_bar:setV(_uNum[_NNUM],_uNum[_NMAX])
+--					_childUI["scrollBtn"].handle._n:setPosition(_bar.data.rect.w -_bar.data.curW+95,-261)
+--					_num:setText(tostring(_uNum[_NNUM].."/".._uNum[_NMAX]))
+--					--根据编辑器顺序进行资源保存
+--					local tempPlayRes = {
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.GOLD),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.FOOD),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.STONE),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.WOOD),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.LIFE),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.CRYSTAL)
+--					}
+--					--根据当前的购买数量进行 lab控件内容设置 陶晶2013-4-8
+--					for i = 1,6,1 do
+--						if tempPlayRes[i]< (_varList[i]*_uNum[_NNUM]) then
+--						_labResList[i].handle.s:setColor(ccc3(255,0,0))
+--					else
+--						_labResList[i].handle.s:setColor(ccc3(255,255,255))
+--					end
+--					_labResList[i]:setText(tostring(_varList[i]*_uNum[_NNUM]))
+--					end
+--
+--				end
+--			end,
+--		})
+--		--拖拽条右箭头
+--		_childUI["btnPlus_"..name] = hUI.button:new({
+--			parent = _frm.handle._n,
+--			mode = "imageButton",
+--			dragbox = _frm.childUI["dragBox"],
+--			model = "UI:addone",
+--			animation = "R",
+--			w = 32,
+--			h = 32,
+--			x = _bar.data.x+_bar.data.w+30,
+--			y = _bar.data.y-18,
+--			scaleT = 0.75,
+--			codeOnTouch = function(self,x,y,sus)
+--				if _uNum[_NNUM]<_uNum[_NMAX] then
+--					_uNum[_NNUM] = _uNum[_NNUM] + 1
+--					_bar:setV(_uNum[_NNUM],_uNum[_NMAX])
+--					local tempX = _bar.data.rect.w -_bar.data.curW
+--					if tempX>350 then tempX = 350 end
+--					_childUI["scrollBtn"].handle._n:setPosition(tempX+95,-261)
+--					_num:setText(tostring(_uNum[_NNUM].."/".._uNum[_NMAX]))
+--					--根据编辑器顺序进行资源保存
+--					local tempPlayRes = {
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.GOLD),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.FOOD),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.STONE),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.WOOD),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.LIFE),
+--					hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.CRYSTAL)
+--					}
+--					--根据当前的购买数量进行 lab控件内容设置 陶晶2013-4-8
+--					for i = 1,6,1 do
+--						if tempPlayRes[i]< (_varList[i]*_uNum[_NNUM]) then
+--							_labResList[i].handle.s:setColor(ccc3(255,0,0))
+--						else
+--							_labResList[i].handle.s:setColor(ccc3(255,255,255))
+--						end
+--						_labResList[i]:setText(tostring(_varList[i]*_uNum[_NNUM]))
+--					end
+--
+--				end
+--			end,
+--		})
+--		
+--		--拖拽条max 箭头 玩家点击后 会增加至最大购买数量 陶晶 2013-4-9
+--		_childUI["btnPlus_Max_"..name] = hUI.button:new({
+--			parent = _frm.handle._n,
+--			mode = "imageButton",
+--			dragbox = _frm.childUI["dragBox"],
+--			model = "UI:maxbutton",
+--			animation = "R",
+--			x = 196,
+--			y = -398,
+--			scaleT = 0.9,
+--			codeOnTouch = function(self,x,y,sus)
+--				if _uNum[_NNUM]<_uNum[_NMAX] then
+--					local tempnum = 0 --玩家身上的资源 一共可购买的兵种个数
+--					local tempIndex = 0 --临时索引
+--					local tempNumlist = {-1,-1,-1,-1,-1,-1} --临时购买个数表 ，每种资源可以购买的最大个数
+--					--根据编辑器顺序进行资源保存
+--					local tempPlayRes = {
+--						hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.GOLD),
+--						hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.FOOD),
+--						hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.STONE),
+--						hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.WOOD),
+--						hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.LIFE),
+--						hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.CRYSTAL)
+--					}
+--					--存储用来排序的购买个数表
+--					for i = 1,6,1 do
+--						if _varList[i] ~= 0 then
+--							tempIndex = tempIndex+1
+--							tempNumlist[tempIndex] = math.floor(tempPlayRes[i]/_varList[i])
+--						end
+--					end
+--					
+--					--找到最小值
+--					tempnum = tempNumlist[1]
+--					for i = 1,#tempNumlist, 1 do
+--						if tempNumlist[i] < tempnum and tempNumlist[i]~= -1 then
+--							tempnum = tempNumlist[i]
+--						end
+--					end
+--
+--					--对购买数进行赋值
+--					if tempnum > _uNum[_NMAX] then
+--						_uNum[_NNUM] = _uNum[_NMAX]
+--					else
+--						_uNum[_NNUM] = tempnum
+--					end
+--					_bar:setV(_uNum[_NNUM],_uNum[_NMAX])
+--					local tempX = _bar.data.rect.w -_bar.data.curW
+--					if tempX>350 then tempX = 350 end
+--					_childUI["scrollBtn"].handle._n:setPosition(tempX+95,-261)
+--					_num:setText(tostring(_uNum[_NNUM].."/".._uNum[_NMAX]))
+--					--根据当前的购买数量进行 lab控件内容设置 陶晶2013-4-8
+--					for i = 1,6,1 do
+--						if tempPlayRes[i]< (_varList[i]*_uNum[_NNUM]) then
+--							_labResList[i].handle.s:setColor(ccc3(255,0,0))
+--							
+--						else
+--							_labResList[i].handle.s:setColor(ccc3(255,255,255))
+--						end
+--						_labResList[i]:setText(tostring(_varList[i]*_uNum[_NNUM]))
+--					end
+--
+--				end
+--			end,
+--		})
+--		
+--		--金 图片 陶晶2013-4-8
+--		_childUI["ImageRes_gold_"..name] = hUI.image:new({
+--			parent = _frm.handle._n,
+--			--mode = "batchImage",
+--			model = "UI:ICON_main_frm_ResourceGold",
+--			animation = "lightSlim",
+--			w = 50,
+--			x = 30,
+--			y = -200,
+--		})
+--		_ImageList[Image_gold] = _childUI["ImageRes_gold_"..name]
+--		_ImageList[Image_gold].handle._n:setVisible(false)
+--
+--		--食物 图片 陶晶2013-4-8
+--		_childUI["ImageRes_food_"..name] = hUI.image:new({
+--			parent = _frm.handle._n,
+--			--mode = "batchImage",
+--			model = "UI:ICON_main_frm_ResourceFood",
+--			animation = "lightSlim",
+--			w = 50,
+--			x = 30,
+--			y =-200,
+--		})
+--		_ImageList[Image_food] = _childUI["ImageRes_food_"..name]
+--		_ImageList[Image_food].handle._n:setVisible(false)
+--		
+--		--石头 图片 陶晶2013-4-8
+--		_childUI["ImageRes_rook_"..name] = hUI.image:new({
+--			parent = _frm.handle._n,
+--			--mode = "batchImage",
+--			model = "UI:ICON_main_frm_ResourceStone",
+--			animation = "lightSlim",
+--			w = 50,
+--			x = 30,
+--			y = -200,
+--		})
+--		_ImageList[Image_stone] = _childUI["ImageRes_rook_"..name]
+--		_ImageList[Image_stone].handle._n:setVisible(false)
+--		
+--		--木材 图片 陶晶2013-4-8
+--		_childUI["ImageRes_wood_"..name] = hUI.image:new({
+--			parent = _frm.handle._n,
+--			--mode = "batchImage",
+--			model = "UI:ICON_main_frm_ResourceWood",
+--			animation = "lightSlim",
+--			w = 50,
+--			x = 30,
+--			y = -200,
+--		})
+--		_ImageList[Image_wood] = _childUI["ImageRes_wood_"..name]
+--		_ImageList[Image_wood].handle._n:setVisible(false)
+--		
+--		--镔铁 图片 陶晶2013-4-8
+--		_childUI["ImageRes_iron_"..name] = hUI.image:new({
+--			parent = _frm.handle._n,
+--			--mode = "batchImage",
+--			model = "UI:ICON_main_frm_ResourceIron",
+--			animation = "lightSlim",
+--			w = 50,
+--			x = 30,
+--			y = -200,
+--		})
+--		_ImageList[Image_iron] = _childUI["ImageRes_iron_"..name]
+--		_ImageList[Image_iron].handle._n:setVisible(false)
+--
+--		--宝石 图片 陶晶2013-4-8
+--		_childUI["ImageRes_jewel_"..name] = hUI.image:new({
+--			parent = _frm.handle._n,
+--			--mode = "batchImage",
+--			model = "UI:ICON_main_frm_ResourceJewel",
+--			animation = "lightSlim",
+--			w = 50,
+--			x = 30,
+--			y = -200,
+--		})
+--		_ImageList[Image_jewel] = _childUI["ImageRes_jewel_"..name]
+--		_ImageList[Image_jewel].handle._n:setVisible(false)
+--		
+--		--所消耗的金币lab 陶晶2013-4-8 
+--		_childUI["labRes_gold_"..name] = hUI.label:new({
+--			parent = _frm.handle._n,
+--			font = "numWhite",
+--			size = 14,
+--			text = "0",
+--			align = "MC",
+--			x = 136,
+--			y = -246,
+--		})
+--		_labResList[labRes_gold] = _childUI["labRes_gold_"..name]
+--		_labResList[labRes_gold].handle._n:setVisible(false)
+--		
+--		--所消耗的食物lab 陶晶2013-4-8 
+--		_childUI["labRes_food_"..name] = hUI.label:new({
+--			parent = _frm.handle._n,
+--			font = "numWhite",
+--			size = 14,
+--			text = "0",
+--			align = "MC",
+--			x = 136,
+--			y = -246,
+--		})
+--		_labResList[labRes_food] = _childUI["labRes_food_"..name]
+--		_labResList[labRes_food].handle._n:setVisible(false)
+--		
+--		--所消耗的石头lab 陶晶2013-4-8 
+--		_childUI["labRes_stone_"..name] = hUI.label:new({
+--			parent = _frm.handle._n,
+--			font = "numWhite",
+--			size = 14,
+--			text = "0",
+--			align = "MC",
+--			x = 136,
+--			y = -246,
+--		})
+--		_labResList[labRes_stone] = _childUI["labRes_stone_"..name]
+--		_labResList[labRes_stone].handle._n:setVisible(false)
+--		
+--		--所消耗的木材lab 陶晶2013-4-8 
+--		_childUI["labRes_wood_"..name] = hUI.label:new({
+--			parent = _frm.handle._n,
+--			font = "numWhite",
+--			size = 14,
+--			text = "0",
+--			align = "MC",
+--			x = 136,
+--			y = -246,
+--		})
+--		_labResList[labRes_wood] = _childUI["labRes_wood_"..name]
+--		_labResList[labRes_wood].handle._n:setVisible(false)
+--		
+--		--所消耗的镔铁lab 陶晶2013-4-8 
+--		_childUI["labRes_iron_"..name] = hUI.label:new({
+--			parent = _frm.handle._n,
+--			font = "numWhite",
+--			size = 14,
+--			text = "0",
+--			align = "MC",
+--			x = 136,
+--			y = -246,
+--		})
+--		_labResList[labRes_iron] = _childUI["labRes_iron_"..name]
+--		_labResList[labRes_iron].handle._n:setVisible(false)
+--
+--		--所消耗的宝石lab 陶晶2013-4-8 
+--		_childUI["labRes_jewel_"..name] = hUI.label:new({
+--			parent = _frm.handle._n,
+--			font = "numWhite",
+--			size = 14,
+--			text = "0",
+--			align = "MC",
+--			x = 136,
+--			y = -246,
+--		})
+--		_labResList[labRes_jewel] = _childUI["labRes_jewel_"..name]
+--		_labResList[labRes_jewel].handle._n:setVisible(false)
+--
+--		
+--		--用于显示单价的图标和 lab 陶晶2013-4-9
+--		--金 图片 
+--		_childUI["minImageRes_gold_"..name] = hUI.image:new({
+--			parent = _frm.handle._n,
+--			--mode = "batchImage",
+--			model = "UI:ICON_main_frm_ResourceGold",
+--			animation = "lightSlim",
+--			w = 50,
+--			x = 30,
+--			y = -200,
+--		})
+--		_minImageList[minImage_gold] = _childUI["minImageRes_gold_"..name]
+--		_minImageList[minImage_gold].handle._n:setVisible(false)
+--
+--		--食物 图片
+--		_childUI["minImageRes_food_"..name] = hUI.image:new({
+--			parent = _frm.handle._n,
+--			--mode = "batchImage",
+--			model = "UI:ICON_main_frm_ResourceFood",
+--			animation = "lightSlim",
+--			w = 50,
+--			x = 30,
+--			y =-200,
+--		})
+--		_minImageList[minImage_food] = _childUI["minImageRes_food_"..name]
+--		_minImageList[minImage_food].handle._n:setVisible(false)
+--		
+--		--石头 图片
+--		_childUI["minImageRes_rook_"..name] = hUI.image:new({
+--			parent = _frm.handle._n,
+--			--mode = "batchImage",
+--			model = "UI:ICON_main_frm_ResourceStone",
+--			animation = "lightSlim",
+--			w = 50,
+--			x = 30,
+--			y = -200,
+--		})
+--		_minImageList[minImage_stone] = _childUI["minImageRes_rook_"..name]
+--		_minImageList[minImage_stone].handle._n:setVisible(false)
+--		
+--		--木材 图片
+--		_childUI["minImageRes_wood_"..name] = hUI.image:new({
+--			parent = _frm.handle._n,
+--			--mode = "batchImage",
+--			model = "UI:ICON_main_frm_ResourceWood",
+--			animation = "lightSlim",
+--			w = 50,
+--			x = 30,
+--			y = -200,
+--		})
+--		_minImageList[minImage_wood] = _childUI["minImageRes_wood_"..name]
+--		_minImageList[minImage_wood].handle._n:setVisible(false)
+--		
+--		--镔铁 图片
+--		_childUI["minImageRes_iron_"..name] = hUI.image:new({
+--			parent = _frm.handle._n,
+--			--mode = "batchImage",
+--			model = "UI:ICON_main_frm_ResourceIron",
+--			animation = "lightSlim",
+--			w = 50,
+--			x = 30,
+--			y = -200,
+--		})
+--		_minImageList[minImage_iron] = _childUI["minImageRes_iron_"..name]
+--		_minImageList[minImage_iron].handle._n:setVisible(false)
+--
+--		--宝石 图片
+--		_childUI["minImageRes_jewel_"..name] = hUI.image:new({
+--			parent = _frm.handle._n,
+--			--mode = "batchImage",
+--			model = "UI:ICON_main_frm_ResourceJewel",
+--			animation = "lightSlim",
+--			w = 50,
+--			x = 30,
+--			y = -200,
+--		})
+--		_minImageList[minImage_jewel] = _childUI["minImageRes_jewel_"..name]
+--		_minImageList[minImage_jewel].handle._n:setVisible(false)
+--		
+--		--所消耗的金币lab 
+--		_childUI["minlabRes_gold_"..name] = hUI.label:new({
+--			parent = _frm.handle._n,
+--			font = "numWhite",
+--			size = 14,
+--			text = "0",
+--			align = "MC",
+--			x = 136,
+--			y = -246,
+--		})
+--		_minlabResList[minlabRes_gold] = _childUI["minlabRes_gold_"..name]
+--		_minlabResList[minlabRes_gold].handle._n:setVisible(false)
+--		
+--		--所消耗的食物lab  
+--		_childUI["minlabRes_food_"..name] = hUI.label:new({
+--			parent = _frm.handle._n,
+--			font = "numWhite",
+--			size = 14,
+--			text = "0",
+--			align = "MC",
+--			x = 136,
+--			y = -246,
+--		})
+--		_minlabResList[minlabRes_food] = _childUI["minlabRes_food_"..name]
+--		_minlabResList[minlabRes_food].handle._n:setVisible(false)
+--		
+--		--所消耗的石头lab 
+--		_childUI["minlabRes_stone_"..name] = hUI.label:new({
+--			parent = _frm.handle._n,
+--			font = "numWhite",
+--			size = 14,
+--			text = "0",
+--			align = "MC",
+--			x = 136,
+--			y = -246,
+--		})
+--		_minlabResList[minlabRes_stone] = _childUI["minlabRes_stone_"..name]
+--		_minlabResList[minlabRes_stone].handle._n:setVisible(false)
+--		
+--		--所消耗的木材lab 
+--		_childUI["minlabRes_wood_"..name] = hUI.label:new({
+--			parent = _frm.handle._n,
+--			font = "numWhite",
+--			size = 14,
+--			text = "0",
+--			align = "MC",
+--			x = 136,
+--			y = -246,
+--		})
+--		_minlabResList[minlabRes_wood] = _childUI["minlabRes_wood_"..name]
+--		_minlabResList[minlabRes_wood].handle._n:setVisible(false)
+--		
+--		--所消耗的镔铁lab  
+--		_childUI["minlabRes_iron_"..name] = hUI.label:new({
+--			parent = _frm.handle._n,
+--			font = "numWhite",
+--			size = 14,
+--			text = "0",
+--			align = "MC",
+--			x = 136,
+--			y = -246,
+--		})
+--		_minlabResList[minlabRes_iron] = _childUI["minlabRes_iron_"..name]
+--		_minlabResList[minlabRes_iron].handle._n:setVisible(false)
+--
+--		--所消耗的宝石lab  
+--		_childUI["minlabRes_jewel_"..name] = hUI.label:new({
+--			parent = _frm.handle._n,
+--			font = "numWhite",
+--			size = 14,
+--			text = "0",
+--			align = "MC",
+--			x = 136,
+--			y = -246,
+--		})
+--		_minlabResList[minlabRes_jewel] = _childUI["minlabRes_jewel_"..name]
+--		_minlabResList[minlabRes_jewel].handle._n:setVisible(false)
+--		
+--		--local d = _slot.data
+--		local _imageName = "img_"..name
+--		local _hintName = "hint_"..name
+--		local _hint_Name = "hint_name_"..name
+--		local _UnitPrice = "UnitPrice_"..name
+--		local _TotalPrices = "TotalPrices_"..name
+--		local _buttons = {"btnScorll_"..name,"btnMinus_"..name,"btnPlus_"..name}
+--		_uNum[_CODE] = function(id,num,numMax)
+--			if id and id~=0 then										--id为需要生产的兵种id
+--				--从 tab_unit表中读取雇佣单位的价格 并赋值 陶晶2013-4-8
+--				if hVar.tab_unit[id].price then
+--					for i = 1,6,1 do
+--						_varList[i] = hVar.tab_unit[id].price[i] or 0				--从兵种unit的price中取数值（数值的顺序和图标的定义已经对应，无需担心）
+--						_ImageList[i].handle._n:setVisible(false)
+--						_labResList[i].handle._n:setVisible(false)
+--						_minImageList[i].handle._n:setVisible(false)
+--						_minlabResList[i].handle._n:setVisible(false)
+--					end
+--				else
+--					for i = 1,6,1 do
+--						_varList[i] = 0
+--						_ImageList[i].handle._n:setVisible(false)
+--						_labResList[i].handle._n:setVisible(false)
+--						_minImageList[i].handle._n:setVisible(false)
+--						_minlabResList[i].handle._n:setVisible(false)
+--					end
+--				end
+--
+--				-- 对本地用来控制那些资源icon用来显示 以及哪些 lab显示的逻辑 陶晶2013-4-8
+--				local tempindex = 0
+--				for i = 1,6,1 do
+--					if _varList[i] and _varList[i] ~= 0 then
+--						--单价显示
+--						_minImageList[i].handle._n:setVisible(true)				--图片可见
+--						_minImageList[i].handle._n:setPosition(140+130*tempindex,-192)		--图片位置
+--						_minlabResList[i].handle._n:setVisible(true)				--数值可见
+--						_minlabResList[i].handle._n:setPosition(140+130*tempindex,-225)		--数值位置
+--						_minlabResList[i]:setText(tostring(_varList[i]))			--数值文字
+--						
+--						--总价显示
+--						_ImageList[i].handle._n:setVisible(true)
+--						_ImageList[i].handle._n:setPosition(140+130*tempindex,-320)
+--						_labResList[i].handle._n:setVisible(true)
+--						_labResList[i].handle._n:setPosition(140+130*tempindex,-350)
+--
+--						tempindex = tempindex+1			
+--					end
+--				end
+--			end
+--
+--			_uNum[_ID] = id
+--			hApi.safeRemoveT(_childUI,_imageName)
+--			hApi.safeRemoveT(_childUI,_hintName)
+--			hApi.safeRemoveT(_childUI,_UnitPrice)
+--			local uHint = hVar.tab_stringU[id][2] or "UNIT_"..id.."_HINT"
+--			
+--			--单价 title
+--			_childUI["UnitPrice_"..name] = hUI.label:new({
+--				parent = _frm.handle._n,
+--				size = 28,
+--				align = "LT",
+--				font = hVar.FONTC,
+--				x = 48,
+--				y =-192,
+--				width = 60,
+--				text = hVar.tab_string["__TEXT_UnitPrice"],
+--				border = 1,
+--			})
+--			--总价 title
+--			_childUI["TotalPrices"..name] = hUI.label:new({
+--				parent = _frm.handle._n,
+--				size = 28,
+--				align = "LT",
+--				font = hVar.FONTC,
+--				x = 48,
+--				y =-315,
+--				width = 60,
+--				text = hVar.tab_string["__TEXT_TotalPrices"],
+--				border = 1,
+--			})
+--			
+--			-- 单位介绍
+--			_childUI["hint_"..name] = hUI.label:new({
+--				parent = _frm.handle._n,
+--				size = 26,
+--				font = hVar.FONTC,
+--				align = "LT",
+--				x = 70+#_Hirelist*90,
+--				y = -55,
+--				width = 380-#_Hirelist*50,
+--				text = uHint,
+--				border = 1,
+--			})
+--
+--			local n = num or 0
+--			_uNum[_NNUM] = 0
+--			_uNum[_NMAX] = n
+--			_num:setText(tostring(_uNum[_NNUM].."/".._uNum[_NMAX]))
+--			--根据当前的购买数量进行 lab控件内容设置 陶晶2013-4-8
+--			for i = 1,6,1 do
+--				_labResList[i]:setText(tostring(_varList[i]*_uNum[_NNUM]))
+--			end
+--			
+--			_bar:setV(_uNum[_NNUM],_uNum[_NMAX])
+--			local tempX = _bar.data.rect.w -_bar.data.curW
+--			_childUI["scrollBtn"].handle._n:setPosition(tempX+95,-261)
+--
+--			for i = 1,#_buttons do
+--				_childUI[_buttons[i]]:setstate(1)
+--			end
+--		end
+--		return _uNum
+--	end
+--	local _slot = {}
+--	local _childUIBtnList = {}
+--	local _BtnStat = {}
+--	local _UnitNmae = {}
+--	local _HireUnit = {}
+--	local _HireTarget = {}
+--	local _HireTemp = {}
+--	_HireTemp[1] = _CreateShopSlot("1",10,-20)
+--	
+--	local _numMax = 0 -- 当前建筑显示的总产量
+--	local _oWorld,_nIndexEx
+--	local _LoadHireList = function(oWorld,oUnit,oTarget,tData)
+--		_oWorld = oWorld
+--		if tData~=oTarget.data then
+--			_nIndexEx = tData.indexOfTown
+--		else
+--			_nIndexEx = 0
+--		end
+--
+--		_Hirelist = tData.hireList
+--		for i = 1, #_childUIBtnList do
+--			hApi.safeRemoveT(_childUI,_childUIBtnList[i])
+--			hApi.safeRemoveT(_childUI,_slot[i])
+--			hApi.safeRemoveT(_childUI,_UnitNmae[i])
+--		end
+--		hApi.safeRemoveT(_childUI,_imageName)
+--		hApi.safeRemoveT(_childUI,_hintName)
+--		hApi.safeRemoveT(_childUI,_UnitPrice)
+--		hApi.safeRemoveT(_childUI,_Unit_Name)
+--
+--		--获取当前单位的总产兵数量
+--
+--		local uModel = 0
+--		local uName = 0
+--		for i = 1, #tData.hireList do
+--			
+--			--头像面板
+--			_childUI["slot_"..i] = hUI.image:new({
+--				parent = _frm.handle._n,
+--				--mode = "batchImage",
+--				model = "UI_frm:slot",
+--				animation = "lightSlim",
+--				w = 74,
+--				x = 80+(i-1)*100,
+--				y = -80,
+--			})
+--			_slot[i] = "slot_"..i
+--			
+--			uName = hVar.tab_stringU[tData.hireList[i][1]][1] or "UNIT_"..tData.hireList[i][1].."_HINT"
+--			-- 单位名字
+--			_childUI["nameint_"..i] = hUI.label:new({
+--				parent = _frm.handle._n,
+--				size = 26,
+--				align = "MC",
+--				font = hVar.FONTC,
+--				x = 80+(i-1)*100,
+--				y = -135,
+--				width = 248,
+--				text = uName,
+--				border = 1,
+--				RGB = {255,255,0},
+--			})
+--			_UnitNmae[i] = "nameint_"..i
+--
+--			uModel = hVar.tab_unit[tData.hireList[i][1]].model or "MODEL:Default"
+--			_childUI["imagebutton"..i] = hUI.button:new({
+--				mode = "imageButton",
+--				dragbox = _frm.childUI["dragBox"],
+--				parent = _frm.handle._n,
+--				model = uModel,
+--				w = 84,
+--				h = 84,
+--				x = _childUI["slot_"..i].data.x-2,
+--				y = _childUI["slot_"..i].data.y-18,
+--				animation = hApi.animationByFacing(uModel,"stand",180),
+--				code = function(self,x,y,sus)
+--					local tempX,tempY = 30,600
+--					if g_phone_mode ~= 0 then
+--						tempX = 32
+--						tempY = 550
+--					end
+--					hGlobal.event:event("LocalEvent_ShowUnitInfoFram",nil,tData.hireList[i][1],tempX,tempY)
+--				end,
+--				codeOnDrag = function(self,x,y,sus)
+--
+--				end,
+--				codeOnTouch = function()
+--					if _BtnStat[i] == 0 then
+--						local v = _Hirelist[i]
+--						if v and v[1] and hVar.tab_unit[v[_ID]] then
+--							_numMax = 0
+--							for j = 1, #tData.hireList do
+--								_numMax = _numMax + tData.hireList[j][2]
+--							end
+--							local id,num,numMax = unpack(v)
+--							_HireTemp[1][_CODE](id,_numMax,numMax)								--刷新需要的资源等UI
+--							
+--						else
+--							_HireTemp[1][_CODE](0)
+--						end
+--						_BtnStat[i] = 1
+--						_childUI["SelectBorder"].handle._n:setPosition(80+(i-1)*100,-80)
+--
+--						--[设置一个默认购买数量]
+--						do
+--							--根据编辑器顺序进行资源保存
+--							local tempPlayRes = {										--什么时候用，什么时候定义，因为玩家的资源数值可能会改变，必须保证使用的是最新的数值
+--								hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.GOLD),
+--								hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.FOOD),
+--								hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.STONE),
+--								hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.WOOD),
+--								hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.LIFE),
+--								hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.CRYSTAL)
+--							}
+--
+--							--根据当前的购买数量 决定是否设置一个默认的购买数量
+--							local bSetOneNum = true
+--							for i = 1,6,1 do
+--								if tempPlayRes[i] < (_varList[i]) then							--判断玩家的资源数量是否小于单价中的数量
+--									bSetOneNum = false
+--									break
+--								end
+--							end
+--
+--							--设置一个默认购买数量
+--							if _childUI["btnPlus_".."1"] ~= nil and true == bSetOneNum then
+--								_childUI["btnPlus_".."1"].data.codeOnTouch()						--做一个“+”的动作
+--							end
+--						end
+--					end
+--					for j = 1,#_BtnStat do
+--						if i~= j then
+--							_BtnStat[j] = 0
+--						end
+--					end
+--				end,
+--			})
+--			_childUIBtnList[i] = "imagebutton"..i
+--			_BtnStat[i] = 0
+--		end
+--		--默认显示的
+--		for i = 1,#_HireTemp do
+--			local v = _Hirelist[i]
+--			if v and v[1] and hVar.tab_unit[v[_ID]] then
+--				local id,num,numMax = unpack(v)
+--				_numMax = 0
+--				for j = 1, #tData.hireList do
+--					_numMax = _numMax + tData.hireList[j][2]
+--				end
+--				_HireTemp[i][_CODE](id,_numMax,numMax)
+--			else
+--				_HireTemp[i][_CODE](0)
+--			end
+--		end
+--		_BtnStat[1] = 1
+--		_childUI["SelectBorder"].handle._n:setPosition(80,-80)
+--
+--		--[设置一个默认购买数量]
+--		do
+--			--根据编辑器顺序进行资源保存
+--			local tempPlayRes = {											--什么时候用，什么时候定义，因为玩家的资源数值可能会改变，必须保证使用的是最新的数值
+--				hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.GOLD),
+--				hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.FOOD),
+--				hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.STONE),
+--				hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.WOOD),
+--				hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.LIFE),
+--				hGlobal.LocalPlayer:getresource(hVar.RESOURCE_TYPE.CRYSTAL)
+--			}
+--
+--			--根据当前的购买数量 决定是否设置一个默认的购买数量
+--			local bSetOneNum = true
+--			for i = 1,6,1 do
+--				if tempPlayRes[i] < (_varList[i]) then
+--					bSetOneNum = false
+--					break
+--				end
+--			end
+--
+--			--设置一个默认购买数量
+--			if _childUI["btnPlus_".."1"] ~= nil and true == bSetOneNum then
+--				_childUI["btnPlus_".."1"].data.codeOnTouch()							--做一个“+”的动作
+--			end
+--		end
+--	end
+--	--buy 按钮
+--	_childUI["btnConfirm"] = hUI.button:new({
+--		parent = _frm.handle._n,
+--		mode = "imageButton",
+--		model = "UI:confirmbut",
+--		dragbox = _frm.childUI["dragBox"],
+--		x = 350,
+--		y = -398,
+--		scaleT = 0.9,
+--		code = function(self)
+--			local buyU = hApi.GetObject(_HireUnit)
+--			--如果可以获得驻守者英雄则改变雇佣单位的unit
+--			local oTown = buyU:gettown()
+--			if oTown then
+--				local gU = oTown:getunit("guard")
+--				if gU then
+--					buyU = gU
+--				end
+--			end
+--			local buyT = hApi.GetObject(_HireTarget)
+--			if buyU and buyT and buyU:getowner()==hGlobal.LocalPlayer then
+--				local buyOpr = {[0] = _nIndexEx}
+--				for i = 1,#_HireTemp do
+--					local v = _HireTemp[i]
+--					if v[_NNUM]>0 then
+--						buyOpr[#buyOpr+1] = {v[_ID],v[_NNUM]}
+--					end
+--				end
+--				return hGlobal.LocalPlayer:order(_oWorld,hVar.OPERATE_TYPE.UNIT_HIRE,buyU,buyOpr,buyT,0,0)
+--				--_HireTemp[1][1] = 0
+--			end
+--		end,
+--	})
+--	
+--	_childUI["SelectBorder"] = hUI.image:new({
+--		parent = _frm.handle._n,
+--		mode = "image",
+--		model = "UI:Button_SelectBorder",
+--		align = "MC",
+--		w = 84,
+--	})
+--	
+--	--购买成功后的监听事件 陶晶 2013-4-8
+--	hGlobal.event:listen("Event_HireConfirm","__HireConfirm",function(oUnit,oTarget,tBuyList)
+--		hApi.PlaySound("army")
+--		hApi.RefreshCombatScore(oUnit)
+--		local oTown = oTarget:gettown()
+--		if oTown then
+--			local visitor = hApi.GetObjectUnit(oTown.data.visitor)
+--			if visitor then
+--				
+--				hGlobal.event:event("LocalEvent_DragOutHeroPhoto",visitor,1,hVar.SCREEN.w - 76,130)
+--			end
+--		end
+--		
+--		--默认显示的
+--		_numMax = 0
+--		for i = 1, #_Hirelist do
+--			_numMax = _numMax + _Hirelist[i][2]
+--		end
+--		for i = 1,#_Hirelist do
+--			local v = _Hirelist[i]
+--			if v and v[1] and hVar.tab_unit[v[_ID]] and tBuyList[_ID][_ID] == v[1]then
+--				local id,num,numMax = unpack(v)
+--				_HireTemp[1][_CODE](id,_numMax,numMax)
+--				break
+--			else
+--				--_HireTemp[1][_CODE](0)
+--			end
+--		end
+--
+--		--_frm:show(1)
+--		--_frm:active()
+--		_frm:show(0)
+--		hGlobal.UI.UnitInfoFram:show(0)
+--	end)
+--	
+--	local _LastindexOfTown = 0
+--	--显示面板
+--	hGlobal.event:listen("Event_HeroTakeShop","__UnitShowHireFrame",function(oWorld,oUnit,oTarget,nOperate,tData,nOperateId)
+--		if nOperate~=hVar.OPERATE_TYPE.UNIT_HIRE or nOperateId == 1 then
+--			return
+--		end
+--		for i = 1,6 do
+--			_labResList[i].handle.s:setColor(ccc3(255,255,255))
+--		end
+--
+--		local u = oUnit
+--		local w = oWorld
+--		local _list = tSellList
+--		local oldU = hApi.GetObject(_HireUnit)
+--		local oldT = hApi.GetObject(_HireTarget)
+--		
+--		_frm:onscreen(64)
+--		if w.data.type=="worldmap" then
+--			--if g_phone_mode ~= 0 then
+--				--local tempx,tempy = _x - 50 ,_y - 50
+--				--_frm:setXY(tempx,tempy)
+--				--_childUI["dragBox"]:sortbutton()
+--			--end
+--
+--			_frm:show(1,"appear")
+--			_frm:active()
+--			needReload = 1
+--		else
+--			--if g_phone_mode == 0 then
+--				--local tempx,tempy = _x - 50 ,_y - 50
+--				--_frm:setXY(tempx,tempy)
+--				--_childUI["dragBox"]:sortbutton()
+--			--end
+--
+--			if oldT==oTarget then
+--				if _frm.data.show==0 then
+--					_frm:show(1,"appear")
+--					_frm:active()
+--				else
+--					if _LastindexOfTown == tData.indexOfTown then
+--						_frm:show(0,"appear")
+--					end	
+--				end
+--			else
+--				needReload = 1
+--				if _frm.data.show==0 then
+--					_frm:show(1,"appear")
+--					_frm:active()
+--				end
+--			end
+--
+--			
+--		end
+--		if needReload==1 then
+--			hApi.SetObject(_HireUnit,oUnit)
+--			hApi.SetObject(_HireTarget,oTarget)
+--			_LoadHireList(oWorld,oUnit,oTarget,tData)
+--		end
+--		_LastindexOfTown = tData.indexOfTown
+--	end)
+--
+--	--大地图移动隐藏
+--	hGlobal.event:listen("Event_UnitStartMove","__UnitHire",function(oWorld,oUnit,gridX,gridY,oTarget,nOperate)
+--		if oWorld.data.type=="worldmap" and oUnit==hApi.GetObject(_HireUnit) then
+--			hApi.SetObject(_HireUnit,nil)
+--			hApi.SetObject(_HireTarget,nil)
+--			if _frm.data.show~=0 then
+--				_frm:show(0)
+--			end
+--			hGlobal.UI.UnitInfoFram:show(0)
+--		end
+--	end)
+--
+--	--切地图隐藏
+--	hGlobal.event:listen("LocalEvent_PlayerFocusWorld","__UI__HideHireFrame",function(sSceneType,oWorld,oMap)
+--		hApi.SetObject(_HireUnit,nil)
+--		hApi.SetObject(_HireTarget,nil)
+--		if _frm.data.show~=0 then
+--			_frm:show(0)
+--		end
+--		hGlobal.UI.UnitInfoFram:show(0)
+--	end)
+--
+--end

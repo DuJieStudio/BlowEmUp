@@ -1,0 +1,1 @@
+start system\hero_pc.exe editor lua_src

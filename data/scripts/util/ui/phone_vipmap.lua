@@ -1,0 +1,175 @@
+--hGlobal.UI.InitVIPMap = function()
+--	local __G_SelectMapWorld = nil
+--	local _tChaHandleList = {}
+--	local temp_map_difficult,temp_map_enemy_num = 0,0
+--	--创建选择关卡界面
+--	local _createSelectMapWorld = function()
+--		if __G_SelectMapWorld then
+--			__G_SelectMapWorld:del()
+--			__G_SelectMapWorld = nil
+--		end
+--		local nChaCount = 0
+--		__G_SelectMapWorld = hClass.map:new({
+--			map = hVar.PHONE_VIPMAP,
+--			background = "other/map_extend",
+--			scenetype = "chooselevel",
+--			codeOnChaCreate = function(oMap,tChaHandle,id,owner,worldX,worldY,facing)
+--				nChaCount = nChaCount + 1
+--				if hVar.tab_unit[id].mapkey == nil or hVar.MAP_INFO[hVar.tab_unit[id].mapkey] == nil then
+--					return
+--				end
+--				
+--				--------------------------------------------------------------------------------------------
+--				_tChaHandleList[#_tChaHandleList+1] = {tChaHandle,hVar.tab_unit[id].mapkey}
+--				--给地图加边框和名字
+--				local labX,labY = -2,45
+--				if hVar.tab_unit[id].labXY then
+--					labX,labY = hVar.tab_unit[id].labXY[1],hVar.tab_unit[id].labXY[2]
+--				end
+--				oMap.worldUI["MapFrame"..nChaCount] = hUI.image:new({
+--					parent = tChaHandle._tn,
+--					model = "UI:level_back",
+--					--x = ,
+--				})
+--				oMap.worldUI["MapNaem"..nChaCount] = hUI.label:new({
+--					parent = tChaHandle._tn,
+--					x = labX,
+--					y = labY,
+--					font = hVar.FONTC,
+--					text = hVar.MAP_INFO[hVar.tab_unit[id].mapkey].name,
+--					size = 23,
+--					align = "MC",
+--					border = 1,
+--					RGB = {230,180,50},
+--				})
+--				
+--				--如果定义了地图难度星星
+--				local diffMap = ""
+--				diffMap = hVar.MAP_INFO[hVar.tab_unit[id].mapkey].diff
+--					
+--				if type(diffMap) == "number" then
+--						
+--					for k = 1, diffMap do
+--						oMap.worldUI["MapStar"..nChaCount..k] = hUI.image:new({
+--						parent = tChaHandle._tn,
+--						model = "UI:HERO_STAR",
+--						align = "LT",
+--						x = 49,
+--						y = 24 - (k-1) * 15.5
+--						})
+--					end
+--				end
+--				
+--				
+--				
+--
+--				--------------------------------------------------------------------------------------------
+--				--显示关卡通关状态
+--				if LuaGetPlayerMapAchi(hVar.tab_unit[id].mapkey,hVar.ACHIEVEMENT_TYPE.LEVEL) == 1 then
+--					oMap.worldUI["Crown"..nChaCount] = hUI.image:new({
+--						parent = tChaHandle._tn,
+--						model = "UI:ach_king",
+--						x = 40,
+--						y = -47,
+--						scale = 0.8,
+--					})
+--				else
+--					if hVar.tab_unit[id].mapkey == "world/level_xlslc" or hVar.tab_unit[id].mapkey == "world/level_lcfj" or hVar.tab_unit[id].mapkey == "world/level_lcfj2" then
+--						temp_map_difficult = LuaGetPlayerMapAchi(hVar.tab_unit[id].mapkey,hVar.ACHIEVEMENT_TYPE.Map_Difficult)
+--						temp_map_enemy_num = LuaGetPlayerMapAchi(hVar.tab_unit[id].mapkey,hVar.ACHIEVEMENT_TYPE.Enemy_Num)
+--						if (temp_map_difficult > 0 or temp_map_enemy_num > 0 )and LuaGetPlayerMapAchi(hVar.tab_unit[id].mapkey,hVar.ACHIEVEMENT_TYPE.LEVEL) == 0 then
+--							oMap.worldUI["diffimage"..nChaCount] = hUI.image:new({
+--								parent = tChaHandle._tn,
+--								model = "UI:difficulty",
+--								x = -20,
+--								y = -47,
+--								scale = 0.8,
+--							})
+--
+--							oMap.worldUI["difflab"..nChaCount] = hUI.label:new({
+--								parent = tChaHandle._tn,
+--								x = -5,
+--								y = -37,
+--								text = temp_map_difficult,
+--								font = "numWhite",
+--								size = 20,
+--								align = "LT",
+--								border = 1,
+--							})
+--
+--							oMap.worldUI["enemy_image"..nChaCount] = hUI.image:new({
+--								parent = tChaHandle._tn,
+--								model = "ICON:action_attack",
+--								x = 30,
+--								y = -50,
+--								scale = 0.4,
+--							})
+--
+--							oMap.worldUI["enemy_num"..nChaCount] = hUI.label:new({
+--								parent = tChaHandle._tn,
+--								x = 45,
+--								y = -37,
+--								font = "numWhite",
+--								text = temp_map_enemy_num,
+--								size = 20,
+--								align = "LT",
+--								border = 1,
+--							})
+--						end
+--					end
+--				end
+--				
+--			end,
+--			codeOnTouchDown = function(oMap,nWorldX,nWorldY,nScreenX,nScreenY)
+--				local tChaHandle = oMap:hit2cha(nWorldX,nWorldY)
+--				if tChaHandle then
+--					--local opr = hVar.tab_unit[tChaHandle.data.id].interaction[1]
+--					--print(tChaHandle.data.id,"aaaaaaa")
+--				end
+--			end,
+--
+--			codeOnTouchUp = function(oMap,nWorldX,nWorldY,nScreenX,nScreenY)
+--				local tChaHandle = oMap:hit2cha(nWorldX,nWorldY)
+--				if tChaHandle then
+--					--print(tChaHandle.data.id,"aaaaaaa")
+--					if tChaHandle.data.id == 60600 then
+--						hGlobal.event:event("LocalEvent_phone_OpenQuestionFrm")
+--						return
+--					end
+--					hGlobal.event:event("LocalEvent_Phone_ShowMapInfoFrm",hVar.tab_unit[tChaHandle.data.id].mapkey)
+--					return
+--				end
+--			end,
+--		})
+--	end
+--	
+--
+--	--显示主界面
+--	hGlobal.event:listen("LocalEvent_Phone_ShowPhone_VIPMap","__Show_Phone_VIPMap",function()
+--		_tChaHandleList = {}
+--		_createSelectMapWorld()
+--		--根据 UnlockAumMapList 表添加锁
+--		for k,v in pairs(hVar.UnlockAumMapList) do
+--			if LuaGetPlayerMapAchi(k,hVar.ACHIEVEMENT_TYPE.LEVEL) == 0 then
+--				for i = 1,#v do
+--					for j = 1,#_tChaHandleList do
+--						if v[i] == _tChaHandleList[j][2] and __G_SelectMapWorld and _tChaHandleList[j][1]._tn then
+--							__G_SelectMapWorld.worldUI["lock"..v[i]] = hUI.image:new({
+--								parent =_tChaHandleList[j][1]._tn,
+--								x = 45,
+--								y = -50,
+--								scale = 0.8,
+--								align = "MC",
+--								model = "UI:LOCK",
+--								IsTemp = __G_SelectMapWorld.data.IsTemp,
+--							})
+--						end
+--					end
+--				end
+--			end
+--		end
+--
+--		hGlobal.LocalPlayer:focusworld(__G_SelectMapWorld)
+--		hApi.setViewNodeFocus(hVar.SCREEN.w/2,hVar.SCREEN.h/2)
+--	end)
+--end

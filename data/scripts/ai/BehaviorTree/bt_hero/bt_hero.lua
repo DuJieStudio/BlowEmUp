@@ -1,0 +1,583 @@
+--BT.heroBT = {}
+--
+--BT.heroBT.callbackinfo = {}
+--
+--function BT.heroBT.Init()
+--	--_DEBUG_MSG("BT.heroBT.Init()")
+--	
+--	BT.heroBT.root = BT.CreateNode(BT.Node_TypeDef.S,"root",nil)
+--	
+--	BT.CreateNode(BT.Node_TypeDef.A,"Move",BT.heroBT.root)
+--	BT.CreateNode(BT.Node_TypeDef.A,"Grab",BT.heroBT.root)
+--	BT.CreateNode(BT.Node_TypeDef.A,"Attack",BT.heroBT.root)
+--	BT.CreateNode(BT.Node_TypeDef.A,"Escape",BT.heroBT.root)
+--	BT.CreateNode(BT.Node_TypeDef.A,"Search",BT.heroBT.root)
+--end
+--
+--local function testPrintTable(t)
+--	if t and #t > 0 then
+--		print("cccccccccccccccccccccccccccccc count:" .. #t)
+--		for i=1,#t do
+--			print("cccccccccccccccccccccccccccccc i" .. i .. " id:" .. t[i][1] .. " num:" .. t[i][2])
+--		end
+--	end
+--end
+--
+--local function containmonster(team,mid)
+--	local templist = {}
+--	for i=1,#team do
+--		if type(team[i]) == "table" then
+--		else
+--			team[i] = {}
+--			team[i][1] = 0
+--			team[i][2] = 0
+--		end
+--		if team[i][1] == mid then
+--			templist[#templist + 1] = i
+--		end
+--	end
+--	
+--	return templist
+--end
+--
+--local function getemptypos(team)
+--	for i=1,#team do
+--		if type(team[i]) == "table" then
+--		else
+--			team[i] = {}
+--			team[i][1] = 0
+--			team[i][2] = 0
+--		end
+--		if team[i][1] == 0 then
+--			return i
+--		end
+--	end
+--	
+--	return 0
+--end
+--
+----有兵先招兵然后再默认给兵
+--local function dodepletehire(task)
+--	if type(task) == "table" and type(task.Target) == "table" and type(task.Target.u) == "table" then
+--		if task.Action == "Occupy" or task.Action == "Attack_Player" or task.Action == "Attack_Ai" then
+--			local city = task.Target.u
+--			local heroid = task.u.data.id
+--			local team = task.u.data.team
+--			local town = city:gettown()
+--			if type(town) == "table" then
+--				local oWorld = city:getworld()
+--				if oWorld then
+--					local pDifficulty = hApi.GetMapValueByDifficulty(oWorld,"AI_Occupy")
+--					local ArmyScore = hApi.floor(math.max(0.2,pDifficulty)*500)
+--					hApi.CreateArmyByGroup(oWorld,nil,city,{{0,10026,10027,10029,10030,10031,10032,4}},ArmyScore,0.01)
+--				end
+--
+--				--local hirelist = town:depletehire()
+--			end
+--		end
+--	end
+--end
+--
+----行动的电脑兵力成长(已废弃)
+--function AI_Garrison(u)--已废弃
+--	if u==nil then
+--		return
+--	elseif u.ID==0 or u.data.IsDead==1 then
+--		return
+--	end
+--	local oWorld = u:getworld()
+--	if oWorld==nil then
+--		return
+--	end
+--	local team = u.data.team
+--	local heroid = u.data.id
+--	local oHero = u:gethero()
+--	local teamH
+--	local gPec = 1
+--	if oHero then
+--		teamH = oHero.data.AITeam
+--		if oHero.data.AIModeBasic==hVar.AI_MODE.GUARD or oHero.data.AIModeBasic==hVar.AI_MODE.PASSIVE then
+--			gPec = 0.8 + oHero.attr.level*0.1
+--		else
+--			gPec = 1.5 + oHero.attr.level*0.1
+--		end
+--	end
+--	local pDifficulty = hApi.GetMapValueByDifficulty(oWorld,"AI_Garrision")
+--	--local name = ""
+--	--if oHero then
+--		--name = "(英雄)"
+--	--end
+--	--print(name..hVar.tab_unit[u.data.id].name,"兵力生长速度:"..pDifficulty)
+--	if pDifficulty<=0 then
+--		--小于等于0的话不长兵
+--		return hApi.RefreshCombatScore(u)
+--	end
+--	if type(teamH)~="table" then
+--		teamH = team
+--	end
+--	if type(team) == "table" and oWorld then
+--		local nDayCount = oWorld.data.roundcount
+--		for i = 1,#team do
+--			local aId,aNum = 0,0
+--			if type(team[i])=="table" then
+--				aId = team[i][1]
+--			end
+--			if aId==0 and type(teamH[i]) == "table" then
+--				aId = teamH[i][1]
+--			end
+--			if aId~=0 and hVar.tab_unit[aId]~=nil and hVar.tab_unit[aId].type~=hVar.UNIT_TYPE.HERO then
+--				--增加生物
+--				local v = (hVar.UNIT_AI_INCREASE_PER_DAY[hVar.tab_unit[aId].unitlevel or 0] or 0)*gPec*pDifficulty
+--				--投石车生长速度慢
+--				if aId==10008 then
+--					v = 0.2*pDifficulty
+--				end
+--				--农民每天+5个
+--				if aId==10021 then
+--					v = 5*pDifficulty
+--				end
+--				aNum = hApi.floor((nDayCount+1)*v)-hApi.floor(v*nDayCount)
+--			end
+--			if aId~=0 and aNum>0 then
+--				if type(team[i])=="table" then
+--					if team[i][1]==0 then
+--						team[i][1] = aId
+--					end
+--					if team[i][1]~=aId then
+--						_DEBUG_MSG("AI英雄"..u.data.name.."部队增长错误！请检查触发器")
+--					else
+--						team[i][2] = team[i][2] + aNum
+--					end
+--				else
+--					team[i] = {aId,aNum}
+--				end
+--			end
+--		end
+--		return hApi.RefreshCombatScore(u)
+--	end
+--	--似乎有没有事件都无所谓啊
+--	--hGlobal.event:call("Event_TeamChange","add",u)
+--end
+--
+--local function GetCurrentAiUnit()
+--	if BT.heroBT.callbackinfo and BT.heroBT.callbackinfo.unit then
+--		return BT.heroBT.callbackinfo.unit
+--	end
+--	
+--	return nil
+--end
+--
+--g_bAiAccelerate = true
+--function xlGameAiAccelerate()
+--	if true == g_bAiAccelerate and heroGameRule.isAiTurn() then
+--		local u = GetCurrentAiUnit()
+--		if type(u) == "table" and u.handle._c and true == u.data.bNeedAccelerate then
+--			--heroGameAI.LogAi(string.format("xlGameAiAccelerate hid:%d hname:%s frame:%d\n",u.data.id,tostring(u.data.name),g_current_frame_count))
+--			for i = 1,10 do
+--				xlCha_UpdatePos(u.handle._c)
+--			end
+--		end
+--	end
+--end
+--
+--function SetAiAccelerate(u,bFlag)
+--	u.data.bNeedAccelerate = bFlag
+--end
+--
+--local function SetAiRuningInfo(u)
+--	local name = hVar.tab_stringU[u.data.id][1]
+--	local info = hVar.tab_string["_AI_ActionInfo"]
+--	info = hGlobal.UI.Format(info,name)
+--	xlUI_SetButtonLabel(g_buttons["ai_workong_info"], 72, 22, info, 230, 30) 
+--end
+--
+--function BT.heroBT.Run(u,callbackfunc,bFirst)
+--	heroGameAI.LogAi(string.format("BT.heroBT.Run() hid:%d hname:%s\n",u.data.id,tostring(u.data.name)))
+--
+--	local h = u:gethero()
+--
+--	if nil == u or nil == h or 1 == h.data.IsDefeated then
+--		return callbackfunc(u)
+--	else
+--		--heroGameAI.LogAi(string.format("BT.heroBT.Run()ishide AIModeBasic:%d AIMode:%d\n",h.data.AIModeBasic,h.data.AIMode))
+--		if 1 == u.data.IsHide then
+--			if hVar.AI_MODE.GUARD_CITY == h.data.AIModeBasic then
+--			else
+--				return callbackfunc(u)
+--			end
+--		end
+--	end	
+--	
+--	SetAiRuningInfo(u)
+--	
+--	xlSetFocusCha(u.handle._c)
+--	local points = xlChaGetCurrentMovePoints(u.handle._c)
+--	if points > 0 then
+--			
+--		local task = heroGameAITask.GetHeroUrgentTask(u)
+--	
+--		if nil == task then
+--			return callbackfunc(u)
+--		else
+--			heroGameAI.ShowAiControl(true)
+--			
+--			BT.heroBT.callbackinfo.unit = u
+--			BT.heroBT.callbackinfo.hero = u
+--			BT.heroBT.callbackinfo.task = task
+--			BT.heroBT.callbackinfo.callbackfunc = callbackfunc
+--			BT.heroBT.callbackinfo.addtimer = nil
+--			
+--			--if true == bFirst then
+--				SetAiAccelerate(u,true)
+--			--end	
+--			
+--			if task.Target and task.Target.u then
+--				heroGameAI.LogAi("act with target begin:" .. task.Action .. " id:" .. u.data.id .. " frame:" .. g_current_frame_count .. " u.x:" .. u.data.gridX .. " u.y:" .. u.data.gridY .. " t.id:" .. task.Target.u.data.id .. " t.name:" .. task.Target.u.data.name .. " t.x:" .. task.Target.x .. " t.y:" .. task.Target.y .. "\n")
+--			else
+--				heroGameAI.LogAi("act without target begin:" .. task.Action .. " id:" .. u.data.id .. " frame:" .. g_current_frame_count .. " u.x:" .. u.data.gridX .. " u.y:" .. u.data.gridY .. "\n")
+--			end
+--			
+--			if task.Action == "Move" then
+--				u:getowner():order(u:getworld(),hVar.OPERATE_TYPE.UNIT_MOVE,u,hVar.ZERO,task.Target.u,task.Target.x,task.Target.y)
+--			elseif task.Action == "Hero_Direct" then
+--				task.AttackRes = 0
+--				u:getowner():order(u:getworld(),hVar.OPERATE_TYPE.AI_UNIT_ATTACK,u,hVar.ZERO,task.Target.u,task.Target.x,task.Target.y)
+--			elseif task.Action == "Hero_Chase" then
+--				task.AttackRes = 0
+--				u:getowner():order(u:getworld(),hVar.OPERATE_TYPE.UNIT_ATTACK,u,hVar.ZERO,task.Target.u,task.Target.x,task.Target.y)		
+--			elseif task.Action == "Hero_Attack" then
+--				task.AttackRes = 0
+--				u:getowner():order(u:getworld(),hVar.OPERATE_TYPE.UNIT_ATTACK,u,hVar.ZERO,task.Target.u,task.Target.x,task.Target.y)	
+--			elseif task.Action == "Attack_Player" then -- 打城市有守卫 目标城市
+--				task.AttackRes = 0
+--				u:getowner():order(u:getworld(),hVar.OPERATE_TYPE.UNIT_ATTACK,u,hVar.ZERO,task.Target.u,task.Target.x,task.Target.y)
+--			elseif task.Action == "Monster_Attack" then
+--				task.AttackRes = 0
+--				u:getowner():order(u:getworld(),hVar.OPERATE_TYPE.UNIT_ATTACK,u,hVar.ZERO,task.Target.u,task.Target.x,task.Target.y)
+--			elseif task.Action == "Attack_Ai" then -- 打城市无守卫 有兵 目标城市
+--				task.AttackRes = 0
+--				u:getowner():order(u:getworld(),hVar.OPERATE_TYPE.UNIT_ATTACK,u,hVar.ZERO,task.Target.u,task.Target.x,task.Target.y)
+--			elseif task.Action == "Hero_Garrison" then
+--				return callbackfunc(u)
+--			elseif task.Action == "Grab" then
+--				u.data.IsAi = 1
+--				u:getowner():order(u:getworld(),hVar.OPERATE_TYPE.UNIT_LOOT,u,hVar.ZERO,task.Target.u,task.Target.x,task.Target.y)
+--			elseif task.Action == "Occupy" then
+--				u.data.IsAi = 1
+--				u:getowner():order(u:getworld(),hVar.OPERATE_TYPE.UNIT_OCCUPY,u,hVar.ZERO,task.Target.u,task.Target.x,task.Target.y)
+--			elseif task.Action == "Giving" then
+--				u.data.IsAi = 1
+--				u:getowner():order(u:getworld(),hVar.OPERATE_TYPE.UNIT_VISIT,u,hVar.ZERO,task.Target.u,task.Target.x,task.Target.y)
+--			elseif task.Action == "Guard_City" then
+--				u.data.IsAi = 1
+--				u:getowner():order(u:getworld(),hVar.OPERATE_TYPE.UNIT_VISIT,u,hVar.ZERO,task.Target.u,task.Target.x,task.Target.y)
+--			elseif task.Action == "House_Hire" then
+--				u.data.IsAi = 1
+--				local buyList = heroGameAIExplore.GetCanHireList(u,task.Target.u)
+--				u:getowner():order(u:getworld(),hVar.OPERATE_TYPE.UNIT_HIRE,u,1,task.Target.u,task.Target.x,task.Target.y)
+--			elseif task.Action == "Escape" then
+--			elseif task.Action == "Search" then
+--			end
+--		end
+--	else	
+--		return callbackfunc(u)
+--	end
+--end
+--
+--function BT.heroBT.OnMoveArrived(u,w,x,y,o,bArrived)
+--	if BT.heroBT.callbackinfo and BT.heroBT.callbackinfo.unit == u then
+--		heroGameAI.LogAi("end frame:" .. g_current_frame_count .. " bArrived:" .. tostring(bArrived) .. " t.x:" .. x .. " t.y:" .. y .. "\n")
+--		if o then
+--			heroGameAI.LogAi("end frame:" .. g_current_frame_count .. " bArrived:" .. tostring(bArrived) .. " t.x:" .. x .. " t.y:" .. y .. " o.name:" .. o.data.name .. "\n")
+--		end
+--		local task = BT.heroBT.callbackinfo.task
+--		if task and u.data.IsDead~=1 then
+--			local bFinish = bArrived
+--			if nil == o and nil~= task.Target then
+--				o = task.Target.u
+--			end
+--
+--			if true == bFinish then
+--				u.localdata.lastTask = {}
+--				BT.heroBT.callbackinfo.addtimer = nil
+--				if task.Action == "Move" then
+--					--print("hero:" .. task.u.data.name .. " Move ")
+--					--u:getowner():order(u:getworld(),hVar.OPERATE_TYPE.UNIT_MOVE,u,hVar.ZERO,task.Target.u,task.Target.x,task.Target.y)
+--				elseif task.Action == "Grab" then
+--					--print("hero:" .. task.u.data.name .. " Grab ")
+--					heroGameInfo.worldMap.RemoveResource(o)
+--					--u:getowner():order(u:getworld(),hVar.OPERATE_TYPE.UNIT_LOOT,u,hVar.ZERO,task.Target.u,task.Target.x,task.Target.y)
+--				elseif task.Action == "Monster_Attack" then
+--					--print("hero:" .. task.u.data.name .. " Attack ")
+--					heroGameInfo.worldMap.RemoveMonster(o)
+--				elseif task.Action == "Occupy" then
+--					--print("hero:" .. task.u.data.name .. " Occupy ")
+--				elseif task.Action == "Giving" then
+--					--print("hero:" .. task.u.data.name .. " Giving ")
+--				elseif task.Action == "Guard_City" then
+--					local city = task.Target.u
+--					local oTown = city:gettown()
+--					local g = oTown:getunit("guard")
+--					if type(g) == "table" then
+--						local v = oTown:getunit("visitor")
+--						if type(v) == "table" then
+--						else
+--							oTown:setvisitor(u)
+--						end
+--					else
+--						oTown:setguard(u)
+--					end
+--					u.localdata.lastTask = {task}
+--				elseif task.Action == "House_Hire" then
+--				elseif task.Action == "" then
+--					heroGameAI.ShowAiControl(false)
+--					--print("hero:" .. task.u.data.name .. " House_Hire ")
+--				elseif (task.Action == "Hero_Attack" or task.Action == "Attack_Player" or task.Action == "Attack_Ai" or task.Action == "Hero_Chase" or task.Action == "Hero_Direct") then
+--					--print("hero:" .. task.u.data.name .. " Hero_Attack ")
+--					--print("o:" .. task.Target.u.data.name)
+--					--不能动的BUG在此
+--					heroGameAI.ShowAiControl(false)
+--					local points = xlChaGetCurrentMovePoints(u.handle._c)
+--					if points > 0 then
+--						local p = task.Target.u:getowner()
+--						if p == heroGameRule.players[heroGameRule.selfPlayerIndex] then
+--							return
+--						end
+--						return
+--					end
+--				elseif task.Action == "Escape" then
+--				elseif task.Action == "Search" then
+--				end
+--				dodepletehire(task)
+--				return BT.heroBT.Run(BT.heroBT.callbackinfo.hero,BT.heroBT.callbackinfo.callbackfunc)
+--			else
+--				local t = task.Target.u
+--				if t and nil == o then
+--					local info = ".................. 没行动力到达对象 id:%d name:%s x:%d y:%d curX:%d curY:%d"
+--					info = string.format(info,t.data.id,hVar.tab_unit[t.data.id].name,task.Target.x,task.Target.y,x,y)
+--					print(info)
+--				end
+--				if task.Action == "Hero_Chase" then
+--					local points = xlChaGetCurrentMovePoints(u.handle._c)
+--					if points > 0 then
+--						--print("e 追击被堵开始随机打怪 :" .. task.Action)
+--						local newtask = heroGameAITask.heroTask["monster_attack"].GetTaskWithChase(u,t)
+--						if nil == newtask then
+--						else
+--							task = newtask
+--							heroGameAI.ShowAiControl(true)
+--							
+--							--BT.heroBT.callbackinfo.unit = u
+--							--BT.heroBT.callbackinfo.hero = hero
+--							BT.heroBT.callbackinfo.task = task
+--							BT.heroBT.callbackinfo.addtimer = nil
+--							--BT.heroBT.callbackinfo.callbackfunc = callbackfunc
+--							--
+--							
+--							if task.Target and task.Target.u then
+--								heroGameAI.LogAi("OnMoveArrived act with target begin:" .. task.Action .. " id:" .. u.data.id .. " frame:" .. g_current_frame_count .. " u.x:" .. u.data.gridX .. " u.y:" .. u.data.gridY .. " t.id:" .. task.Target.u.data.id .. " t.name:" .. task.Target.u.data.name .. " t.x:" .. task.Target.x .. " t.y:" .. task.Target.y .. "\n")
+--							else
+--								heroGameAI.LogAi("OnMoveArrived act without target begin:" .. task.Action .. " id:" .. u.data.id .. " frame:" .. g_current_frame_count .. " u.x:" .. u.data.gridX .. " u.y:" .. u.data.gridY .. "\n")
+--							end
+--							
+--							u:getowner():order(u:getworld(),hVar.OPERATE_TYPE.UNIT_ATTACK,u,hVar.ZERO,task.Target.u,task.Target.x,task.Target.y)
+--							return
+--						end
+--					end
+--				end
+--				--print("e 原来是卡这里了 task:" .. task.Action)				
+--				return BT.heroBT.Run(BT.heroBT.callbackinfo.hero,BT.heroBT.callbackinfo.callbackfunc)
+--			end
+--		end
+--		
+--		return BT.heroBT.callbackinfo.callbackfunc(BT.heroBT.callbackinfo.hero)
+--	end
+--end
+--
+--function BT.heroBT.OnHeroAttackConfirm(id,bWin)
+--	heroGameAI.LogAi("OnHeroAttackConfirm id:" .. id .. " bWin:" .. tostring(bWin))
+--	if BT.heroBT.callbackinfo and BT.heroBT.callbackinfo.unit then
+--		local task = BT.heroBT.callbackinfo.task
+--		if heroGameRule.isAiTurn() and task and (task.Action == "Monster_Attack" or task.Action == "Hero_Attack" or task.Action == "Attack_Player" or task.Action == "Attack_Ai" or task.Action == "Hero_Chase" or task.Action == "Hero_Direct") and task.AttackRes == 0 and (id == BT.heroBT.callbackinfo.unit.data.id or id == task.Target.u.data.id) then
+--			task.AttackRes = 1
+--			heroGameAI.LogAi("hero:" .. task.u.data.name .. " id:" .. task.u.data.id .. " Hero_Attack Confirm " .. tostring(bWin))
+--			if bWin then
+--				local u = task.u
+--				u.localdata.lastTask = {}
+--				u.localdata.lastTask[#u.localdata.lastTask + 1] = task
+--				dodepletehire(task)
+--				return BT.heroBT.Run(BT.heroBT.callbackinfo.hero,BT.heroBT.callbackinfo.callbackfunc)
+--			else
+--				return BT.heroBT.callbackinfo.callbackfunc(BT.heroBT.callbackinfo.hero)
+--			end
+--		end
+--	end
+--end
+--
+--hGlobal.WorldMapAIArriveCache = {}
+--local __GetRecordFromAIArriveCache = function(oUnit,InitFlag)
+--	local tCache = hGlobal.WorldMapAIArriveCache
+--	if #tCache>0 then
+--		for i = 1,#tCache do
+--			local v = tCache[i]
+--			if type(v)=="table" then
+--				local IsFind = 0
+--				if InitFlag==1 then
+--					if v.ArriveParam~=nil and v.ArriveParam~=0 then
+--						IsFind = 1
+--					end
+--				elseif v.tArriveParam==nil then
+--					IsFind = 1
+--				end
+--				if IsFind==1 then
+--					if v.mode=="WatchBF" then
+--						if oUnit==v.oUnitA then
+--							return v
+--						end
+--					elseif v.mode=="QuickBF" then
+--						if oUnit==v.oUnitV or oUnit==v.oUnitD then
+--							return v
+--						end
+--					end
+--				end
+--			end
+--		end
+--	end
+--end
+----每天AI行动前清理暂存AI表
+--hGlobal.event:listen("LocalEvent_WMAIMoveStart","__AI__ClearPauseTemp",function()
+--	hGlobal.WorldMapAIArriveCache = {}
+--end)
+--
+----每天开始时清理暂存AI表
+--hGlobal.event:listen("Event_NewDay","__AI__ClearPauseTemp",function(nDayCount)
+--	hGlobal.WorldMapAIArriveCache = {}
+--end)
+--
+----世界创建或者读取的时候都要刷
+--hGlobal.event:listen("Event_WorldCreated","__AI__ClearPauseTemp",function(oWorld)
+--	if oWorld.data.type=="worldmap" then
+--		hGlobal.WorldMapAIArriveCache = {}
+--	end
+--end)
+--
+----如果打败了某个家伙并开始对话,那么赛个临时表进去(这个事件到AttackConfirm之间世界地图上的单位不应该有任何改变，否则报错)
+--hGlobal.event:listen("LocalEvent_QuickBattlefieldDefeatTalk","__AI__UnitDefeat",function(oWorld,oUnitV,oUnitD)
+--	hGlobal.WorldMapAIArriveCache[#hGlobal.WorldMapAIArriveCache+1] = {mode="QuickBF",oUnitV=oUnitV,oUnitD=oUnitD,tArriveParam=nil}
+--end)
+--
+--hGlobal.event:listen("LocalEvent_PlayerWatchingAIBattle","__AI__UnitAttack",function(oWorld,oUnitA,oUnitT)
+--	hGlobal.WorldMapAIArriveCache[#hGlobal.WorldMapAIArriveCache+1] = {mode="WatchBF",oUnitA=oUnitA,oUnitT=oUnitT,tArriveParam=nil}
+--end)
+--
+--hGlobal.event:listen("Event_AfterUnitArrive","__AI__UnitArrive",function(oWorld,oUnit,gridX,gridY,oTarget,nOperate,nOperateId)
+--	--print("Event_AfterUnitArrive", oUnit.data.name)
+--	local u = oUnit
+--	local w = oWorld
+--	if w.data.type=="worldmap" then
+--		if oTarget then
+--			heroGameAI.LogAi("Event_AfterUnitArrive frame:" .. g_current_frame_count .. " t.x:" .. gridX .. " t.y:" .. gridY .. " o.id:" .. oTarget.data.id .. " o.name:" .. oTarget.data.name .. "\n")
+--		else
+--			heroGameAI.LogAi("Event_AfterUnitArrive frame:" .. g_current_frame_count .. " t.x:" .. gridX .. " t.y:" .. gridY .. "\n")
+--		end
+--		if heroGameRule.isAiTurn() then
+--			if oTarget then
+--				heroGameAI.LogAi("Event_AfterUnitArrive frame:" .. g_current_frame_count .. " u=" .. tostring(BT.heroBT.callbackinfo and BT.heroBT.callbackinfo.unit == u) .. " t.x:" .. gridX .. " t.y:" .. gridY .. " o.name:" .. oTarget.data.name .. "\n")
+--			else
+--				heroGameAI.LogAi("Event_AfterUnitArrive frame:" .. g_current_frame_count .. " u=" .. tostring(BT.heroBT.callbackinfo and BT.heroBT.callbackinfo.unit == u) .. " t.x:" .. gridX .. " t.y:" .. gridY .. "\n")
+--			end
+--			
+--			local bRes = false
+--			local points = xlChaGetCurrentMovePoints(u.handle._c)
+--			if points > 0 then
+--				bRes = true
+--			end
+--			if u ~= BT.heroBT.callbackinfo.unit then
+--				return
+--			end
+--			if nil == BT.heroBT.callbackinfo.addtimer then
+--				local tFind = __GetRecordFromAIArriveCache(oUnit,0)
+--				if tFind~=nil then
+--					tFind.tArriveParam = {bRes,oWorld,oUnit,gridX,gridY,oTarget}
+--				else
+--					BT.heroBT.callbackinfo.addtimer = false
+--					hApi.addTimerOnce("__AI__CommandAck",1,function()
+--						--heroGameAI.LogAi("xxxxx Event_AfterUnitArrive uid:" .. oUnit.data.id)
+--						BT.heroBT.OnMoveArrived(oUnit,oWorld,gridX,gridY,oTarget,bRes)
+--					end)			
+--				end
+--			end
+--		else
+--			local buildingRet,movepointRet = CheckPlayerEndDay()
+--			if buildingRet == 0 and movepointRet == 0 then
+--				hGlobal.event:event("LocalEvent_NextDayBreathe",1)
+--			end
+--		end 
+--	end
+--end)
+--
+--hGlobal.event:listen("Event_UnitNotMove","__AI__UnitNotMove",function(oWorld,oUnit,gridX,gridY,bRes)
+--	local u = oUnit
+--	local w = oWorld
+--	if w.data.type=="worldmap" then
+--		if heroGameRule.isAiTurn() then
+--			heroGameAI.LogAi("Event_UnitNotMove frame:" .. g_current_frame_count .. " u=" .. tostring(BT.heroBT.callbackinfo and BT.heroBT.callbackinfo.unit == u) .. " t.x:" .. gridX .. " t.y:" .. gridY .. "\n")
+--			if nil == bRes then
+--				bRes = true
+--			end
+--
+--			if nil == BT.heroBT.callbackinfo.addtimer then
+--				local tFind = __GetRecordFromAIArriveCache(oUnit,0)
+--				if tFind~=nil then
+--					tFind.tArriveParam = {bRes,oWorld,oUnit,gridX,gridY,oTarget}
+--				else
+--					hApi.addTimerOnce("__AI__CommandAck",1,function()
+--						--local points = xlChaGetCurrentMovePoints(oUnit.handle._c)
+--						--heroGameAI.LogAi("xxxxx Event_UnitNotMove uid:" .. oUnit.data.id .. " point:" .. points .. " res:" .. tostring(bRes)) 
+--						BT.heroBT.OnMoveArrived(oUnit,oWorld,gridX,gridY,nil,bRes)
+--					end)
+--				end
+--			end
+--		end
+--		
+--		local mapname = hGlobal.WORLD.LastWorldMap.data.map
+--		--如果是桃园结义则判断一下是否拥有通关成就，如果没有则给一个提示面板
+--		if mapname == "world/level_tyjy" and g_game_days == 0 then
+--			if hApi.chaGetMovePoint(oUnit.handle) == 0 then
+--				local customs = LuaGetPlayerAchievementByMapName(mapname,hVar.ACHIEVEMENT_TYPE.LEVEL)
+--				if customs == 0 then
+--					hGlobal.event:event("LocalEvent_MsgTipFrm",hVar.tab_string["__TEXT_NextDayTipInfoText"],"UI:next_day")
+--				end
+--			end
+--		end
+--	end
+--end)
+--
+--hGlobal.event:listen("Event_HeroAttackConfirm","__AI__HeroAttack",function(oWorld,oAIUnit,bWin)
+--	local task = BT.heroBT.callbackinfo.task
+--	if heroGameRule.isAiTurn() and task then
+--		--对话回调后（如果快速战场战胜的时候触发了一段对话，点完对话框以后也会有这个回调）
+--		local tFind = __GetRecordFromAIArriveCache(oAIUnit,1)
+--		if tFind~=nil then
+--			--补上之前的到达事件，AI继续走
+--			local bRes,oWorld,oUnit,gridX,gridY,oTarget = unpack(tFind.tArriveParam)
+--			tFind.tArriveParam = 0
+--			hApi.addTimerOnce("__AI__CommandAck",1,function()
+--				--BT.heroBT.OnMoveArrived(oUnit,oWorld,gridX,gridY,oTarget,bRes)
+--				BT.heroBT.OnHeroAttackConfirm(oAIUnit.data.id,bWin)
+--			end)
+--			return
+--		end
+--
+--		heroGameAI.LogAi("Event_HeroAttackConfirm frame:" .. g_current_frame_count .. " u=" .. oAIUnit.data.id)
+--		
+--		if (task.Action == "Hero_Attack" or task.Action == "Attack_Player" or task.Action == "Attack_Ai" or task.Action == "Hero_Chase" or task.Action == "Hero_Direct") and task.AttackRes == 0 then
+--			BT.heroBT.callbackinfo.addtimer = true
+--		end
+--		
+--		hApi.addTimerOnce("__AI__CommandAck",1,function()
+--			heroGameAI.LogAi("xxxxx Event_HeroAttackConfirm uid:" .. oAIUnit.data.id) 
+--			BT.heroBT.OnHeroAttackConfirm(oAIUnit.data.id,bWin)
+--		end)		
+--	end
+--end)

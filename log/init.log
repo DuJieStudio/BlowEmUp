@@ -1,0 +1,115 @@
+[2023-02-03 10:14:50]App Delegate FinishLaunching, screen frame size = [1560 720]
+[2023-02-03 10:14:50]
+ dofullpathfail[C:\Users\User2023\Desktop\source\documents//data/screen_size.def], do screen_size.def from package path
+[2023-02-03 10:14:50]xlLuaEvent_SetScreenSize w:1560 h:720[2023-02-03 10:14:50]devcie screen size = [1560 720], ratio = 21
+[2023-02-03 10:14:50]检测到超宽屏幕
+[2023-02-03 10:14:50]Set Screen Size From Script,  [1560 x 720]
+[2023-02-03 10:14:50]set screen size [1560 720] 21
+[2023-02-03 10:14:50]begin..........., Mem used = 36256   free = 5614552   total = 8325792 
+[2023-02-03 10:14:50]begin InitGame, Mem used = 36256   free = 5614552   total = 8325792 
+[2023-02-03 10:14:50]XLGameSceneMgr::InitGame()  exe version = [v033-033-app]
+[2023-02-03 10:14:50]lua src mode: do scripts/load_gamesys.lua
+[2023-02-03 10:14:51]====== game_start() ====== 
+[2023-02-03 10:14:51]size of Character is : 5888
+[2023-02-03 10:14:51]xlScene_Create [world]
+[2023-02-03 10:14:51]size of Character is : 5888
+[2023-02-03 10:14:51]xlScene_Create [town]
+[2023-02-03 10:14:51]size of Character is : 5888
+[2023-02-03 10:14:51]xlScene_Create [battlefield]
+[2023-02-03 10:14:51]size of Character is : 5888
+[2023-02-03 10:14:51]xlScene_Create [loading]
+[2023-02-03 10:14:51]size of Character is : 5888
+[2023-02-03 10:14:51]xlScene_Create [mainmenu]
+[2023-02-03 10:14:51]size of Character is : 5888
+[2023-02-03 10:14:51]xlScene_Create [chooselevel]
+[2023-02-03 10:14:51]size of Character is : 5888
+[2023-02-03 10:14:51]xlScene_Create [pvp]
+[2023-02-03 10:14:54][0 0] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:14:54]Layer [town] load map[town/town_mainmenu] background [town/town_mainmenu] begin ...
+[2023-02-03 10:14:54][0 0] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:14:54]==================== Switch Current Scene[null] To [town] =====
+
+[2023-02-03 10:14:54]switch scene to [town]
+[2023-02-03 10:14:54]>>>>>>>>>>> lua mem : 45 MB
+[2023-02-03 10:14:54][switch scene] ######    Memory Usuage Report    #######################
+[2023-02-03 10:14:54]MemInfo  used = 121.1(MB)  free = 5394.4(MB)  total = 8130.7(MB) 
+
+[2023-02-03 10:14:54]after InitGame, Mem used = 124808   free = 5523340   total = 8325792 
+[2023-02-03 10:14:54]ApplicationDidFinishLaunching()  exe version = [v033-033-app]
+[2023-02-03 10:14:54]online uid = 0
+[2023-02-03 10:14:54]userdefault path = C:\Users\User2023\Desktop\source\UserDefault.xml
+[2023-02-03 10:14:57][0 0] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:14:57]Scene[world] ClearAll!
+[2023-02-03 10:14:57]=================== Switch Current Scene[town]   To [loading] =====
+
+[2023-02-03 10:14:57]switch scene to [loading]
+[2023-02-03 10:14:57]>>>>>>>>>>> lua mem : 48 MB
+[2023-02-03 10:14:57][switch scene] ######    Memory Usuage Report    #######################
+[2023-02-03 10:14:57]MemInfo  used = 131.6(MB)  free = 5322.5(MB)  total = 8130.7(MB) 
+
+[2023-02-03 10:14:57][2 2] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:14:57][0 0] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:14:57]Layer [loading] load map[noname dat] background [other/loading] begin ...
+[2023-02-03 10:14:57][0 0] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:14:58][0 0] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:14:58]Layer [world] load map[world/start_001] background [world/start_001] begin ...
+[2023-02-03 10:14:58]map [data/map/world/start_001.ter] sprite size = [4096 4608]
+[2023-02-03 10:14:58][0 0] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:15:04]xlScene [world] RefreshBuildingData, map_name = [world/start_001]
+[2023-02-03 10:15:04]=================== Switch Current Scene[loading]   To [world] =====
+
+[2023-02-03 10:15:04]switch scene to [worldmap]
+[2023-02-03 10:15:04]>>>>>>>>>>> lua mem : 83 MB
+[2023-02-03 10:15:04][switch scene] ######    Memory Usuage Report    #######################
+[2023-02-03 10:15:04]MemInfo  used = 245.0(MB)  free = 4962.9(MB)  total = 8130.7(MB) 
+
+[2023-02-03 10:15:11][256 288] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:15:11][256 288] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:15:11]Scene[world] ClearAll!
+[2023-02-03 10:15:11]=================== Switch Current Scene[world]   To [loading] =====
+
+[2023-02-03 10:15:11]switch scene to [loading]
+[2023-02-03 10:15:11]>>>>>>>>>>> lua mem : 53 MB
+[2023-02-03 10:15:11][switch scene] ######    Memory Usuage Report    #######################
+[2023-02-03 10:15:11]MemInfo  used = 243.3(MB)  free = 4952.3(MB)  total = 8130.7(MB) 
+
+[2023-02-03 10:15:11][0 0] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:15:11]Layer [loading] load map[noname dat] background [other/loading] begin ...
+[2023-02-03 10:15:11][0 0] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:15:12][256 288] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:15:12]Layer [world] load map[world/csys_random_test] background [world/csys_random_test] begin ...
+[2023-02-03 10:15:12]_LoadBackground : create random map [data/map/world/csys_random_test.ter] size = [7168 7168]
+[2023-02-03 10:15:12][256 288] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:15:12]xlScene [world] RefreshBuildingData, map_name = [world/csys_random_test]
+[2023-02-03 10:15:13]=================== Switch Current Scene[loading]   To [world] =====
+
+[2023-02-03 10:15:13]switch scene to [worldmap]
+[2023-02-03 10:15:13]>>>>>>>>>>> lua mem : 53 MB
+[2023-02-03 10:15:13][switch scene] ######    Memory Usuage Report    #######################
+[2023-02-03 10:15:13]MemInfo  used = 225.6(MB)  free = 5010.4(MB)  total = 8130.7(MB) 
+
+[2023-02-03 10:15:30][448 448] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:15:30][448 448] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:15:30]Scene[world] ClearAll!
+[2023-02-03 10:15:30]=================== Switch Current Scene[world]   To [loading] =====
+
+[2023-02-03 10:15:30]switch scene to [loading]
+[2023-02-03 10:15:30]>>>>>>>>>>> lua mem : 49 MB
+[2023-02-03 10:15:30][switch scene] ######    Memory Usuage Report    #######################
+[2023-02-03 10:15:30]MemInfo  used = 181.9(MB)  free = 5167.1(MB)  total = 8130.7(MB) 
+
+[2023-02-03 10:15:30][0 0] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:15:30]Layer [loading] load map[noname dat] background [other/loading] begin ...
+[2023-02-03 10:15:30][0 0] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:15:31][448 448] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:15:31]Layer [world] load map[world/start_001] background [world/start_001] begin ...
+[2023-02-03 10:15:31]map [data/map/world/start_001.ter] sprite size = [4096 4608]
+[2023-02-03 10:15:31][448 448] clear all map data(block, idbuf, fog etc)
+[2023-02-03 10:15:36]xlScene [world] RefreshBuildingData, map_name = [world/start_001]
+[2023-02-03 10:15:37]=================== Switch Current Scene[loading]   To [world] =====
+
+[2023-02-03 10:15:37]switch scene to [worldmap]
+[2023-02-03 10:15:37]>>>>>>>>>>> lua mem : 80 MB
+[2023-02-03 10:15:37][switch scene] ######    Memory Usuage Report    #######################
+[2023-02-03 10:15:37]MemInfo  used = 254.0(MB)  free = 4939.8(MB)  total = 8130.7(MB) 
+

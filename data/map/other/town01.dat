@@ -1,0 +1,3 @@
+map_background = "town/tback_land02"
+units_list = {}
+units_list[1] = {41018,0,480,160,0,1}

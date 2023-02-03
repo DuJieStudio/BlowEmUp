@@ -1,0 +1,1 @@
+start system\hero_pc.exe lua_src skip_update w=1360; h=720;

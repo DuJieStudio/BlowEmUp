@@ -1,0 +1,390 @@
+--hGlobal.UI.InitRewardPreviewFrm = function(mode)
+--	local tInitEventName = {"LocalEvent_ShowRewardPreviewFrm","__PVPMap"}
+--	if mode~="include" then
+--		return tInitEventName
+--	end
+--	
+--	local _CODE_UpdateReward = hApi.DoNothing
+--	
+--	local _FrmXYWH = {hVar.SCREEN.w/2-280,hVar.SCREEN.h/2+306,640,618}
+--	local _FrmBG
+--	local _childUI
+--	
+--	local _RPF_GridXYWH = {140,-130,78,86}
+--	local _RPF_ViewRect = {0,-86,640,86*6}
+--	local _RPF_DragRect = {140,-120,0,680}
+--	local _RPF_AutoAlign = {"V","RewardGrid",30,0,-12}
+--	local _RPF_SlotGrid = {{0,0,0,0,0,0}}
+--	for i = 2,20 do
+--		_RPF_SlotGrid[i] = _RPF_SlotGrid[1]
+--	end
+--	
+--	local _RPF_RewardItem = {}		--奖励显示的物品临时表格
+--	local _RPF_RewardCmd = ""
+--	
+--	
+--	local _RPF_UIHandle = {}
+--	local _RPF_UIList = {
+--		{"labelX","labTittle","reward",{_FrmXYWH[3]/2,-38,28,1,"MC",hVar.FONTC}},
+--		{"labelX","labIntro","intro",{_FrmXYWH[3]/2,-68,22,1,"MC",hVar.FONTC}},
+--	}
+--	local _RPF_TittleArt = {
+--		["1st"] = "UI:rank_n_1",
+--		["2nd"] = "UI:rank_n_2",
+--		["3rd"] = "UI:rank_n_3",
+--	}
+--	
+--	
+--	
+--	hGlobal.UI.RewardPreviewFrm = hUI.frame:new({
+--		x = _FrmXYWH[1],
+--		y = _FrmXYWH[2],
+--		w = _FrmXYWH[3],
+--		h = _FrmXYWH[4],
+--		border = "UI:TileFrmBasic_thin",
+--		bgmode = "tile",
+--		--background = "panel/panel_bg1.png",
+--		scrollview = {
+--			[1] = {
+--				ui = "RewardGrid",
+--				rect = _RPF_ViewRect,
+--				dragable = _RPF_DragRect,
+--				autoalign = _RPF_AutoAlign,
+--				codeOnUp = function(oFrm,tTempPos,tPickParam)
+--					local oGrid = oFrm.childUI[tPickParam.scrollview.ui]
+--					local cx,cy = tTempPos.tx-oFrm.data.x,tTempPos.ty-oFrm.data.y
+--					local gx,gy,tItemIndex = oGrid:xy2grid(cx,cy,"parent")
+--					if type(tItemIndex)=="table" then
+--						local itm = _RPF_RewardItem[tItemIndex[1]]
+--						if type(itm)=="table" and itm[1]~=0 then
+--							hUI.GetUITemplate("bagitem")[2].ShowItemTip(itm)
+--						end
+--					end
+--				end,
+--			},
+--		},
+--		dragable = 3,
+--		--closebtn = {
+--			--x = _FrmXYWH[3]/2,
+--			--y = -1*_FrmXYWH[4] + 26,
+--			--model = "UI:ButtonBack",
+--			--scaleT = 0.95,
+--			--w = 112,
+--			--h = 36,
+--			--label = {
+--				--text = hVar.tab_string["__TEXT_Confirm"],
+--				--font = hVar.FONTC,
+--				--border = 1,
+--			--},
+--			--code = function()
+--				--_FrmBG:show(0,"fade")
+--			--end,
+--		--},
+--	})
+--	_FrmBG = hGlobal.UI.RewardPreviewFrm
+--	_childUI = _FrmBG.childUI
+--	
+--	
+--	--local pLayer = CCLayer:create()
+--	
+--	--hUI.__static.mainScene:addChild(pLayer,1)	--UI层在最顶上
+--	
+--	--hApi.ReloadParent(_FrmBG.handle._n,pLayer)
+--	
+--	
+--	hUI.CreateMultiUIByParam(_FrmBG,0,0,_RPF_UIList,_RPF_UIHandle,hUI.MultiUIParamByFrm(_FrmBG))
+--	
+--	local pClipper = hApi.CreateClippingNode(_FrmBG,_RPF_ViewRect,5,_RPF_ViewRect[5])
+--	_childUI["RewardGrid"] = hUI.bagGrid:new({
+--		parent = pClipper,--_FrmBG.handle._n,
+--		grid = _RPF_SlotGrid,
+--		x = _RPF_GridXYWH[1],
+--		y = _RPF_GridXYWH[2],
+--		slot = 0,
+--		gridW = _RPF_GridXYWH[3],
+--		gridH = _RPF_GridXYWH[4],
+--		iconW = 48,
+--		iconH = 48,
+--		smartWH = 1,
+--		animation = -1,
+--		num = {font = "numWhite",size = 16,align = "MC",x=-24,y=0},
+--		codeOnImageCreate = function(oGrid,nItemI,pNode,gx,gy)
+--			local oItem = _RPF_RewardItem[nItemI]
+--			if type(oItem)=="table" then
+--				if oItem[hVar.ITEM_DATA_INDEX.ID]==0 then
+--					local sText = oItem[hVar.ITEM_DATA_INDEX.NUM]
+--					if string.sub(sText,1,1)=="$" and string.len(sText)>1 then
+--						hUI.deleteUIObject(hUI.label:new({
+--							parent = pNode,
+--							font = hVar.FONTC,
+--							text = string.sub(sText,2,string.len(sText)),
+--							x = -58,
+--							size = 28,
+--							border = 1,
+--							align = "LC",
+--						}))
+--					else
+--						local sModelName = _RPF_TittleArt[sText]
+--						if sModelName then
+--							hUI.deleteUIObject(hUI.image:new({
+--								parent = pNode,
+--								model = sModelName,
+--								x = -36,
+--							}))
+--						else
+--							hUI.deleteUIObject(hUI.label:new({
+--								parent = pNode,
+--								font = "numWhite",
+--								text = tostring(sText),
+--								x = -58,
+--								size = 18,
+--								align = "LC",
+--							}))
+--						end
+--					end
+--					hUI.deleteUIObject(hUI.image:new({
+--						parent = pNode,
+--						model = "UI:MADEL_BANNER",
+--						x = 180,
+--						w = 580,
+--						h = 80,
+--						z = -1,
+--					}))
+--				elseif type(oItem[hVar.ITEM_DATA_INDEX.ID])=="string" then
+--					local v = hUI.GetUITemplate("bagitem")
+--					hUI.CreateMultiUIByParam(pNode,0,0,v[1],{},v[2].GetParam(oItem,1))
+--				end
+--			end
+--		end,
+--	})
+--	
+--	_CODE_UpdateReward = function(sCmd)
+--		_RPF_RewardItem = {}
+--		local tItem = {}
+--		local sHead = "rw:"
+--		local n = string.find(sCmd,":")
+--		if n and n>1 then
+--			sHead = string.sub(sCmd,1,n)
+--		end
+--		local tReward = hApi.GetParamByCmd(sHead,sCmd)
+--		local oGrid = _childUI["RewardGrid"]
+--		local _code_GetItemByCmd = hUI.GetUITemplate("bagitem")[2].GetItemByCmd
+--		local nCols = #_RPF_SlotGrid[1]
+--		for lv = 1,10 do
+--			local v = tReward[lv]
+--			for i = 1,nCols do
+--				local n = #tItem+1
+--				tItem[n] = 0
+--				_RPF_RewardItem[n] = 0
+--				if type(v)=="table" and type(v[i])=="string" then
+--					if i==1 then
+--						local itm = {0,v[i],0}
+--						tItem[n] = {n,""}
+--						_RPF_RewardItem[n] = itm
+--					else
+--						local itm = _code_GetItemByCmd(v[i])
+--						if itm~=0 then
+--							tItem[n] = {n,""}
+--							_RPF_RewardItem[n] = itm
+--						end
+--					end
+--				end
+--			end
+--		end
+--		_childUI["RewardGrid"]:updateitem({})
+--		_childUI["RewardGrid"]:updateitem(tItem)
+--		local nHeight = math.max(0,#tReward*oGrid.data.gridH-_RPF_ViewRect[4])
+--		_RPF_DragRect[2] = _RPF_GridXYWH[2] + nHeight - _RPF_AutoAlign[5]
+--		_RPF_DragRect[4] = nHeight - _RPF_AutoAlign[5]*2
+--	end
+--	
+--	hGlobal.event:listen(tInitEventName[1],tInitEventName[2],function(sTittle,sIntro,sCmd)
+--		_FrmBG:show(1)
+--		_FrmBG:active()
+--		_childUI["labTittle"]:setText(tostring(sTittle),2)
+--		_childUI["labIntro"]:setText(tostring(sIntro),2)
+--		if type(sCmd)~="string" then
+--			sCmd = ""
+--		end
+--		if _RPF_RewardCmd~=sCmd then
+--			_RPF_RewardCmd = sCmd
+--			_CODE_UpdateReward(_RPF_RewardCmd)
+--		end
+--		hUI.uiSetXY(_childUI["RewardGrid"],_RPF_GridXYWH[1],_RPF_GridXYWH[2])
+--	end)
+--end
+--
+--hGlobal.UI.InitL2CRewardFrm = function(mode)
+--	local tInitEventName = {"NetEvent_L2CReward","__ShowGetFrm"}
+--	if mode~="include" then
+--		return tInitEventName
+--	end
+--	
+--	local _FrmXYWH = {hVar.SCREEN.w/2-240,hVar.SCREEN.h/2+160,480,320}
+--	local _FrmBG
+--	local _childUI
+--	
+--	local _LRF_GridXYWH = {}
+--	local _LRF_RewardItem = {}		--奖励显示的物品临时表格
+--	local _LRF_RewardCmd = ""
+--	local _LRF_GridSlot = {
+--		{0,0,0,0,0},
+--		{0,0,0,0,0},
+--	}
+--	local _LRF_GridXYByNum = {
+--		[0] = {96,-128},
+--		[1] = {240,-156},
+--		[2] = {240-36,-156},
+--		[3] = {240-72,-156},
+--		[4] = {240-72-36,-156},
+--		[5] = {240-72-72,-156},
+--	}
+--	
+--	local _LRF_UIHandle = {}
+--	local _LRF_UIList = {
+--		{"labelX","labTittle","reward",{_FrmXYWH[3]/2,-38,28,1,"MC",hVar.FONTC}},
+--		{"labelX","labIntro","intro",{_FrmXYWH[3]/2,-68,22,1,"MC",hVar.FONTC}},
+--		{"image","imgRewardBG","UI:selectbg",{_FrmXYWH[3]/2,-164,_FrmXYWH[3],144}},
+--	}
+--	local _LRF_TittleArt = {
+--		["1st"] = "UI:rank_n_1",
+--		["2nd"] = "UI:rank_n_2",
+--		["3rd"] = "UI:rank_n_3",
+--	}
+--	
+--	hGlobal.UI.L2CRewardFrm = hUI.frame:new({
+--		x = _FrmXYWH[1],
+--		y = _FrmXYWH[2],
+--		w = _FrmXYWH[3],
+--		h = _FrmXYWH[4],
+--		--border = "UI:TileFrmBasic_thin",
+--		bgmode = "tile",
+--		--background = "panel/panel_bg1.png",
+--		show = 0,
+--		dragable = 3,
+--		closebtn = {
+--			x = _FrmXYWH[3]/2,
+--			y = -_FrmXYWH[4]+36,
+--			w = 128,
+--			h = 38,
+--			scaleT = 0.95,
+--			model = "UI:ButtonBack2",
+--			label = {
+--				font = hVar.FONTC,
+--				text = hVar.tab_string["__TEXT_Confirm"],
+--				border = 1,
+--			},
+--			code = function()
+--				_FrmBG:show(0,"fade")
+--			end,
+--		},
+--		codeOnTouch = function(self,x,y,sus)
+--			if sus~=1 then
+--				return
+--			end
+--			local _,_,tItemIndex = self.childUI["ItemGrid"]:xy2grid(x,y,"parent")
+--			if type(tItemIndex)=="table" then
+--				local itm = _LRF_RewardItem[tItemIndex[1]]
+--				if type(itm)=="table" and itm[1]~=0 then
+--					hUI.GetUITemplate("bagitem")[2].ShowItemTip(itm)
+--				end
+--			end
+--		end,
+--	})
+--	
+--	_FrmBG = hGlobal.UI.L2CRewardFrm
+--	_childUI = _FrmBG.childUI
+--	
+--	hUI.CreateMultiUIByParam(_FrmBG,0,0,_LRF_UIList,_LRF_UIHandle,hUI.MultiUIParamByFrm(_FrmBG))
+--	
+--	_childUI["ItemGrid"] = hUI.bagGrid:new({
+--		parent = _FrmBG.handle._n,
+--		x = _LRF_GridXYByNum[0][1],
+--		y = _LRF_GridXYByNum[0][2],
+--		gridW = 72,
+--		gridH = 72,
+--		grid = _LRF_GridSlot,
+--		slot = 0,
+--		iconW = 64,
+--		iconH = 64,
+--		smartWH = 1,
+--		animation = -1,
+--		codeOnImageCreate = function(oGrid,nItemI,pNode,gx,gy)
+--			local oItem = _LRF_RewardItem[nItemI]
+--			if type(oItem)=="table" and type(oItem[1])=="string" then
+--				local v = hUI.GetUITemplate("bagitem")
+--				hUI.CreateMultiUIByParam(pNode,0,0,v[1],{},v[2].GetParam(oItem,1))
+--			end
+--		end,
+--	})
+--	
+--	hGlobal.event:listen(tInitEventName[1],tInitEventName[2],function(nQuestID,sTittle,sIntro,sCmd, nCloseFrame)
+--		if 1 ~= nCloseFrame then
+--			_FrmBG:show(1)
+--			_FrmBG:active()
+--		end
+--		_childUI["labTittle"]:setText(tostring(sTittle),2)
+--		_childUI["labIntro"]:setText(tostring(sIntro),2)
+--		_LRF_RewardItem = {}
+--		if type(sCmd)~="string" then
+--			sCmd = ""
+--		end
+--		local _code_GetItemByCmd = hUI.GetUITemplate("bagitem")[2].GetItemByCmd
+--		local tRewardCmd = hApi.GetParamByCmd("rw:",sCmd)
+--		local tItem = {}
+--		if #tRewardCmd>0 then
+--			for n = 1,#tRewardCmd do
+--				local v = tRewardCmd[n]
+--				for i = 1,#v do
+--					local nItemI = #_LRF_RewardItem+1
+--					tItem[#tItem+1] = {nItemI,""}
+--					_LRF_RewardItem[nItemI] = _code_GetItemByCmd(v[i])
+--				end
+--			end
+--		end
+--		if type(nQuestID)=="number" and nQuestID>0 then
+--			for i = 1,#_LRF_RewardItem do
+--				local v = _LRF_RewardItem[i]
+--				if type(v)=="table" and type(v[2])=="number" then
+--					--第三个参数的合法性判断
+--					if v[1]=="sc" then
+--						--给积分
+--						LuaAddPlayerScore(v[2])
+--						LuaSavePlayerData(g_localfilepath,g_curPlayerName,Save_PlayerData,Save_PlayerLog)
+--					elseif v[1]=="it" then
+--						--给物品
+--						local id = v[2]
+--						local num = math.max(v[3],1)
+--						if id==29 then
+--							--皮革
+--							LuaAddPlayerMaterial(1,num)
+--						elseif id==30 then
+--							--玄铁
+--							LuaAddPlayerMaterial(2,num)
+--						elseif id==31 then
+--							--炎晶
+--							LuaAddPlayerMaterial(3,num)
+--						else
+--							--普通道具最多发99个，请注意写法
+--							for n = 1,math.min(num,99) do
+--								LuaAddItemToPlayerBag(id,"mx",{hVar.ITEM_FROMWHAT_TYPE.NET_MISSION,nQuestID,0,0})
+--							end
+--						end
+--						LuaSavePlayerData(g_localfilepath,g_curPlayerName,Save_PlayerData,Save_PlayerLog)
+--					elseif v[1]=="tc" then
+--						local id = v[2]
+--						local tabT = hVar.tab_tactics[id]
+--						local lv = math.min(tabT and tabT.level or 1,v[3])
+--						LuaAddPlayerSkillBook(id,lv)
+--						LuaSavePlayerData(g_localfilepath,g_curPlayerName,Save_PlayerData,Save_PlayerLog)
+--					end
+--				end
+--			end
+--		end
+--		
+--		local tPos = _LRF_GridXYByNum[#_LRF_RewardItem] or _LRF_GridXYByNum[0]
+--		hUI.uiSetXY(_childUI["ItemGrid"],tPos[1],tPos[2])
+--		_childUI["ItemGrid"]:updateitem({})
+--		_childUI["ItemGrid"]:updateitem(tItem)
+--	end)
+--end

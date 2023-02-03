@@ -1,0 +1,135 @@
+-------------------------
+----操作面板总入口
+-------------------------
+--hGlobal.UI.InitCtrlFrm = function()
+--	local _exitFunc = function() end
+--	hGlobal.UI.CtrlFrm  = hUI.frame:new({
+--		x = 0,
+--		y = 0,
+--		w = 1024,
+--		h = 1024,
+--		dragable = 2,
+--		show = 0,
+--		autoactive = 0,
+--		background = "UI:tip_item",
+--		codeOnTouch = function(self,x,y,isInside)
+--			_exitFunc()
+--			hGlobal.event:event("LocalEvent_CtrlFrmClose")
+--		end,
+--	})
+--
+--	local _frm = hGlobal.UI.CtrlFrm
+--	local _parent = _frm.handle._n
+--	local _childUI = _frm.childUI
+--	
+--	local _gridWH = 50
+--	local _iconWH = 46
+--
+--	--底框消失动画的回调
+--	local _RemoveActionBar = function()
+--		hApi.safeRemoveT(_childUI,"actionBar")
+--	end
+--
+--	--按钮的消失动画的回调
+--	local _RemoveActions = function()
+--		_frm:show(0)
+--		hApi.safeRemoveT(_childUI,"actions")
+--	end
+--
+--	--面板的退出方法 在执行完相对应的操作后执行
+--	_exitFunc = function()
+--		--背景底框的消失动画
+--		if _childUI["actionBar"].handle._n then
+--			local action = CCJumpTo:create(0.08,ccp(_childUI["actionBar"].data.x,_childUI["actionBar"].data.y),4,1)
+--			_childUI["actionBar"].handle._n:runAction(CCSequence:createWithTwoActions(action,CCCallFunc:create(_RemoveActionBar)))
+--		end	
+--		--按钮的消失动画
+--		if  _childUI["actions"].handle._n then
+--			local action = CCJumpTo:create(0.08,ccp(_childUI["actions"].data.x,_childUI["actions"].data.y),4,1)
+--			_childUI["actions"].handle._n:runAction(CCSequence:createWithTwoActions(action,CCCallFunc:create(_RemoveActions)))
+--		else
+--			_frm:show(0)
+--		end
+--	end
+--	
+--	local _getmsg = function(opr,msg)
+--		for i = 1,#msg do
+--			if msg[i].key == opr then
+--				return msg[i]
+--			end
+--		end
+--		return nil
+--	end
+--
+--	hGlobal.event:listen("LocalEvent_ShowCtrlFrm","_showctrlfrm",function(grid,x,y,oUnit,msg)
+--		hApi.safeRemoveT(_childUI,"actionBar")
+--		hApi.safeRemoveT(_childUI,"actions")
+--		
+--		--操作面板背景条
+--		_childUI["actionBar"] = hUI.bar:new({
+--			parent = _parent,
+--			model = "UI:BAR_talk_bg",
+--			align = "LC",
+--			x = x-hApi.getint(_gridWH/2),
+--			y = y,
+--			w = _gridWH*#grid,
+--			h = _gridWH,
+--		})
+--		_childUI["actionBar"].handle._n:runAction(CCJumpTo:create(0.08,ccp(x-hApi.getint(_gridWH/2),y),4,1))
+--		
+--		--创建操作面板
+--		_childUI["actions"] = hUI.grid:new({
+--			parent = _parent,
+--			mode = "imageButton",
+--			dragbox = _childUI["dragBox"],
+--			x = x,
+--			y = y,
+--			iconW = _iconWH,
+--			iconH = _iconWH,
+--			gridW = _gridWH,
+--			gridH = _gridWH,
+--			tab = hVar.INTERACTION_ART,
+--			tabModelKey = "icon",
+--			grid = grid,
+--			code = function(opr,btn)
+--				--单位的详细信息面板
+--				if opr == hVar.INTERACTION_TYPE.DETAIL then
+--					local m_msg = _getmsg(opr,msg)
+--					if m_msg and m_msg.id then
+--						hGlobal.event:event("LocalEvent_ShowUnitInfoFram",m_msg.unit,m_msg.id,150,600)
+--					end
+--				--分兵界面
+--				elseif opr == hVar.INTERACTION_TYPE.PartArmy then
+--					local m_msg = _getmsg(opr,msg)
+--					if m_msg and m_msg.index and m_msg.teamGridIndex then
+--						hGlobal.event:event("LocalEvent_ShowPartArmyFrm",oUnit,m_msg.index,m_msg.teamGridIndex)
+--					end
+--				--兵种升级界面
+--				elseif opr == hVar.INTERACTION_TYPE.UpgradeArmy then
+--					local m_msg = _getmsg(opr,msg)
+--					if m_msg and m_msg.index and m_msg.UnitID and m_msg.UnitNum and m_msg.teamGridIndex then
+--						hGlobal.event:event("LocalEvent_ShowUpgradeArmyFrm",oUnit,m_msg.index,m_msg.UnitID,m_msg.UnitNum,m_msg.teamGridIndex)
+--					end
+--				----使用道具界面
+--				--elseif opr == hVar.INTERACTION_TYPE.USEITEM then
+--					--local m_msg = _getmsg(opr,msg)
+--					--if m_msg and m_msg.index then
+--						--oUnit:gethero():useitem(m_msg.index)
+--					--end
+--				--elseif opr == hVar.INTERACTION_TYPE.ITEMDETAIL then
+--					--local m_msg = _getmsg(opr,msg)
+--					--if m_msg and m_msg.itemID then
+--						--hGlobal.event:event("LocalEvent_ShowItemInfoFrm",m_msg.itemID)
+--					--end
+--				end
+--
+--				_exitFunc()
+--			end,
+--		})
+--		_childUI["actions"].handle._n:runAction(CCJumpTo:create(0.08,ccp(x,y),4,1))
+--		_frm:show(1)
+--		_frm:active()
+--	end)
+--
+--end
+--

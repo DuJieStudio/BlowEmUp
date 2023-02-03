@@ -1,0 +1,726 @@
+--heroGameAIExplore = {}
+--heroGameAIExplore.MaxDistance = 1000000
+--heroGameAIExplore.CityGuardDis = 1100
+--heroGameAIExplore.PriorityDistance = 100
+----heroGameAIExplore.CannotArrived = -1
+--
+--
+--
+--function GetDistance(u,res)
+--	if 1 == g_ai_distance_type then
+--		return GetDistanceByPathCount(u,res)
+--	else
+--		return GetDistanceByDirect(u,res)
+--	end
+--end
+--
+--function GetDistanceByDirect(u,res)
+--	if nil == u or ni == res then
+--		return heroGameAIExplore.MaxDistance
+--	end
+--	
+--	local dis = (u.data.gridX - res.data.gridX)^2 + (u.data.gridY - res.data.gridY)^2
+--	return dis
+--end
+--
+--function GetDistanceByPathCount(u,res)
+--	if nil == u or ni == res then
+--		return -2
+--	end
+--	
+--	if nil == u.handle._c or nil == res.handle._c then
+--		return -2
+--	end
+--	
+--	local dis = xlMap_GetPathCount(u.handle._c,res.handle._c)
+--	--local info = string.format("xlMap_GetPathCount u:[%s] t:[%s] u.x:%d u.y:%d t.x:%d t.y:%d pathCount:%d\n",u.data.name,res.data.name,u.data.gridX,u.data.gridY,res.data.gridX,res.data.gridY,dis)
+--	--xlLG("ai",info)
+--	return dis
+--end
+--
+--function GetPriority(u,t,basePriority)
+--	local dis = GetDistance(u,t)
+--	if dis < 0 then
+--		return heroGameAIExplore.MaxDistance
+--	end
+--	if 1 == g_ai_distance_type then
+--		heroGameAIExplore.PriorityDistance = 10
+--	else 
+--		heroGameAIExplore.PriorityDistance = 100
+--	end
+--	local priority = dis / heroGameAIExplore.PriorityDistance
+--	--print("GetPriority base:" .. basePriority .. " revise:" .. priority .. " total:" .. (basePriority + priority))
+--	return (basePriority + priority)
+--end
+--
+--function HaveGuard(t)
+--	if nil == t then
+--		return false
+--	end
+--	--城镇没有"守卫"，只有守城英雄
+--	if t:gettown()~=nil then
+--		return false
+--	end
+--	local tD = t:gettriggerdata()
+--	local w = t:getworld()
+--	if tD and tD.guard and #tD.guard > 0 then
+--
+--		local bHaveGuard = false
+--		for i = 1,#tD.guard do
+--			local gu = w:tgrid2unit(tD.guard[i])
+--			if gu then
+--				if gu.data.type==hVar.UNIT_TYPE.GROUP then
+--					if gu.data.nTarget~=0 then
+--						local cu = hClass.unit:find(gu.data.nTarget)
+--						if cu and cu.data.nTarget==gu.ID then
+--							bHaveGuard = true
+--							break
+--						end
+--					end
+--				else
+--					bHaveGuard = true
+--					break
+--				end
+--			end
+--		end
+--		
+--		return bHaveGuard
+--	end
+--	
+--	return false
+--end
+--
+--function HaveFiredTarget(u,t)
+--do
+--	local oHero = u:gethero()
+--	local aitype = oHero.data.AIMode
+--	if aitype == hVar.AI_MODE.GUARD_CITY then
+--		local city = hApi.GetObjectUnit(u:gethero().data.AIExtData)
+--		local dis = GetDistanceByDirect(t,city)
+--		local mindis = 1000000
+--		if dis < mindis then
+--			mindis = dis
+--			--heroGameAI.LogAi(string.format("HaveFiredTarget tid:%d tname:%s dis:%d city.x:%d city.y%d t.x:%d t.y:%d t.type:%d\n",t.data.id,tostring(t.data.name),dis,city.data.gridX,city.data.gridY,t.data.gridX,t.data.gridY,hVar.tab_unit[t.data.id].type))
+--		end
+--		--heroGameAI.LogAi(string.format("HaveFiredTarget uid:%d uname:%s cityid:%d cityname:%s tid:%d tname:%s dis:%d\n",u.data.id,tostring(u.data.name),city.data.id,tostring(city.data.name),t.data.id,tostring(t.data.name),dis))
+--		-- dis >= heroGameAIExplore.CityGuardDis / 2 and 
+--		if dis <= (heroGameAIExplore.CityGuardDis + 800) then
+--			return false
+--		else
+--			return true
+--		end
+--	end
+--	
+--	return false
+--end	
+--	
+--	if u.localdata.lastTask and #u.localdata.lastTask > 0 then
+--		--print("zzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzzz " .. #u.localdata.lastTask)
+--		for i=1,#u.localdata.lastTask do
+--			local task = u.localdata.lastTask[i]
+--			if task and task.Target and task.Target.u == t then
+--				return true
+--			end
+--		end
+--	end
+--	
+--	return false
+--end
+--
+----取最近的城
+--local function haveTeam(team)
+--	for i = 1,#team do
+--		if 0 == team[i] then
+--		else
+--			return true
+--		end
+--	end
+--	return false
+--end
+--function heroGameAIExplore.GetSpecialCityTaskType(u,city)
+--	local relation = u:getowner():allience(city:getowner())
+--	if relation == hVar.PLAYER_ALLIENCE_TYPE.NEUTRAL or relation == hVar.PLAYER_ALLIENCE_TYPE.ENEMY then
+--		local team = city.data.team
+--		local oTown = city:gettown()
+--		local oGrud = oTown:getunit("guard")
+--		if haveTeam(team) or oGrud then
+--			if oGrud then
+--				return "Attack_Player"
+--			else
+--				return "Attack_Ai"
+--			end
+--		else
+--			local oVisitor = oTown:getunit("visitor")
+--			if nil == oVisitor then
+--				return "Attack_Ai"
+--			else
+--				if true == heroGameAIExplore.CanHeroAttack(u,oVisitor,sf) then
+--					return "Hero_Attack"
+--				else
+--					return "none"
+--				end
+--			end
+--		end
+--	else
+--		return "none"
+--	end
+--end
+--function heroGameAIExplore.GetCityTaskType(u,city,sf)
+--	local relation = u:getowner():allience(city:getowner())
+--	if relation == hVar.PLAYER_ALLIENCE_TYPE.NEUTRAL or relation == hVar.PLAYER_ALLIENCE_TYPE.ENEMY then
+--		local team = city.data.team
+--		local oTown = city:gettown()
+--		local oGrud = oTown:getunit("guard")
+--		if haveTeam(team) or oGrud then
+--			if oGrud then
+--				local hero = oGrud:gethero()
+--				if hero and hero.data.AIModeBasic == hVar.AI_MODE.PASSIVE then
+--					return "none" 
+--				end
+--				local cityCombatSocre = heroGameAI.CalculateSystem.Calculate(oGrud,nil,heroGameAI.CalculateSystem.CALC_TYPE_DEF.COMBATSCORE)
+--				local uCombatSocre = heroGameAI.CalculateSystem.Calculate(u,nil,heroGameAI.CalculateSystem.CALC_TYPE_DEF.COMBATSCORE)
+--				--print("GetCityTaskType uid:" .. u.data.id .. " cid:" .. city.data.id .. " gid:" .. oGrud.data.id .. " gname:" .. oGrud.data.name .. " cs:" .. cityCombatSocre .. " us:" .. uCombatSocre .. "\n")
+--				local city_lrs = heroGameAI.CalculateSystem.Calculate(oGrud,nil,heroGameAI.CalculateSystem.CALC_TYPE_DEF.LONGRANGESCORE)
+--				local u_lrs = heroGameAI.CalculateSystem.Calculate(u,nil,heroGameAI.CalculateSystem.CALC_TYPE_DEF.LONGRANGESCORE)
+--				if true == sf then
+--					if oGrud:getowner()==hGlobal.LocalPlayer then
+--						return "Attack_Player"
+--					end
+--					return "Attack_Ai"
+--				end
+--				if uCombatSocre >= cityCombatSocre - 50 and u_lrs >= 100 and u_lrs >= city_lrs * 1.2 then
+--					if oGrud:getowner()==hGlobal.LocalPlayer then
+--						return "Attack_Player"
+--					end
+--					return "Attack_Ai"
+--				end
+--				
+--				return "none"
+--			else
+--				local city_lrs = heroGameAI.CalculateSystem.Calculate(city,nil,heroGameAI.CalculateSystem.CALC_TYPE_DEF.LONGRANGESCORE)
+--				local u_lrs = heroGameAI.CalculateSystem.Calculate(u,nil,heroGameAI.CalculateSystem.CALC_TYPE_DEF.LONGRANGESCORE)
+--				local cityCombatSocre = heroGameAI.CalculateSystem.Calculate(city,nil,heroGameAI.CalculateSystem.CALC_TYPE_DEF.COMBATSCORE)
+--				local uCombatSocre = heroGameAI.CalculateSystem.Calculate(u,nil,heroGameAI.CalculateSystem.CALC_TYPE_DEF.COMBATSCORE)
+--				if true == sf then
+--					return "Attack_Ai"
+--				end
+--				if uCombatSocre >= cityCombatSocre - 50 and u_lrs >= 100 and u_lrs >= city_lrs * 1.2 then
+--					return "Attack_Ai"
+--				else
+--					return "none"
+--				end
+--			end
+--		else
+--			local oVisitor = oTown:getunit("visitor")
+--			if nil == oVisitor then
+--				return "Attack_Ai"
+--			else
+--				if true == heroGameAIExplore.CanHeroAttack(u,oVisitor,sf) then
+--					return "Hero_Attack"
+--				else
+--					return "none"
+--				end
+--			end
+--		end
+--	else
+--		return "none"
+--	end
+--	
+--end
+--function heroGameAIExplore.GetCityOccupyTask(u,dis,sf)
+--	local cityTable = heroGameInfo.worldMap.cities
+--	if nil == cityTable then
+--		return nil
+--	end
+--	
+--	if nil == dis then
+--		dis = heroGameAIExplore.MaxDistance
+--	end
+--	local minDistance = heroGameAIExplore.MaxDistance
+--	local city = nil
+--	heroGameAI.LogAi("cityNum"..#cityTable)
+--	for i = 1,#cityTable do
+--		if cityTable[i] then
+--			--判断是否可占领或者可攻击
+--			local taskType = heroGameAIExplore.GetCityTaskType(u,cityTable[i],sf)
+--			heroGameAI.LogAi("id"..cityTable[i].data.id..";name"..cityTable[i].data.name)
+--			if "none" == taskType then
+--				heroGameAI.LogAi("resnone"..cityTable[i].data.name)
+--			else
+--				local tempDis = GetDistance(u,cityTable[i])
+--				heroGameAI.LogAi("resnone name "..cityTable[i].data.name .. " dis:" .. tempDis .. " \n")
+--				if tempDis >=0 and tempDis < minDistance then
+--					minDistance = tempDis
+--					city = cityTable[i]
+--					city.tempAiType = taskType
+--				end				
+--			end
+--		end
+--	end
+--	
+--	if dis >= minDistance then
+--		return city
+--	else
+--		return nil
+--	end
+--end
+--
+----取最近的镇(各种采集场)
+--function heroGameAIExplore.CanTownOccupy(u,town,sf)
+--	if HaveGuard(town) then
+--		return false
+--	end
+--	
+--	if HaveFiredTarget(u,town) then
+--		return false
+--	end	
+--	
+--	local relation = u:getowner():allience(town:getowner())
+--	if relation == hVar.PLAYER_ALLIENCE_TYPE.NEUTRAL or relation == hVar.PLAYER_ALLIENCE_TYPE.ENEMY then
+--		return true
+--	end
+--	return false
+--end
+--function heroGameAIExplore.GetTownOccupyTask(u,dis,sf)
+--	local townTable = heroGameInfo.worldMap.towns
+--	if nil == townTable then
+--		return nil
+--	end
+--	
+--	if nil == dis then
+--		dis = heroGameAIExplore.MaxDistance
+--	end
+--	local minDistance = heroGameAIExplore.MaxDistance
+--	local town = nil
+--	for i = 1,#townTable do
+--		if townTable[i] and heroGameAIExplore.CanTownOccupy(u,townTable[i]) then
+--			local tempDis = GetDistance(u,townTable[i])
+--			if tempDis >= 0 and tempDis < minDistance then
+--				minDistance = tempDis
+--				town = townTable[i]
+--			end
+--		end
+--	end
+--	
+--	if dis >= minDistance then
+--		return town
+--	else
+--		return nil
+--	end
+--end
+--
+----取最近的奖励
+--function heroGameAIExplore.CanHouseGiving(u,house)
+--	if HaveGuard(house) then
+--		return false
+--	end
+--	
+--	if HaveFiredTarget(u,house) then
+--		return false
+--	end	
+--	
+--	if house then
+--		local tTab = house:gettab()
+--		if house:iscooldown(u) then
+--			if type(tTab.loot)=="table" and #(tTab.loot) >= 1 and type(tTab.loot[1])=="table" and tTab.loot[1][1] == "attr" then
+--				if tTab.loot[1][2] == "hp" then
+--					if u.attr.hp / u.attr.mxhp >= 0.5 then
+--						return false
+--					end
+--				elseif tTab.loot[1][2] == "hp_pec" then
+--					if u.attr.hp / u.attr.mxhp >= 0.5 then
+--						return false
+--					end
+--				elseif tTab.loot[1][2] == "mp" then
+--					if u.attr.mxmp == 0 or u.attr.mp / u.attr.mxmp >= 0.5 then
+--						return false
+--					end
+--				elseif tTab.loot[1][2] == "mp_pec" then
+--					if u.attr.mxmp == 0 or u.attr.mp / u.attr.mxmp >= 0.5 then
+--						return false
+--					end
+--				else
+--					
+--				end
+--			end
+--			
+--			if type(tTab.interactionBox)=="table" and type(tTab.loot)=="table" and type(tTab.visit)=="table" then
+--				if 0~= tTab.visit[1] and #(tTab.loot) >= 1 then
+--					return true
+--				end
+--			end
+--		end
+--	end
+--	
+--	return false
+--end
+--function heroGameAIExplore.GetHouseGivingTask(u)
+--	local givingTable = heroGameInfo.worldMap.giving
+--	if nil == givingTable then
+--		return nil
+--	end
+--	
+--	local minDistance = heroGameAIExplore.MaxDistance
+--	local giving = nil
+--	for i = 1,#givingTable do
+--		if givingTable[i] and heroGameAIExplore.CanHouseGiving(u,givingTable[i]) then
+--			local tempDis = GetDistance(u,givingTable[i])
+--			if tempDis >= 0 and tempDis < minDistance then
+--				minDistance = tempDis
+--				giving = givingTable[i]
+--			end
+--		end
+--	end
+--	
+--	return giving
+--end
+--
+----取最近的野外雇佣
+--function heroGameAIExplore.GetCanHireList(u,house)
+--	local gold = heroGameAI.currentPlayer.data.resource[hVar.RESOURCE_TYPE.GOLD]
+--	local food = heroGameAI.currentPlayer.data.resource[hVar.RESOURCE_TYPE.FOOD]
+--	local stone = heroGameAI.currentPlayer.data.resource[hVar.RESOURCE_TYPE.STONE]
+--	local wood = heroGameAI.currentPlayer.data.resource[hVar.RESOURCE_TYPE.WOOD]
+--	local iron = heroGameAI.currentPlayer.data.resource[hVar.RESOURCE_TYPE.LIFE]
+--	local crystal = heroGameAI.currentPlayer.data.resource[hVar.RESOURCE_TYPE.CRYSTAL]
+--	
+--	-- todo 先这样挡一下
+--	if type(house) == "table" and type(house.data) == "table" and type(house.data.hireList) == "table" then
+--	else
+--		return nil
+--	end
+--
+--	local oHero = u:gethero()
+--	local itemList = {}
+--	for i = 1,#house.data.hireList do
+--		local temp = house.data.hireList[i][2]
+--		local itemid = house.data.hireList[i][1]
+--		local uLv = hVar.tab_unit[itemid].unitlevel or 1
+--		if temp > 0 then
+--			if oHero and oHero.attr.level >= 10 then
+--				if uLv >= 3 then
+--					itemList[#itemList + 1] = {id = house.data.hireList[i][1],number = temp,price = hVar.tab_unit[house.data.hireList[i][1]].price}
+--				end
+--			else
+--				itemList[#itemList + 1] = {id = house.data.hireList[i][1],number = temp,price = hVar.tab_unit[house.data.hireList[i][1]].price}
+--			end
+--		end
+--	end
+--	
+--	local buyList = {}
+--	for i = 1,#itemList do
+--		local curNum = 0
+--		local curGold = itemList[i].price[1] or 0
+--		local curFood = itemList[i].price[2] or 0
+--		local curStone = itemList[i].price[3] or 0
+--		local curWood = itemList[i].price[4] or 0
+--		local curIron = itemList[i].price[5] or 0
+--		local curCrystal = itemList[i].price[6] or 0
+--		for j = 1,itemList[i].number do
+--			if gold >= curGold and food >= curFood and stone >= curStone and wood >= curWood and iron >= curIron and crystal >= curCrystal then
+--				curNum = curNum + 1
+--				gold = gold - curGold
+--				food = food - curFood
+--				stone = stone - curStone
+--				wood = wood - curWood 
+--				iron = iron - curIron
+--				crystal = crystal - curCrystal
+--			else
+--				break
+--			end
+--		end
+--		
+--		if curNum > 0 then
+--			buyList[#buyList + 1] = {itemList[i].id,curNum}
+--			if curNum < itemList[i].number then
+--				break
+--			end
+--		end
+--	end
+--	
+--	local team = u.data.team
+--	--首先计算出空槽子的个数
+--	local teamN = 0
+--	for i = 1,#team do
+--		if team[i] == 0 then
+--			teamN = teamN + 1
+--		elseif type(team[i]) == "table" then
+--			for j = 1,#buyList do
+--			--当house 有可雇佣的单位时 并且 跟自己身上的 单位ID 一致时 返回可以雇佣
+--				if buyList[j][2] > 0 and buyList[j][1] == team[i][1] then
+--					local uID,uNum = unpack(buyList[j])
+--					buyList = {{uID,uNum}}
+--					return buyList
+--				end
+--			end
+--		end
+--	end
+--
+--	--如果长度相等则直接返回
+--	if teamN >= #buyList then
+--		return buyList
+--	end
+--
+--	return nil
+--	
+--end
+--
+--function heroGameAIExplore.CanHouseHire(u,house)	
+--	if HaveGuard(house) then
+--		return false
+--	end
+--	
+--	if HaveFiredTarget(u,house) then
+--		return false
+--	end		
+--	
+--	if house and house.data and house.data.hireList then
+--		local buyList = heroGameAIExplore.GetCanHireList(u,house)
+--		if type(buyList) == "table" and #buyList > 0 then
+--			return true 
+--		end
+--	end
+--	
+--	return false
+--end
+--function heroGameAIExplore.GetHouseHireTask(u)
+--	local hireTable = heroGameInfo.worldMap.hire
+--	if nil == hireTable then
+--		return nil
+--	end
+--	
+--	local minDistance = heroGameAIExplore.MaxDistance
+--	local hire = nil
+--	for i = 1,#hireTable do
+--		if hireTable[i] and heroGameAIExplore.CanHouseHire(u,hireTable[i]) then
+--			local tempDis = GetDistance(u,hireTable[i])
+--			if tempDis >= 0 and tempDis < minDistance then
+--				minDistance = tempDis
+--				hire = hireTable[i]
+--			end
+--		end
+--	end
+--	
+--	return hire
+--end
+--
+----取最近的资源
+--function heroGameAIExplore.CanGrab(u,r)
+--	if HaveGuard(r) then
+--		return false
+--	end
+--	
+--	if HaveFiredTarget(u,r) then
+--		return false
+--	end	
+--	
+--	if nil == r then
+--		return false
+--	end
+--
+--	if 1 == r.data.IsHide then
+--		return false
+--	end
+--	
+--	return true
+--end
+--
+--function heroGameAIExplore.GetGrabTask(u,dis,sf)
+--	local resTable = heroGameInfo.worldMap.resource
+--	if nil == resTable then
+--		return nil
+--	end
+--	
+--	if nil == dis then
+--		dis = heroGameAIExplore.MaxDistance
+--	end
+--	local minDistance = heroGameAIExplore.MaxDistance
+--	local res = nil
+--	local index = 0
+--	for i = 1,table.maxn(resTable) do
+--		if type(resTable[i]) == "table" and heroGameAIExplore.CanGrab(u,resTable[i]) then
+--			local tempDis = GetDistance(u,resTable[i])
+--			if tempDis >= 0 and tempDis < minDistance then
+--				minDistance = tempDis
+--				res = resTable[i]
+--				index = i
+--			end
+--		end
+--	end
+--	
+--	heroGameAI.LogAi("heroGameAIExplore.GetGrabTask index = " .. index .. "\n")
+--	
+--	if dis >= minDistance then
+--		return res
+--	else
+--		return nil
+--	end
+--end
+--
+----取最近的玩家英雄
+--function heroGameAIExplore.CanHeroAttack(u,monster,sf)
+----print("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx1111111 u:" .. u.data.name .. " h:" .. monster.data.name)	
+--	if HaveGuard(monster) then
+--		return false
+--	end
+--
+--	if HaveFiredTarget(u,monster) then
+--		return false
+--	end	
+--	
+--	local isOk = false
+--	
+--	if monster and monster.data.IsHide == 0 and monster.attr.invincible == 0 then
+--		local hero = monster:gethero()
+--		if hero then
+--			local ai_task = hero.data.AIModeBasic
+--			if hero.data.IsDefeated == 0 and ai_task ~= hVar.AI_MODE.PASSIVE then
+--				isOk = true
+--			end
+--		end
+--	end
+--	
+--	
+--	if u and monster and isOk then
+--		if true == sf then
+--			return true
+--		end
+--		local uCombatSocre = heroGameAI.CalculateSystem.Calculate(u,nil,heroGameAI.CalculateSystem.CALC_TYPE_DEF.COMBATSCORE)
+--		local mCombatSocre = heroGameAI.CalculateSystem.Calculate(monster,nil,heroGameAI.CalculateSystem.CALC_TYPE_DEF.COMBATSCORE)
+--		if uCombatSocre >= 1.3 * mCombatSocre or (uCombatSocre >= 1500 + mCombatSocre)then
+--			return true
+--		end 
+--	end
+--	
+--	return false
+--end
+--function heroGameAIExplore.GetHeroAttackTask(h,dis,sf)
+--	local monsterTable = {}
+--	local oPlayer = h:getowner()
+--
+--	for i = 1,#heroGameRule.players do
+--		if oPlayer:allience(heroGameRule.players[i]) == hVar.PLAYER_ALLIENCE_TYPE.ENEMY then
+--			local heros = heroGameRule.players[i].heros
+--			for i = 1,#heros do
+--				local u = heros[i]:getunit()
+--				local ai_task = heros[i].data.AIModeBasic
+--				if type(u) == "table" and ai_task ~= hVar.AI_MODE.PASSIVE then
+--					monsterTable[#monsterTable + 1] = u
+--				end
+--			end
+--		end
+--	end
+--
+--	if nil == dis then
+--		dis = heroGameAIExplore.MaxDistance
+--	end
+--
+--	local minDistance = heroGameAIExplore.MaxDistance
+--	local monster = nil
+--	for i = 1,#monsterTable do
+--		if heroGameAIExplore.CanHeroAttack(h,monsterTable[i],sf) then
+--			local tempDis = GetDistance(h,monsterTable[i])
+--			if tempDis >= 0 and tempDis < minDistance then
+--				minDistance = tempDis
+--				monster = monsterTable[i]
+--			end
+--		end
+--	end
+--	
+--	if dis >= minDistance then
+--		return monster
+--	else
+--		return nil
+--	end
+--end
+--
+--
+----取最近的怪
+--function heroGameAIExplore.CanMonsterAttack(u,monster)
+--	if monster.data.IsDead == 1 then
+--		heroGameInfo.worldMap.RemoveMonster(monster)
+--		return false
+--	end
+--	
+--	if HaveGuard(monster) then
+--		return false
+--	end
+--	
+--	if HaveFiredTarget(u,monster) then
+--		return false
+--	end	
+--	
+--	local oPlayer = u:getowner()
+--	local oMonster = monster:getowner()
+--	if nil == oMonster then
+--		return false
+--	end
+--	if oMonster.data.palyerId == 9 then
+--		return false
+--	end
+--
+--	if monster.data.IsHide == 1 then
+--		return false
+--	end
+--
+--	local relationshop = oPlayer:allience(oMonster)
+--    if relationshop == hVar.PLAYER_ALLIENCE_TYPE.OWNER or relationshop == hVar.PLAYER_ALLIENCE_TYPE.ALLY then
+--		return false
+--	end
+--	
+--	if u and monster then
+--		local uCombatSocre = heroGameAI.CalculateSystem.Calculate(u,nil,heroGameAI.CalculateSystem.CALC_TYPE_DEF.COMBATSCORE)
+--		local mCombatSocre = heroGameAI.CalculateSystem.Calculate(monster,nil,heroGameAI.CalculateSystem.CALC_TYPE_DEF.COMBATSCORE)
+--		if uCombatSocre >= 2 * mCombatSocre or (uCombatSocre >= 2000 + mCombatSocre)then
+--			return true
+--		end 
+--	end
+--	
+--	return false
+--end
+--function heroGameAIExplore.GetMonsterTask(u)
+--	local monsterTable = heroGameInfo.worldMap.monster
+--	if nil == monsterTable then
+--		return nil
+--	end
+--
+--	local minDistance = heroGameAIExplore.MaxDistance
+--	local monster = nil
+--	for i = 1,table.maxn(monsterTable) do
+--		if type(monsterTable[i]) == "table" and heroGameAIExplore.CanMonsterAttack(u,monsterTable[i]) then
+--			local tempDis = GetDistance(u,monsterTable[i])
+--			if tempDis >= 0 and tempDis < minDistance then
+--				minDistance = tempDis
+--				monster = monsterTable[i]
+--			end
+--		end
+--	end
+--	
+--	return monster
+--end
+--
+--
+--function heroGameAIExplore.GetMonsterTaskWithChase(u,t)
+--	local monsterTable = heroGameInfo.worldMap.monster
+--	if nil == monsterTable or nil == u.handle._c or nil==t then
+--		return nil
+--	end
+--	local minDistance = heroGameAIExplore.MaxDistance
+--	local monster = nil
+--	for i = 1,table.maxn(monsterTable) do
+--		if type(monsterTable[i]) == "table" and monsterTable[i].ID~=0 and monsterTable[i].handle._c and heroGameAIExplore.CanMonsterAttack(u,monsterTable[i]) then
+--			local m = monsterTable[i]
+--			local nDisWithUnit = xlMap_GetPathCount(u.handle._c,m.handle._c)				--走到目标所需的距离
+--			if nDisWithUnit >= 0 then
+--				local nDisWithTarget = math.floor(math.sqrt((t.data.gridX-m.data.gridX)^2+(t.data.gridY-m.data.gridY)^2))	--目标距离追击单位的直线距离
+--				--print(m.data.id,"需要移动的步数",nDisWithUnit,"直线距离",nDisWithTarget)
+--				if (nDisWithUnit+nDisWithTarget) < minDistance then
+--					minDistance = nDisWithUnit+nDisWithTarget
+--					monster = m
+--				end
+--			end
+--		end
+--	end
+--	
+--	return monster
+--end

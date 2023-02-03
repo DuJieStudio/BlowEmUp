@@ -1,0 +1,42 @@
+--BT.playerBT = {}
+--BT.playerBT.callbackinfo = {}
+--
+--function BT.playerBT.Init()
+--	--_DEBUG_MSG("BT.playerBT.Init()")
+--	
+--	BT.playerBT.root = BT.CreateNode(BT.Node_TypeDef.Se,"player_bt_root",nil)
+--	
+--	BT.heroBT.Init()
+--end
+--
+--function BT.playerBT.Run(p,heros,callbackfunc)
+--	heroGameAI.LogAi(string.format("BT.playerBT.Run pid:%d pname:%s heronum:%d\n",p.data.playerId,tostring(p.data.name),#heros))
+--	
+--	BT.playerBT.SeqenceHero(p,heros)
+--
+--	BT.playerBT.callbackinfo.p = p
+--	BT.playerBT.callbackinfo.heros = heros
+--	BT.playerBT.callbackinfo.seindex = 1
+--	BT.playerBT.callbackinfo.callbackfunc = callbackfunc
+--
+--	heros[1].localdata.lastTask = {}
+--	BT.heroBT.Run(heros[1],BT.playerBT.CallBack,true)
+--end
+--
+--function BT.playerBT.SeqenceHero(p,heros)
+--	
+--end
+--
+--function BT.playerBT.CallBack(u)
+--	heroGameAI.LogAi(string.format("BT.playerBT.CallBack hid:%d hname:%s\n",u.data.id,tostring(u.data.name)))
+--	--AI_Garrison(u)--已废弃
+--	SetAiAccelerate(u,false)
+--
+--	if BT.playerBT.callbackinfo.seindex < #BT.playerBT.callbackinfo.heros then
+--		BT.playerBT.callbackinfo.seindex = BT.playerBT.callbackinfo.seindex + 1
+--		BT.playerBT.callbackinfo.heros[BT.playerBT.callbackinfo.seindex].localdata.lastTask = {}
+--		BT.heroBT.Run(BT.playerBT.callbackinfo.heros[BT.playerBT.callbackinfo.seindex],BT.playerBT.CallBack,true)
+--	else
+--		BT.playerBT.callbackinfo.callbackfunc(BT.playerBT.callbackinfo.p)
+--	end
+--end
